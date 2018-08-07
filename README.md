@@ -1,7 +1,7 @@
 # АИС "Карта активиста"
 `АИС "Карта активиста"` - система учета внеаудиторной деятельности студентов в образовательной организации России.
 
-[Подробнее о системе] (https://github.com/danilov1/activist-card/blob/master/%D0%90%D0%98%D0%A1%20%D0%9A%D0%B0%D1%80%D1%82%D0%B0%20%D0%B0%D0%BA%D1%82%D0%B8%D0%B2%D0%B8%D1%81%D1%82%D0%B0%20(2018).pdf) | [Техническая документация и API] (https://github.com/danilov1/activist-card/blob/master/%D0%94%D0%9E%D0%9A%D0%A3%D0%9C%D0%95%D0%9D%D0%A2%D0%90%D0%A6%D0%98%D0%AF%20%D0%90%D0%98%D0%A1%20%22%D0%9A%D0%90%D0%A0%D0%A2%D0%90%20%D0%90%D0%9A%D0%A2%D0%98%D0%92%D0%98%D0%A1%D0%A2%D0%90%22.pdf)
+[Подробнее о системе](https://github.com/danilov1/activist-card/blob/master/%D0%90%D0%98%D0%A1%20%D0%9A%D0%B0%D1%80%D1%82%D0%B0%20%D0%B0%D0%BA%D1%82%D0%B8%D0%B2%D0%B8%D1%81%D1%82%D0%B0%20(2018).pdf) | [Техническая документация и API](https://github.com/danilov1/activist-card/blob/master/%D0%94%D0%9E%D0%9A%D0%A3%D0%9C%D0%95%D0%9D%D0%A2%D0%90%D0%A6%D0%98%D0%AF%20%D0%90%D0%98%D0%A1%20%22%D0%9A%D0%90%D0%A0%D0%A2%D0%90%20%D0%90%D0%9A%D0%A2%D0%98%D0%92%D0%98%D0%A1%D0%A2%D0%90%22.pdf)
 
 ## Требования к установке
 1. `Apache 2, PHP 5.6, MySQL 5`
