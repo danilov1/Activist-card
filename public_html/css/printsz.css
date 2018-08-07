@@ -1,0 +1,70 @@
+@charset "utf-8";
+/*----------------------------------------------------------------------*/
+/*----- Организация: Совет Студентов и Аспирантов ФГБОУ ВПО "ПГЛУ" -----*/
+/*----- Разработчик: Владимир Данилов (danilov.5gor@mail.ru) -----------*/
+/*----------------------------------------------------------------------*/
+
+p { margin:0; }
+.clear { clear:both; }
+.header {
+    float:right;
+    width:40%;
+    font-family:"Times New Roman", Times, serif;
+    font-size:16px;
+	line-height:25px;
+    color:#000;
+}
+.header p { margin:0; }
+.title {
+    margin:20px 0 -20px 0;
+    padding:0;
+    font-weight:bold;
+    text-align:center;
+    font-family:"Times New Roman", Times, serif;
+    font-size:16px;
+    line-height:16px;
+    color:#000;
+}
+.text p {
+    margin-bottom:5px;
+    line-height:18px;
+    text-indent:1cm;
+    text-align:justify;
+    font-family:"Times New Roman", Times, serif;
+    font-size:16px;
+	line-height:25px;
+    color:#000;
+}
+.footer { margin-top:1cm; }
+.post {
+    float:left;
+    width:40%;
+    font-family:"Times New Roman", Times, serif;
+    font-size:16px;
+    color:#000;
+}
+.sign {
+    float:right;
+    width:40%;
+    text-align:right;
+    font-family:"Times New Roman", Times, serif;
+    font-size:16px;
+    color:#000;
+}
+
+.ollist {
+    margin-left:40px;
+    font-family:"Times New Roman", Times, serif;
+    font-size:16px;
+	line-height:25px;
+    color:#000;
+}
+
+ol, ul {
+    margin:0;
+    padding:0;
+    font-family:"Times New Roman", Times, serif;
+    font-size:16px;
+	line-height:25px;
+    color:#000;
+}

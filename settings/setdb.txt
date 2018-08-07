@@ -1,0 +1,173 @@
+
+CREATE TABLE `activity` (
+  `id` bigint(20) NOT NULL,
+  `event` bigint(20) NOT NULL,
+  `user` bigint(20) NOT NULL,
+  `role` varchar(10) NOT NULL,
+  `created` datetime NOT NULL,
+  `addedby` bigint(20) NOT NULL,
+  `complex` varchar(1) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `deps` (
+  `id` bigint(20) NOT NULL,
+  `type` varchar(10) NOT NULL,
+  `area` bigint(20) DEFAULT NULL,
+  `name` varchar(500) NOT NULL,
+  `full` varchar(500) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `events` (
+  `id` bigint(20) NOT NULL,
+  `name` varchar(500) NOT NULL,
+  `place` varchar(500) DEFAULT NULL,
+  `date` date NOT NULL,
+  `date_for` date DEFAULT NULL,
+  `time_since` time NOT NULL,
+  `time_for` time NOT NULL,
+  `comment` longtext,
+  `level` varchar(10) NOT NULL,
+  `dep` bigint(11) DEFAULT NULL,
+  `holder` bigint(20) NOT NULL,
+  `created` datetime NOT NULL,
+  `author` bigint(20) NOT NULL,
+  `fixers` text,
+  `outside` varchar(1) NOT NULL,
+  `complex` varchar(1) NOT NULL,
+  `tags` longtext NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `lists` (
+  `id` bigint(20) NOT NULL,
+  `name` varchar(500) NOT NULL,
+  `rights` text NOT NULL,
+  `public` varchar(2) NOT NULL,
+  `icon` varchar(100) NOT NULL,
+  `content` longtext NOT NULL,
+  `holder` bigint(20) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `tags` (
+  `id` bigint(20) NOT NULL,
+  `type` varchar(1) NOT NULL,
+  `name` varchar(150) NOT NULL,
+  `comment` text,
+  `style` varchar(150) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+INSERT INTO `tags` (`id`, `type`, `name`, `comment`, `style`) VALUES
+(1, 'a', 'Общественная', NULL, '0000000001.png'),
+(2, 'a', 'Научно-исследовательская', NULL, '0000000002.png'),
+(3, 'a', 'Творческая', NULL, '0000000003.png'),
+(4, 'a', 'Спортивная', NULL, '0000000004.png'),
+(5, 'e', 'Организационное (сопроводительное) мероприятие', NULL, '#45926b'),
+(6, 'e', 'Воспитательное/патриотическое', NULL, '#be3f3f'),
+(7, 'e', 'Благотворительное', NULL, '#3f8dbe'),
+(8, 'e', 'Конкурс/Соревнование', NULL, '#e5882d'),
+(9, 'e', 'Концертная программа', NULL, '#b26bb3'),
+(10, 'e', 'Приуроченная акция (не благотворительная)', NULL, '#bcb842'),
+(11, 'e', 'Выпуск периодического продукта', NULL, '#5cb77c'),
+(12, 'e', 'Форум/Конференция', NULL, '#59aaa9'),
+(13, 'e', 'Прием/Почетная встреча', NULL, '#795a5a');
+
+CREATE TABLE `temp_sz` (
+  `id` bigint(20) NOT NULL,
+  `name` varchar(300) NOT NULL,
+  `header` text NOT NULL,
+  `title` varchar(500) NOT NULL,
+  `post` varchar(300) NOT NULL,
+  `sign` varchar(300) NOT NULL,
+  `content` longtext NOT NULL,
+  `holder` bigint(20) NOT NULL,
+  `area` varchar(50) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `tokens` (
+  `token` varchar(70) NOT NULL,
+  `lastip` varchar(50) NOT NULL,
+  `deadline` datetime NOT NULL,
+  `user` bigint(20) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Токены доступа';
+
+CREATE TABLE `users` (
+  `id` bigint(20) NOT NULL,
+  `access` varchar(1) NOT NULL,
+  `sin` varchar(15) NOT NULL,
+  `phone` varchar(10) NOT NULL,
+  `password` varchar(150) NOT NULL,
+  `vkauth` int(50) DEFAULT NULL,
+  `vktoken` varchar(300) DEFAULT NULL,
+  `type` varchar(10) NOT NULL,
+  `out` varchar(6) DEFAULT NULL,
+  `code` varchar(50) DEFAULT NULL,
+  `fullname` varchar(150) NOT NULL,
+  `sname` varchar(150) NOT NULL,
+  `fname` varchar(150) NOT NULL,
+  `pname` varchar(150) NOT NULL,
+  `sex` varchar(10) NOT NULL,
+  `birthday` date DEFAULT NULL,
+  `post` varchar(300) DEFAULT NULL,
+  `fac` varchar(2) DEFAULT NULL,
+  `dep` bigint(20) NOT NULL,
+  `gen` varchar(3) DEFAULT NULL,
+  `form` varchar(3) DEFAULT NULL,
+  `curcourse` varchar(10) DEFAULT NULL,
+  `groupnum` varchar(10) DEFAULT NULL,
+  `budget` varchar(1) DEFAULT NULL,
+  `created` datetime NOT NULL,
+  `addedby` bigint(20) NOT NULL,
+  `count` bigint(20) NOT NULL,
+  `groups` text,
+  `ic_1` bigint(20) NOT NULL,
+  `ic_2` bigint(20) NOT NULL,
+  `ic_3` bigint(20) NOT NULL,
+  `ic_4` bigint(20) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+ALTER TABLE `activity`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `event` (`event`),
+  ADD KEY `user` (`user`),
+  ADD KEY `event_2` (`event`),
+  ADD KEY `user_2` (`user`);
+
+ALTER TABLE `deps`
+  ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `events`
+  ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `lists`
+  ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `tags`
+  ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `temp_sz`
+  ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `tokens`
+  ADD PRIMARY KEY (`token`);
+
+ALTER TABLE `users`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `code` (`code`),
+  ADD KEY `type` (`type`),
+  ADD KEY `out` (`out`);
+
+
+ALTER TABLE `activity`
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `deps`
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `events`
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `lists`
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `tags`
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `temp_sz`
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `users`
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;

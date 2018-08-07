@@ -1,0 +1,40 @@
+{
+    "mysql_user": "",
+    "mysql_pw": "",
+    "mysql_db": "",
+    "sms_login": "",
+    "sms_pw": "",
+    "sms_name": "",
+    "vk_state": 0,
+    "vk_id": "",
+    "vk_secret": "",
+    "organization_form": "",
+    "organization_fullname": "",
+    "organization_shortname": "",
+    "organization_department": "",
+    "organization_logo": "img\/org_logo.svg?5a1d3126eec28",
+    "organization_favicon": "img\/favicon.ico?5a1d3126eecaa",
+    "rating_roles": {
+        "b": 0,
+        "u": 1,
+        "p": 2,
+        "w": 3,
+        "l": 1,
+        "m": 3,
+        "h": 4
+    },
+    "rating_levels": {
+        "f": 1,
+        "u": 2,
+        "c": 3,
+        "r": 4,
+        "v": 5,
+        "i": 6
+    },
+    "rating_complex": 1.5,
+    "rating_muscle": 0.2,
+    "rating_oneday": 0.1,
+    "organizations_order": [
+        "1"
+    ]
+}

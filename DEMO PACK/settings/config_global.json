@@ -1,0 +1,42 @@
+{
+    "mysql_user": "НУЖНО ЗАПИСАТЬ",
+    "mysql_pw": "НУЖНО ЗАПИСАТЬ",
+    "mysql_db": "НУЖНО ЗАПИСАТЬ",
+    "sms_login": "",
+    "sms_pw": "",
+    "sms_name": "",
+    "vk_state": 1,
+    "vk_id": "6428946",
+    "vk_secret": "tcHJpcFCdUbt5SlBph6y",
+    "organization_form": "\u0424\u0413\u0411\u041e\u0423 \u0412\u041e",
+    "organization_fullname": "\u041d\u0435\u0441\u0443\u0449\u0435\u0441\u0442\u0432\u0443\u044e\u0449\u0438\u0439 \u0433\u043e\u0441\u0443\u0434\u0430\u0440\u0441\u0442\u0432\u0435\u043d\u043d\u044b\u0439 \u0443\u043d\u0438\u0432\u0435\u0440\u0441\u0438\u0442\u0435\u0442",
+    "organization_shortname": "\u041d\u0435\u0441\u0413\u0423",
+    "organization_department": "\u041e\u0431\u044a\u0435\u0434\u0438\u043d\u0435\u043d\u043d\u044b\u0439 \u0441\u043e\u0432\u0435\u0442 \u043e\u0431\u0443\u0447\u0430\u044e\u0449\u0438\u0445\u0441\u044f \u041d\u0435\u0441\u0413\u0423",
+    "organization_logo": "img\/org_logo.svg?5abc95efb99b3",
+    "organization_favicon": "img\/favicon.ico?5abc981e55773",
+    "rating_roles": {
+        "b": 0,
+        "u": 1,
+        "p": 2,
+        "w": 3,
+        "l": 1,
+        "m": 3,
+        "h": 4
+    },
+    "rating_levels": {
+        "f": 1,
+        "u": 2,
+        "c": 3,
+        "r": 4,
+        "v": 5,
+        "i": 6
+    },
+    "rating_complex": 1.5,
+    "rating_muscle": 0.2,
+    "rating_oneday": 0.1,
+    "organizations_order": [
+        "17",
+        "1",
+        "2"
+    ]
+}
