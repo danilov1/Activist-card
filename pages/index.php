@@ -14,7 +14,7 @@ render_doctype();
 	<?php
 	if(LOGGEDIN == "NO") {
 	?>
-	
+
 	<script type="text/javascript">
 	image2 = new Image();
 	image2.src = 'img/loading.gif';
@@ -35,7 +35,7 @@ render_doctype();
 	<?php
 	} else {
 	?>
-	
+
 	<script type="text/javascript">
 	$(function() {
 		$(".setpw_info, .header_mini, .header_slide").hide();
@@ -87,11 +87,12 @@ render_doctype();
 							<input name="loginauth_pw" class="span12" type="password" placeholder="Пароль" />
 							<div class="center">
 								<?php if($GLOBALS['config']['vk_id'] == "") { ?>
-								<div style="float:left; width:100%;"><a class="btn1 loginauth_submit g-recaptcha" href="" data-sitekey="6Le0pmIUAAAAAAbD01zfKyxEfisr9UBOEzuI-8kp" data-callback="login" data-size="invisible">Вход</a></div>
+								<div style="float:left; width:100%;"><a class="btn1 loginauth_submit g-recaptcha" href="" data-sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI" data-callback="login" data-size="invisible">Вход</a></div>
 								<?php
 								} else {
 								?>
-								<div style="float:left; width:84%;"><a class="btn1 loginauth_submit g-recaptcha" href="" data-sitekey="6Le0pmIUAAAAAAbD01zfKyxEfisr9UBOEzuI-8kp" data-callback="login" data-size="invisible">Вход</a></div>
+								<div style="float:left; width:84%;"><a class="btn1 loginauth_submit g-recaptcha" href="" data-sitekey="								<div style="float:left; width:100%;"><a class="btn1 loginauth_submit g-recaptcha" href="" data-sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI" data-callback="login" data-size="invisible">Вход</a></div>
+" data-callback="login" data-size="invisible">Вход</a></div>
 								<div style="float:right; width:15%;"><a class="btn1 loginvk" href="#" onclick="javascript:void window.open('<?php vk_auth_link('vkauth'); ?>','vkauthwindow','width=656,height=377,toolbar=0,menubar=0,location=0,status=1,scrollbars=0,resizable=1'); return false;">В</a></div>
 								<?php
 								}
