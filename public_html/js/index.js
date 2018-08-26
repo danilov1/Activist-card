@@ -15,7 +15,7 @@ function clearLoading() {
 
 $(function() {
   $('.alert .close').click(function() { $(this).parent().slideUp(); });
-  
+
   if(IsIE8()) {
       $('[placeholder]').each(function () {
           objie = $(this);
@@ -71,12 +71,12 @@ function login(token) {
 	  beforeSend: function() { $(".loadover").fadeIn(); },
     })
     .done(function(answer) {
-	  
+
       var preanswer = JSON.parse(answer);
       var logindata = preanswer.error;
       if(logindata == 'access_wrong') {
-		grecaptcha.reset();
-		$(".loginauth_submit").prepend("Вход");
+		// grecaptcha.reset();
+		//$(".loginauth_submit").prepend("Вход");
 		$(".loadover").fadeOut();
         pwInput.val('');
         $(".loginauth_info span").html("<strong>Неверный</strong> логин или пароль.");
@@ -87,8 +87,8 @@ function login(token) {
           window.location.reload();
       }
       else {
-		grecaptcha.reset();
-		$(".loginauth_submit").prepend("Вход");
+		// grecaptcha.reset();
+		//$(".loginauth_submit").prepend("Вход");
 		$(".loadover").fadeOut();
         $(".loginauth_info span").html(logindata);
         $(".loginauth_info").slideDown();

@@ -6,10 +6,10 @@ ini_set('post_max_size', '2M');
 date_default_timezone_set('Europe/Moscow');
 if(isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') { define("PROTOCOL", "https://"); } else { define("PROTOCOL", "http://"); }
 
-define("filesversion", "060418");
+define("filesversion", "260818");
 
 // Проверка .htaccess
-if(!file_exists('.htaccess')) { 
+if(!file_exists('.htaccess')) {
 	$htaccess = fopen(".htaccess", "a+");
 	fwrite($htaccess, "RewriteEngine On
 RewriteCond %{ENV:HTTPS} !on [NC]
@@ -109,13 +109,14 @@ function gologin() {
 		$curip = get_client_ip();
 		if($curip == "UNKNOWN") { errorjson("Невозможно распознать IP-адрес клиента"); }
 		if(!$_POST['token']) { errorjson("Ошибка сессии. Обновите страницу. #1"); }
-		
+
 		// RECAPTURE
+		/*
 		require_once('../plugins/request/Requests.php');
 		Requests::register_autoloader();
 		try {
 			$Request_RECAPTURE = Requests::post('https://www.google.com/recaptcha/api/siteverify', array(), array(
-				'secret' => '6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe',
+				'secret' => '6LcIVmwUAAAAACLOb9IYsDygqWlaDCdVEH7oB7Nb',
 				'response' => $_POST['token'],
 				'remoteip' => $curip
 			));
@@ -126,7 +127,8 @@ function gologin() {
 			if($isRequest_RECAPTURE["success"] !== true or $isRequest_RECAPTURE["hostname"] !== $_SERVER['SERVER_NAME']) { errorjson("Ошибка сессии. Обновите страницу. #3"); }
 		}
 		else { errorjson("Ошибка сессии. Обновите страницу. #4"); }
-		
+		*/
+
 		$pregetaccess = mysql_query("SELECT `id`,`sin`,`password`,`type` from `users` WHERE `sin`='".$_POST['l']."' AND `access` ='y' LIMIT 1");
 		$getaccess = mysql_fetch_row($pregetaccess);
 		if(!$getaccess[0]) { errorjson("access_wrong"); }
@@ -197,7 +199,7 @@ function get_client_ip() {
      else
          $ipaddress = 'UNKNOWN';
 
-     return $ipaddress; 
+     return $ipaddress;
 }
 
 function uploaderror($filevar) {
@@ -237,7 +239,7 @@ function datecheck($dc_date, $dc_error) {
 	list($dc_day, $dc_month, $dc_year) = split('[.]', $dc_date);
 	if(!checkdate($dc_month, $dc_day, $dc_year)) { errorjson($dc_error); }
 	$dc_return = $dc_year."-".$dc_month."-".$dc_day;
-	return $dc_return; 
+	return $dc_return;
 }
 
 function timecheck($tc_time) {
@@ -250,7 +252,7 @@ function activityPoints($up_event, $up_role, $up_complex) {
 	// Уровни
 	$levels = $GLOBALS['config']['rating_levels'];
 	// Коеффициент за "тяжелое" мероприятие
-	$complex = $GLOBALS['config']['rating_complex']; // от всего 
+	$complex = $GLOBALS['config']['rating_complex']; // от всего
 	// Коеффициент за "мускул"
 	$muscle = $GLOBALS['config']['rating_muscle'];
 	// Коеффициент за каждый дополнительный день
@@ -330,7 +332,7 @@ function render_meta($pagename, $pagefile) {
 	<!--[if lt IE 9]>
 		<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
 	<![endif]-->
-	
+
 	<!-- google fonts --> <link href='https://fonts.googleapis.com/css?family=PT+Sans:400,700|Roboto+Slab:400,700&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
 	<!-- google fonts --> <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,700&subset=latin,cyrillic,cyrillic-ext' rel='stylesheet' type='text/css'>
 	<!-- bootstrap    --> <link href="css/bootstrap.css" rel="stylesheet" type="text/css" />
@@ -344,10 +346,10 @@ function render_meta($pagename, $pagefile) {
 		<script type="text/javascript" src="js/fancybox/lib/jquery.mousewheel-3.0.6.pack.js"></script>
 		<link rel="stylesheet" href="js/fancybox/source/jquery.fancybox.css?v=2.1.4" type="text/css" media="screen" />
 		<script type="text/javascript" src="js/fancybox/source/jquery.fancybox.pack.js?v=2.1.4"></script>
-	<!-- /fancybox		-->	
+	<!-- /fancybox		-->
 	<!-- common style --> <link href="css/style.css?<?php echo filesversion; ?>" rel="stylesheet" type="text/css" />
 	<!-- js md5       --> <script src="js/md5.js"></script>
-	<!-- recapture    --> <script src='https://www.google.com/recaptcha/api.js'></script>
+	<!-- recapture        <script src="https://www.google.com/recaptcha/api.js" async defer></script> -->
 	<!-- js index     --> <script src="js/index.js?<?php echo filesversion; ?>"></script>
 		<?php } else { ?><!-- common style --> <link href="css/style.css?<?php echo filesversion; ?>" rel="stylesheet" type="text/css" />
 	<!-- js md5       --> <script src="js/md5.js"></script>
@@ -368,7 +370,7 @@ function render_meta($pagename, $pagefile) {
 	<?php } ?>
 	<?php }
 	?>
-	
+
 	<!--[if IE 8]>
 		<style>
 			header, .page { width:960px !important; }
@@ -444,10 +446,10 @@ function menu() {
 		</ul><?php
 	}
 	echo '<script>$(".menu a[href=\''.PAGEFILE.'\']").addClass("active");</script>';
-	
+
 	$prevkauth = mysql_query("SELECT `id`,`vkauth`,`vktoken`,`type` from `users` WHERE `id`='".LOGGED_ID."' AND `type` !='d' LIMIT 1");
 	$vkauth = mysql_fetch_row($prevkauth);
-	
+
 	if($vkauth[1] == NULL and $GLOBALS['config']['vk_state'] == 1) {
 	?>
 	<a class="btnadd sociallink" href="#" onclick="javascript:void window.open('<?php vk_auth_link('vktoken'); ?>','vkauthwindow','width=656,height=377,toolbar=0,menubar=0,location=0,status=1,scrollbars=0,resizable=1'); return false;" style="margin:15px 0;">Привязать аккаунт</a>
@@ -491,7 +493,7 @@ function countStudentsRating($studentID) {
 			if(isThisAcademicYear($checkeid[1]) == true) {
 				$currentActivityPoints = activityPoints($getactive[2],$getactive[3],$getactive[4]);
 				$editcount = $editcount + $currentActivityPoints;
-				
+
 				$countByTags = json_decode($checkeid[2]);
 				$pregetByATags = mysql_query("SELECT `id`,`type` from `tags` WHERE `type` = 'a';");
 				while($getByATags = mysql_fetch_array($pregetByATags)) {
@@ -506,7 +508,7 @@ function countStudentsRating($studentID) {
 			}
 		}
 	}
-	
+
 	$recounts = "UPDATE  `".$GLOBALS['config']['mysql_db']."`.`users` SET  `count` = ".$editcount."".$sqlcountByTagsText." WHERE  `users`.`id` =".$studentID.";";
 	if(!mysql_query($recounts)) { errorjson("Ошибка базы данных. Повторите попытку позже."); }
 }

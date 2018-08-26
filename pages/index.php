@@ -23,9 +23,9 @@ render_doctype();
 		$(".loadgif").fadeOut(500);
 		$("header").delay(500).fadeTo(700,1);
 		$(".page").delay(600).fadeTo(500,1);
-		$(".loginauth_submit").click(function(e) { grecaptcha.execute(); e.preventDefault(); });
+		$(".loginauth_submit").click(function(e) { /* grecaptcha.execute();  e.preventDefault(); */ login(null); return false; });
 		$("input[name=loginauth_login]").keyup(function(e) { if(e.keyCode == 13) { $( "input[name=loginauth_pw]" ).focus(); } });
-		$("input[name=loginauth_pw]").keyup(function(e) { if(e.keyCode == 13) { grecaptcha.execute(); } });
+		$("input[name=loginauth_pw]").keyup(function(e) { if(e.keyCode == 13) { /* grecaptcha.execute(); */ login(null); return false; } });
 		var setFocus = setInterval(function() {
 			var elem = $("input[name=loginauth_login]");
 			if(elem.is(":focus")) { clearTimeout(setFocus); } else { elem.focus(); }
@@ -87,12 +87,11 @@ render_doctype();
 							<input name="loginauth_pw" class="span12" type="password" placeholder="Пароль" />
 							<div class="center">
 								<?php if($GLOBALS['config']['vk_id'] == "") { ?>
-								<div style="float:left; width:100%;"><a class="btn1 loginauth_submit g-recaptcha" href="" data-sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI" data-callback="login" data-size="invisible">Вход</a></div>
+								<div style="float:left; width:100%;"><a class="btn1 loginauth_submit g-recaptcha" href="" data-sitekey="6Le0pmIUAAAAAAbD01zfKyxEfisr9UBOEzuI-8kp" data-callback="login" data-size="invisible">Вход</a></div>
 								<?php
 								} else {
 								?>
-								<div style="float:left; width:84%;"><a class="btn1 loginauth_submit g-recaptcha" href="" data-sitekey="								<div style="float:left; width:100%;"><a class="btn1 loginauth_submit g-recaptcha" href="" data-sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI" data-callback="login" data-size="invisible">Вход</a></div>
-" data-callback="login" data-size="invisible">Вход</a></div>
+								<div style="float:left; width:84%;"><a class="btn1 loginauth_submit g-recaptcha" href="" data-sitekey="6Le0pmIUAAAAAAbD01zfKyxEfisr9UBOEzuI-8kp" data-callback="login" data-size="invisible">Вход</a></div>
 								<div style="float:right; width:15%;"><a class="btn1 loginvk" href="#" onclick="javascript:void window.open('<?php vk_auth_link('vkauth'); ?>','vkauthwindow','width=656,height=377,toolbar=0,menubar=0,location=0,status=1,scrollbars=0,resizable=1'); return false;">В</a></div>
 								<?php
 								}
