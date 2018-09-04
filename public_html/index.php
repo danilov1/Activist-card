@@ -6,7 +6,7 @@ ini_set('post_max_size', '2M');
 date_default_timezone_set('Europe/Moscow');
 if(isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') { define("PROTOCOL", "https://"); } else { define("PROTOCOL", "http://"); }
 
-define("filesversion", "260818");
+define("filesversion", "040918");
 
 // Проверка .htaccess
 if(!file_exists('.htaccess')) {
@@ -105,10 +105,11 @@ function accessto($access_list) {
 function gologin() {
 	if(LOGGEDIN == "YES") { errorjson("ok"); }
 	else {
-		if((!$_POST['l']) or (!$_POST['p']) or (!$_POST['token'])) { errorjson("access_wrong"); }
+		if((!$_POST['l']) or (!$_POST['p'])) { errorjson("access_wrong"); }
+		//if((!$_POST['l']) or (!$_POST['p']) or (!$_POST['token'])) { errorjson("access_wrong"); }
 		$curip = get_client_ip();
 		if($curip == "UNKNOWN") { errorjson("Невозможно распознать IP-адрес клиента"); }
-		if(!$_POST['token']) { errorjson("Ошибка сессии. Обновите страницу. #1"); }
+		//if(!$_POST['token']) { errorjson("Ошибка сессии. Обновите страницу. #1"); }
 
 		// RECAPTURE
 		/*

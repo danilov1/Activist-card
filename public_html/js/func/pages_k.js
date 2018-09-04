@@ -8,7 +8,7 @@ var sR = {
     defaults: {
         slideSpeed: 400,
         easing: false,
-        callback: false     
+        callback: false
     },
     thisCallArgs: {
         slideSpeed: 400,
@@ -32,12 +32,12 @@ var sR = {
             }else if(typeof arg2 == 'function'){
                 sR.thisCallArgs.callback = arg2;
             }else if(typeof arg2 == 'undefined') {
-                sR.thisCallArgs.easing = sR.defaults.easing;    
+                sR.thisCallArgs.easing = sR.defaults.easing;
             }
             if(typeof arg3 == 'function') {
                 sR.thisCallArgs.callback = arg3;
             }else if(typeof arg3 == 'undefined' && typeof arg2 != 'function'){
-                sR.thisCallArgs.callback = sR.defaults.callback;    
+                sR.thisCallArgs.callback = sR.defaults.callback;
             }
             var $cells = $(this).find('td');
             $cells.wrapInner('<div class="slideRowUp" />');
@@ -58,7 +58,7 @@ var sR = {
                         sR.thisCallArgs.callback.call(this);
                     }
                 }
-            }, 100);                                                                                                    
+            }, 100);
             return $(this);
         },
         down: function (arg1,arg2,arg3) {
@@ -77,12 +77,12 @@ var sR = {
             }else if(typeof arg2 == 'function'){
                 sR.thisCallArgs.callback = arg2;
             }else if(typeof arg2 == 'undefined') {
-                sR.thisCallArgs.easing = sR.defaults.easing;    
+                sR.thisCallArgs.easing = sR.defaults.easing;
             }
             if(typeof arg3 == 'function') {
                 sR.thisCallArgs.callback = arg3;
             }else if(typeof arg3 == 'undefined' && typeof arg2 != 'function'){
-                sR.thisCallArgs.callback = sR.defaults.callback;    
+                sR.thisCallArgs.callback = sR.defaults.callback;
             }
             var $cells = $(this).find('td');
             $cells.wrapInner('<div class="slideRowDown" style="display:none;" />');
@@ -300,7 +300,7 @@ function addstudent(studentid, listnum) {
 			else { $.fancybox({ 'content' : m_error(data.error) }); }
 		}
 	});
-}	
+}
 
 function addfromevent_window() {
 	$(".window_addfromevent input[type='checkbox']").each(function() { $(this).prop("checked",true); });
@@ -317,7 +317,7 @@ function list_addnew() {
 	$(".databox_"+listblock+" .sort1, .databox_"+listblock+" .sort2, .databox_"+listblock+" .sort3, .databox_"+listblock+" .sort4, .databox_"+listblock+" .sort5, .databox_"+listblock+" .sort6").attr("onclick","sortTable("+listblock+",$(this).parent().attr('class')); return false;");
 		$(".databox_"+listblock+" .btn_dellist").attr("onclick","dellist_sz("+listblock+"); return false;");
 		$(".databox_"+listblock+" .btn_downloadlist").attr("onclick","downloadlist("+listblock+"); return false;");
-	
+
 	$(".databox_"+listblock).slideDown(500, function() {
 		setAutocomplete_sz(listblock);
 	});
@@ -332,7 +332,7 @@ function list_addfromevent(ifall) {
 		 && (!$("#addrole_5").is(':checked'))
 		 && (!$("#addrole_6").is(':checked'))
 		 && (!$("#addrole_7").is(':checked'))) { return true; }
-		
+
 		rolelist = "";
 		if($("#addrole_1").is(':checked')) { rolelist += "b" }
 		if($("#addrole_2").is(':checked')) { rolelist += "u" }
@@ -342,7 +342,7 @@ function list_addfromevent(ifall) {
 		if($("#addrole_6").is(':checked')) { rolelist += "m" }
 		if($("#addrole_6").is(':checked')) { rolelist += "h" }
 	} else { rolelist = "bupwlmh"; }
-	
+
 	$.ajax({
 	  data: {
 		act: "getinvolvedsz",
@@ -365,7 +365,7 @@ function list_addfromevent(ifall) {
 			$(".databox_"+listblock+" .sort1, .databox_"+listblock+" .sort2, .databox_"+listblock+" .sort3, .databox_"+listblock+" .sort4, .databox_"+listblock+" .sort5, .databox_"+listblock+" .sort6").attr("onclick","sortTable("+listblock+",$(this).parent().attr('class')); return false;");
 			$(".databox_"+listblock+" .btn_dellist").attr("onclick","dellist_sz("+listblock+"); return false;");
 			$(".databox_"+listblock+" .btn_downloadlist").attr("onclick","downloadlist("+listblock+"); return false;");
-			
+
 			$(".databox_"+listblock).slideDown(500, function() {
 				alist = data.alist;
 				for (var i = 0; i < alist.length; i++) {
@@ -652,15 +652,15 @@ function page_events(setcurpage) {
 						if(getdata[i].e_date_for !== null) { dates = "" + getdata[i].e_date_since + "<br />"+getdata[i].e_date_for; }
 						else { dates = getdata[i].e_date_since; }
 						times = getdata[i].e_time_since + "-"+getdata[i].e_time_for;
-						
-						var elevel;					
+
+						var elevel;
 						if(getdata[i].e_level == "f") { elevel = "факультет"; }
 						else if(getdata[i].e_level == "u") { elevel = "университет"; }
 						else if(getdata[i].e_level == "c") { elevel = "город"; }
 						else if(getdata[i].e_level == "r") { elevel = "регион"; }
 						else if(getdata[i].e_level == "v") { elevel = "страна"; }
 						else if(getdata[i].e_level == "i") { elevel = "мировой"; }
-						
+
 						tr = $('<tr/>');
 						tr.addClass("rowclick");
 						if(getdata[i].e_access == "yes") { tr.addClass("rowedit"); }
@@ -687,7 +687,7 @@ function page_events(setcurpage) {
 		}
 	});
 }
-	
+
 function addevent() {
     if(($("#add_name").val() == "") || ($("#add_date_since").val() == "") || ((!$("#add_date_if").is(':checked') && $("#add_date_for").val() == "")) || ($("#add_level option:selected").val() == "") || (newholder == "") || (($("#add_dep_if").is(':checked') && $("#add_dep option:selected").val() == ""))) {
       $.fancybox({ 'content' : 'Заполните все поля' });
@@ -733,7 +733,7 @@ function addevent() {
       });
     }
   }
-  
+
   function saveevent() {
     if(($("#add_name").val() == "") || ($("#add_date_since").val() == "") || ((!$("#add_date_if").is(':checked') && $("#add_date_for").val() == "")) || ($("#add_level option:selected").val() == "") || (newholder == "") || (($("#add_dep_if").is(':checked') && $("#add_dep option:selected").val() == ""))) {
       $.fancybox({ 'content' : 'Заполните все поля' });
@@ -780,11 +780,11 @@ function addevent() {
       });
     }
   }
-  
+
   function delevent() {
 	  render_massage("Удалить мероприятие?","<div class='render_massage'>ВНИМАНИЕ! При удалении мероприятия активисты лишаются заработанных за него баллов.</div><div class='render_massage_buttons'><a class='btn1' href='' onclick='deleventYES(); $.fancybox.close(); return false;' style='background:#f36b69;'>Удалить</a> <a class='btn1' href='' onclick='$.fancybox.close(); return false;'>Отмена</a></div>");
   }
-  
+
   function deleventYES() {
     $.ajax({
       data: {
@@ -806,7 +806,7 @@ function addevent() {
 	  }
     });
   }
-  
+
   function findevents() {
     si = $(".searchinput").val();
     if((si == "") || (si == " ")) { cursearch = ""; }
@@ -814,7 +814,7 @@ function addevent() {
 	$(".filter button, .filter input, .filter select").blur();
     page_events(1);
   }
-  
+
   function addwindow_events() {
     $("#savebtn, #delbtn").hide();
     $("#regbtn").show();
@@ -838,7 +838,7 @@ function addevent() {
     $(".fillblack, .addwindow").fadeIn(400);
     $("#add_name").focus();
   }
-  
+
   function editwindow_events() {
     $("#savebtn, #delbtn").show();
     $("#regbtn").hide();
@@ -849,7 +849,7 @@ function addevent() {
     $("#add_time_since").val(global_time_since);
     $("#add_time_for").val(global_time_for);
     $("#add_level [value='"+global_level+"']").prop("selected", true);
-    
+
     if(global_date_for !== null) {
       $("#add_date_if").prop("checked", false);
       $("#add_date_for").val(global_date_for);
@@ -860,7 +860,7 @@ function addevent() {
       $("#add_date_for").val("");
       $("#add_date_for").hide();
     }
-    
+
     if(global_dep !== null) {
       $("#add_dep_if").prop("checked", true);
       $("#add_dep [value='"+global_dep+"']").prop("selected", true);
@@ -871,29 +871,29 @@ function addevent() {
       $("#add_dep [value='']").prop("selected", true);
       $("#add_dep").hide();
     }
-	
+
 	$("#add_outside").prop("checked", global_outside);
 	$("#add_complex").prop("checked", global_complex);
-	
+
 	$("input.add_tagA, input.add_tagE").each(function() {
 		$(this).prop("checked", false);
 	});
-	
+
 	for (var i = 0; i < global_tags.length; i++) {
 		$("input[tagID='"+global_tags[i]+"']").prop("checked", true);
 	}
-    
+
     newholder = global_holderid;
     $("#add_holderend").html(HTML.decode(global_holdername));
-	
+
 	fixers = [];
 	if(global_fixers !== null) { fixers = global_fixers; recount_fixers(); }
-	
+
 	$("#add_comment").val(HTML.decode(global_comment));
     $("html, body").animate({ scrollTop: 0 });
     $(".fillblack, .addwindow").fadeIn(400);
   }
-  
+
   function _edit_events(_eventid) {
     $.ajax({
       data: {
@@ -928,7 +928,7 @@ function addevent() {
     });
     return false;
   }
-  
+
   function recount_fixers() {
 	_div = $("#add_fixersend");
 	_div.html("");
@@ -940,24 +940,24 @@ function addevent() {
 		_div.append(newF);
 	}
   }
-  
+
   function del_fixer(fixer_id) {
 	for (var i = 0; i < fixers.length; i++) {
 		if(fixers[i][0] == fixer_id) { fixers.splice(i,1); }
 	}
 	recount_fixers();
   }
-  
+
   function changedate() {
     if($("#add_date_if").is(':checked')) { $("#add_date_for").hide(); $("#add_date_for").val(""); }
     else { $("#add_date_for").show(); }
   }
-  
+
   function changedep() {
     if($("#add_dep_if").is(':checked')) { $("#add_dep").show(); }
     else { $("#add_dep").hide(); $("#add_dep [value='']").prop("selected", true); }
   }
-  
+
 /* GROUPS */
 function init_groups() {
 	$("input[name='ue'][value='r3'], input[name='uv'][value='r3']").next("span").html(depName);
@@ -968,7 +968,7 @@ function init_groups() {
 		{ $("input[name='ue'][value='r1']").prop("checked", true); changeUserRights($("input[name='ue']")); }
 		changeUserRights($(this));
 	});
-	
+
 	$(".loadlogo, .fillblack, .textalert, .addwindow, .checkwindow, .forgetcode, .changebook").hide();
 	$(".searchinput").keyup(function(e) { if(e.keyCode == 13) { findlists(); } });
 	var setFocus = setInterval(function() { var elem = $(".searchinput"); if(elem.is(":focus")) { clearTimeout(setFocus); } else { elem.focus(); } }, 500);
@@ -980,7 +980,7 @@ function init_groups() {
 		}
 		$(".uploadFile").val($(this).val());
 	});
-	
+
 	$("#ue_search, #uv_search").autocomplete({
       source: function(request, response) {
               $.ajax({
@@ -1049,10 +1049,10 @@ function page_groups(setcurpage) {
 					var getdata = data.lists;
 					var tr;
 					for (var i = 0; i < getdata.length; i++) {
-						
+
 						addicon = "";
 						if(getdata[i].l_icon !== "n") { addicon = "<img class='inlinesvg' src='content/svg/"+getdata[i].l_icon+"' alt='"+getdata[i].l_name+"' /> "; }
-						
+
 						tr = $('<tr/>');
 						tr.addClass("rowclick");
 						tr.attr("eid", ""+getdata[i].l_id+"");
@@ -1099,7 +1099,7 @@ function editlistwindow(lid) {
 		url:"operator2",
 		data: {
 			act: "getlistdata",
-			lid: lid 
+			lid: lid
 		},
 		success: function(answer) {
 			var data = JSON.parse(answer);
@@ -1132,7 +1132,7 @@ function editlistwindow(lid) {
 
 function noicon(elem) {
 	delicon();
-	$(".fileUpload").find("span").html("Выбрать"); 
+	$(".fileUpload").find("span").html("Выбрать");
 	elem.hide();
 }
 
@@ -1183,7 +1183,7 @@ function addlist_groups(ifedit) {
 	 || (($("input[name='ue']").filter(':checked').val() == "r4") && (ue.length == 0))
 	 || (($("input[name='uv']").filter(':checked').val() == "r4") && (uv.length == 0)))
 	{ $.fancybox({ 'content' : 'Заполните все поля' }); return false; }
-	
+
 	var fd = new FormData();
 	if (ifedit !== 1) { fd.append('act', 'addlist'); }
 	else {
@@ -1200,15 +1200,15 @@ function addlist_groups(ifedit) {
 	if($('#list_icon').val() !== "") { fd.append('icon', $('#list_icon')[0].files[0]); }
 	fd.append('ue', $("input[name='ue']").filter(':checked').val());
 	fd.append('uv', $("input[name='uv']").filter(':checked').val());
-	
+
 	aue = []; auv = [];
 	for (var i = 0; i < ue.length; i++) { aue.push(ue[i][0]); }
 	for (var i = 0; i < uv.length; i++) { auv.push(uv[i][0]); }
-	
+
 	fd.append('aue', JSON.stringify(aue));
 	fd.append('auv', JSON.stringify(auv));
 	fd.append('sv', $("input[name='sv']").filter(':checked').val());
-	
+
 	$.ajax({
 		method: "post",
 		url:"operator2",
@@ -1245,7 +1245,7 @@ function addwindow_groups() {
 	changeUserRights($("input[name='uv']"));
 	$(".btn_noicon").hide();
 	$(".fileUpload").find("span").html("Выбрать");
-	$(".addwindow h1").html("Добавление группы"); 
+	$(".addwindow h1").html("Добавление группы");
 	$("html, body").animate({ scrollTop: 0 });
 	$(".fillblack, .addwindow").fadeIn(400);
 	$("#list_name").focus();
@@ -1265,7 +1265,7 @@ function dellistYES_groups() {
 			lid: curLID
 		},
 		success: function(answer) {
-			
+
 			closemw("addwindow");
 			var data = JSON.parse(answer);
 			if(data.error == "ok") {
@@ -1294,11 +1294,11 @@ function init_rating() {
 	$("#add_groupnum").keyup(function(e) { if(e.keyCode == 13) { if($("#regbtn").is(':visible')) { oncheck(); } else { onsave(); } } });
 	$("#bookcode").keydown(function(downit) { if(downit.keyCode == 9) { downit.preventDefault(); $("#bookcode").focus(); } });
 	$(".closemw").click(function(e) { $('.searchinput').focus(); });
-	
+
 	$("#newbookcode").blur(function() {
 	  if($(".changebook").is(":visible")) { var setFocusNC = setInterval(function() { thiselem = $("#newbookcode"); if(thiselem.is(":focus")) { clearTimeout(setFocusNC); } else { thiselem.focus(); } }, 100); }
 	});
-	
+
 	$("#bookcode").blur(function() {
 	  $(this).val("");
 	  $(this).attr("placeholder","Нажмите на поле для подтверждения");
@@ -1312,7 +1312,7 @@ function init_rating() {
 	  isoncheck = "n";
 	  return false;
 	});
-	
+
 	$("#add_birthday").mask("99.99.9999");
 	$("#add_phone").mask("(999)999-99-99");
 	var setFocus = setInterval(function() { var elem = $(".searchinput"); if(elem.is(":focus")) { clearTimeout(setFocus); } else { elem.focus(); } }, 500);
@@ -1354,18 +1354,18 @@ function page_rating(setcurpage, hideload) {
 							listsicons += newicon+" ";
 						}
 					}
-					
+
 					tr = $('<tr/>');
 					tr.addClass("rowclick");
 					tr.attr("id","id" + getdata[i].id + "");
 					tr.addClass("center");
-					
+
 					if($(".searchinput").val().trim() == "" && cursearchdep == "" && cursearchcourse == "" && cursearchtagA == "") {
 						tr.append("<td>" + getdata[i].rate + "</td>");
 					} else {
 						tr.append("<td>" + getdata[i].rate_filter + "</td>");
 					}
-					
+
 					tr.append("<td class=\"curpoints blowit\"><b>" + getdata[i].points + "</b></td>");
 					tr.append("<td class=\"curfio\">" + listsicons + "" + getdata[i].name + "</td>");
 					tr.append("<td class=\"blowit owncourse\">" + getdata[i].course + "</td>");
@@ -1385,7 +1385,7 @@ function page_rating(setcurpage, hideload) {
 						if((numpages-endnum) <= 0) { endnum = numpages; next = "n"; }
 					} else { startnum = 1; endnum = onpage; }
 				}
-				
+
 				$(".pager").html("");
 				if(prev == "y") {
 					apager = $('<a/>');
@@ -1426,12 +1426,12 @@ function showlist(iconid) {
     $("#add_surname").focus();
 	$.fancybox.close();
   }
-  
+
   function changeevents() {
 	  if($("#report_events").prop("checked") == true) { $(".report_events_window").slideDown(); }
 	  else { $(".report_events_window").slideUp(); }
   }
-  
+
   function student(studentid,ifnothistory) {
     globalsid = studentid;
     $(".box_student_info, .box_student_add, .owntable").html("");
@@ -1459,10 +1459,10 @@ function showlist(iconid) {
 			global_level = data.edulevel;
 			global_budget = data.budget;
 			global_groupnum = data.groupnum;
-			
+
 			addbirthday = "";
 			if(data.birthday !== "unknown") { addbirthday = " <b>("+data.birthday+")</b>"; }
-			
+
 			var infobox = $(".box_student_info");
 			if(data.patronymic.length < 2) {
 				infobox.html("<b style='text-transform:uppercase; color:#4b8ab5;'>"+data.surname+" "+data.firstname+"</b>"+addbirthday);
@@ -1483,7 +1483,7 @@ function showlist(iconid) {
 				if(data.phone == "unknown") { /*infobox.append("<br />тел.: <b><span style=\"color:red;\">неизвестный</span></b>");*/ }
 				else { infobox.append("<br /><b>тел.:</b> <b style='text-decoration:underline;'><a href='tel:+7"+formatnewphone+"'>+7"+formatnewphone+"</a></b>"); }
 			}
-			
+
 			var infobox_lists = $(".box_student_lists");
 			infobox_lists.html("");
 			if(data.lists.length == 0) { infobox_lists.hide(); }
@@ -1493,7 +1493,7 @@ function showlist(iconid) {
 					$(".box_student_lists").append('<div class="greybox"><div class="event_info_inner" style="margin-bottom:-1px;"><div><img class="inlinesvg" src="content/svg/'+data.lists[c][3]+'" alt="'+data.lists[c][1]+'" style="margin:0 8px 0 0; vertical-align:middle;"><span style="display:inline-block; vertical-align:middle; padding:3px 0 0 0; color:#666;"><a target="_blank" href="groups-'+data.lists[c][0]+'">'+data.lists[c][1]+'</a></span></div></div></div>');
 				}
 			}
-			
+
 			if(data.events) {
 			  var tablehead = '<tr class="table_head"><td class="hideit" width=""><b>№</b></td><td class="hideit" width="12%"><b>Дата</b></td><td><b>Наименование мероприятия</b></td><td width="17%"><b>Статус</b></td><td class="event_holder" width="17%"><b>Ответственный</b></td><td width="7%"><b>Баллы</b></td><!--<td width="4%"></td>--></tr>';
 			  $('.owntable').append(tablehead);
@@ -1508,8 +1508,8 @@ function showlist(iconid) {
 				var dates = "";
 				if(getdata[i].date_for !== null) { dates = "" + getdata[i].date_since + "<br />"+getdata[i].date_for; }
 				else { dates = getdata[i].date_since; }
-				
-				var role;         
+
+				var role;
 				if(getdata[i].role == "u") { role = "участн."; }
 				else if(getdata[i].role == "p") { role = "призер"; }
 				else if(getdata[i].role == "w") { role = "победит."; }
@@ -1517,10 +1517,10 @@ function showlist(iconid) {
 				else if(getdata[i].role == "m") { role = "организ."; }
 				else if(getdata[i].role == "h") { role = "глав. организ."; }
 				else if(getdata[i].role == "b") { role = "-"; }
-				
+
 				complex = "";
 				if(getdata[i].complex == "y") { complex = " <img style=\"vertical-align:top; width:15px; opacity:0.8;\" src=\"img/muscle_black.svg\">"; }
-				
+
 				tr = $('<tr/>');
 				tr.attr("aid", ""+getdata[i].aid+"");
 				tr.append("<td class=\"blowit center hideit\">" + (i+1) + "</td>");
@@ -1545,12 +1545,12 @@ function showlist(iconid) {
 			} else {
 			  $(".box_student_add").append("<p class=\"center\"><b>Мероприятий нет</b></p>");
 			}
-			
+
 			var incontent = $(".box_student").html();
-			
+
 			if(ifnothistory !== 1) {
 				history.pushState(null, data.sinid, "/rating#"+data.sinid);
-				
+
 				window.onpopstate = function(event) {
 					if(($(".fancybox-skin").is(":visible")) && (!$(".mw").is(":visible"))) {
 					  $.fancybox.close();
@@ -1559,7 +1559,7 @@ function showlist(iconid) {
 					}
 				};
 			}
-	
+
 			$.fancybox({
 				'afterClose':function () {
 					if(ifnothistory !== 1) { history.pushState(null, null, "/rating"); }
@@ -1567,10 +1567,10 @@ function showlist(iconid) {
 				'width' : 500,
 				'content' : incontent
 			});
-			
+
 		  } else if(data.error == "s_notexist") {
 			$(".searchinput").blur();
-			
+
 			$.fancybox({
 			  'afterClose':function () {
 				$(".searchinput").focus();
@@ -1578,7 +1578,7 @@ function showlist(iconid) {
 			  'height' : 250,
 			  'content' : m_error('Студент c заданным кодом не найден!')
 			});
-			
+
 		  } else {
 			$.fancybox({ 'content' : m_error(data.error) });
 		  }
@@ -1586,7 +1586,7 @@ function showlist(iconid) {
 		}
     });
   }
-  
+
   function findstudents() {
     si = $(".searchinput").val();
     maycode = /^[0-9]{10}$/;
@@ -1607,7 +1607,7 @@ function showlist(iconid) {
       $(".searchinput").val("");
     }
   }
-  
+
   function editwindow_rating() {
     $("#savebtn").show();
     $("#regbtn").hide();
@@ -1629,13 +1629,13 @@ function showlist(iconid) {
     $.fancybox.close();
     $(".fillblack, .addwindow").fadeIn(400);
   }
-  
+
   function oncheck() {
     if(($("#add_surname").val() == "") || ($("#add_firstname").val() == "") || ($("#add_patronymic").val() == "") || ($("#add_sex option:selected").val() == "") || ($("#add_birthday").val() == "") || ($("#add_phone").val() == "") || ($("#add_faculty option:selected").val() == "") || ($("#add_group option:selected").val() == "") || ($("#add_course option:selected").val() == "") || ($("#add_level option:selected").val() == "") || ($("#add_budget option:selected").val() == "") || ($("#add_groupnum").val() == "")) {
       $.fancybox({ 'content' : 'Заполните все поля' });
     } else {
       isoncheck = "y";
-      
+
       $(".check_surname").text($("#add_surname").val());
       $(".check_firstname").text($("#add_firstname").val());
       $(".check_patronymic").text($("#add_patronymic").val());
@@ -1647,7 +1647,7 @@ function showlist(iconid) {
       $(".check_course").text($("#add_course option:selected").text()+" ("+$("#add_level option:selected").text()+")");
       $(".check_budget").text($("#add_budget option:selected").text());
       $(".check_groupnum").text($("#add_groupnum").val());
-      
+
       $(".checkwindow").fadeIn(200);
       /*
         var
@@ -1676,7 +1676,7 @@ function showlist(iconid) {
       });
     }
   }
-  
+
   function onsave() {
     if(($("#add_surname").val() == "") || ($("#add_firstname").val() == "") || ($("#add_patronymic").val() == "") || ($("#add_sex option:selected").val() == "") || ($("#add_faculty option:selected").val() == "") || ($("#add_group option:selected").val() == "") || ($("#add_course option:selected").val() == "") || ($("#add_gen option:selected").val() == "") || ($("#add_level option:selected").val() == "") || ($("#add_budget option:selected").val() == "") || ($("#add_groupnum").val() == "")) {
       $.fancybox({ 'content' : 'Заполните все поля' });
@@ -1764,11 +1764,11 @@ function showlist(iconid) {
       });
     }
   }
-  
+
   function returnaccess() {
 	  render_massage("Восстановление доступа","<div class='render_massage'>При восстановлении доступа будет сгенерирован новый пароль</div><div class='render_massage_buttons'><a class='btn1' href='' onclick='returnaccessYES(); $.fancybox.close(); return false;' style='background:#f36b69;'>Восстановить по SMS</a> <a class='btn1' href='' onclick='returnaccessYES(1); $.fancybox.close(); return false;' style='background:#f36b69;'>Отобразить новый пароль</a> <a class='btn1' href='' onclick='$.fancybox.close(); return false;'>Отмена</a></div>");
   }
-  
+
   function returnaccessYES(ifDisplay) {
 	  _ifDisplay = "y";
 	  if(ifDisplay == 1) { _ifDisplay = "n"; }
@@ -1807,7 +1807,7 @@ function showlist(iconid) {
 	  }
     });
   }
-  
+
   function loadgroups(ifedit) {
     groupel = $("#add_group");
     groupel.html("");
@@ -1832,7 +1832,7 @@ function showlist(iconid) {
       });
     }
   }
-  
+
 /* SET */
 function changepw() {
 	if(($("#pw_old").val() !== '') && ($("#pw_new").val() !== '') && ($("#pw_newrepeat").val() !== '')) {
@@ -1890,11 +1890,11 @@ function page_group() {
 				if(data.icon !== "n") {
 					$(".titleline h1").prepend("<img class='inlinesvg inlinesvg_title' src='content/svg/"+data.icon+"' alt='' />");
 				}
+        if(data.isediticon) {
+          if(data.public == "y") { $(".listpublicicon").attr("publicset","y"); $(".listpublicicon").html("Скрыть значок группы в Рейтинге"); }
+          else { $(".listpublicicon").attr("publicset","n"); $(".listpublicicon").html("Отобразить значок группы в Рейтинге"); }
+        }
 				if(data.isedit == "y") {
-					if($(".listpublicicon")) {
-						if(data.public == "y") { $(".listpublicicon").attr("publicset","y"); $(".listpublicicon").html("Скрыть значок группы в Рейтинге"); }
-						else { $(".listpublicicon").attr("publicset","n"); $(".listpublicicon").html("Отобразить значок группы в Рейтинге"); }
-					}
 					$(".editSortFIO").html("<b><a href='' onclick='sortFIO(); return false;'>ФИО студента</a></b>");
 					ue = data.rights[3];
 					uv = data.rights[4];
@@ -1906,7 +1906,7 @@ function page_group() {
 						if(data.rights[3].length !== 0) { rights_ue += " и <i><a href='' onclick='showSome(\"ue\"); return false;'>некоторые пользователи</a></i>"; }
 					}
 					if(data.rights[0] == "r4") { rights_ue = "<i><a href='' onclick='showSome(\"ue\"); return false;'>некоторые пользователи</a></i>"; }
-					
+
 					rights_v = "";
 					if(data.rights[1] == "r2" && data.rights[2] == "r1") { rights_v = "все студенты и сотрудники образовательной организации"; }
 					else {
@@ -1922,7 +1922,7 @@ function page_group() {
 						if(data.rights[1] == "r4") { rights_v += "<i><a href='' onclick='showSome(\"uv\"); return false;'>некоторые пользователи</a></i>"; }
 					}
 					$(".list_info").append($("<div/>").addClass("span12 inforow").html("<div><b>Редактирование:</b> <span>"+rights_ue+"</span></div><div><b>Просмотр:</b> <span>"+rights_v+"</span></div><div><b>Кол-во студентов:</b> <span class='memberscount'>"+members.length+"</span></div>"));
-					
+
 					$(".searchinput").autocomplete({
 					  source: function(request, response) {
 							  $.ajax({
@@ -1965,7 +1965,7 @@ function page_group() {
 				} else {
 					$(".list_info").append($("<div/>").addClass("span12 inforow").html("<div><b>Кол-во студентов:</b> <span class='memberscount'>"+members.length+"</span></div>"));
 				}
-				
+
 				if(members.length == 0) {
 					$('.textalert').show();
 				} else {
@@ -2176,7 +2176,7 @@ function delmembersYES() {
 		}
     });
   }
-  
+
   function init_event_control() {
 	$(".regbox").hide();
     $(".regnewbtn").parent().parent().hide();
@@ -2188,7 +2188,7 @@ function delmembersYES() {
       $(this).attr("placeholder","ДОБАВИТЬ СТУДЕНТА ПО ФИО...");
     });
     $("#add_activity").keydown(function(e) { if(e.keyCode == 13) { findbc(); } });
-    
+
     $("#add_activity").autocomplete({
       source: function(request, response) {
               $.ajax({
@@ -2220,10 +2220,10 @@ function delmembersYES() {
           return false;
       }
     });
-	
+
 	page_event_control();
   }
-  
+
   function page_event_control() {
     $.ajax({
       data: {
@@ -2235,17 +2235,17 @@ function delmembersYES() {
 		  var data = (JSON.parse(answer));
 		  if(data.error == "ok") {
 			$(".activitytable").html('<tr class="table_head"><td><b>ФИО [курс/группа]</b></td><td width="20%" class="curevent_role"><b>Роль</b></td><td width="4%" style="padding:3px !important;"><img src="img/muscle.svg" /></td><td width="14%" class="curevent_added"><b>Добавлено</b></td><td width="18%" class="curevent_by"><b>Фиксатор</b></td><td width="4%"></td></tr>');
-			
+
 			var getdata = (JSON.parse(answer)).einfo;
-			
-			var elevel, edates;         
+
+			var elevel, edates;
 			if(getdata.level == "f") { elevel = "факультетский"; }
 			else if(getdata.level == "u") { elevel = "университетский"; }
 			else if(getdata.level == "c") { elevel = "городской"; }
 			else if(getdata.level == "r") { elevel = "региональный"; }
 			else if(getdata.level == "v") { elevel = "всероссийский"; }
 			else if(getdata.level == "i") { elevel = "международный"; }
-			
+
 			$("h1").html(getdata.name);
 			$("h1").append("<a href='#' class='headicon' onclick='printdata(); return false;'><i class='icon-print'></i></a>");
 			$(".menu").after('<div class="row-fluid sz_event" style="margin-top:20px;"><a href="" class="span12 btn" onclick="printdata(); return false;">С/з по мероприятию</a></div><div class="row-fluid sz_event" style="margin-top:0;"><button href="" class="span12 btn btn-success" onclick="printdata(1); return false;">С/з на освобождение</button></div>');
@@ -2255,14 +2255,14 @@ function delmembersYES() {
 			else { edates = getdata.ds; }
 			$(".event_i1").append("<div><b>Дата:</b> <span>"+edates+"</span></div>");
 			if(getdata.ts !== null) { $(".event_i1").append("<div><b>Время:</b> <span>"+getdata.ts+" - "+getdata.tf+"</span></div>"); }
-			
+
 			if(getdata.creator) { $(".event_i2").html("<div><b>Регистратор:</b> <span>"+HTML.decode(getdata.creator)+"</span></div>"); }
 			if(getdata.dep) { $(".event_i2").append("<div><b>Организация:</b> <span>"+getdata.dep+"</span></div><div><b>Координатор:</b> <span>"+getdata.hname+"</span></div>"); }
-			else { $(".event_i2").append("<div><b>Координатор:</b> <span>"+getdata.hname+"</span></div>"); } 
+			else { $(".event_i2").append("<div><b>Координатор:</b> <span>"+getdata.hname+"</span></div>"); }
 			$(".event_i2").append("<div><b>Задействовано:</b> <span class='involvednum'>"+data.allrows+"</span></div>");
-			
+
 			if(getdata.comment) { $(".event_comment_box").html("<div class='event_comment'><span style='width:100%;'>"+getdata.comment+"</span></div>"); }
-			
+
 			if(data.allrows == '0') {
 			  $('.textalert').show();
 			} else {
@@ -2288,7 +2288,7 @@ function delmembersYES() {
 		}
     });
   }
-  
+
   function init_event_user() {
     $.ajax({
       data: {
@@ -2300,17 +2300,17 @@ function delmembersYES() {
 		  var data = (JSON.parse(answer));
 		  if(data.error == "ok") {
 			$(".activitytable").html('<tr class="table_head"><td><b>ФИО [курс/группа]</b></td><td width="40%"><b>Роль</b></td></tr>');
-			
+
 			var getdata = (JSON.parse(answer)).einfo;
-			
-			var elevel, edates;         
+
+			var elevel, edates;
 			if(getdata.level == "f") { elevel = "факультетский"; }
 			else if(getdata.level == "u") { elevel = "университетский"; }
 			else if(getdata.level == "c") { elevel = "городской"; }
 			else if(getdata.level == "r") { elevel = "региональный"; }
 			else if(getdata.level == "v") { elevel = "всероссийский"; }
 			else if(getdata.level == "i") { elevel = "международный"; }
-			
+
 			$("h1").html(getdata.name);
 			$("h1").append("<a href='#' class='headicon' onclick='printdata(); return false;'><i class='icon-print'></i></a>");
 			$(".menu").after('<div class="row-fluid sz_event" style="margin-top:20px;"><a href="" class="span12 btn" onclick="printdata(); return false;">С/з по мероприятию</a></div><div class="row-fluid sz_event" style="margin-top:0;"><button href="" class="span12 btn btn-success" onclick="printdata(1); return false;">С/з на освобождение</button></div>');
@@ -2320,14 +2320,14 @@ function delmembersYES() {
 			else { edates = getdata.ds; }
 			$(".event_i1").append("<div><b>Дата:</b> <span>"+edates+"</span></div>");
 			if(getdata.ts !== null) { $(".event_i1").append("<div><b>Время:</b> <span>"+getdata.ts+" - "+getdata.tf+"</span></div>"); }
-			
+
 			if(getdata.creator) { $(".event_i2").html("<div><b>Регистратор:</b> <span>"+HTML.decode(getdata.creator)+"</span></div>"); }
 			if(getdata.dep) { $(".event_i2").append("<div><b>Организация:</b> <span>"+getdata.dep+"</span></div><div><b>Координатор:</b> <span>"+getdata.hname+"</span></div>"); }
-			else { $(".event_i2").append("<div><b>Координатор:</b> <span>"+getdata.hname+"</span></div>"); } 
+			else { $(".event_i2").append("<div><b>Координатор:</b> <span>"+getdata.hname+"</span></div>"); }
 			$(".event_i2").append("<div><b>Задействовано:</b> <span class='involvednum'>"+data.allrows+"</span></div>");
-			
+
 			if(getdata.comment) { $(".event_comment_box").html("<div class='event_comment'><span style='width:100%;'>"+getdata.comment+"</span></div>"); }
-			
+
 			if(data.allrows == '0') {
 			  $('.textalert').show();
 			} else {
@@ -2337,7 +2337,7 @@ function delmembersYES() {
 				addcomplex = '';
 				tr.append("<td><a href=\"\" onclick=\"student("+alist[i].a_uid+",1); return false;\"><b>" + alist[i].a_name + "</b></a> [" + alist[i].a_from + "]</td>");
 				var role;
-				if(alist[i].a_complex == "y") { addcomplex = ' <img width="15px" src="img/muscle_black.svg">'; }       
+				if(alist[i].a_complex == "y") { addcomplex = ' <img width="15px" src="img/muscle_black.svg">'; }
 				if(alist[i].a_role == "u") { tr.append('<td>участник'+addcomplex+'</td>'); }
 				else if(alist[i].a_role == "p") { tr.append('<td>призер'+addcomplex+'</td>'); }
 				else if(alist[i].a_role == "w") { tr.append('<td>победитель'+addcomplex+'</td>'); }
@@ -2352,12 +2352,12 @@ function delmembersYES() {
 		}
     });
   }
-  
+
   function printdata(ifSpec) {
 	  if(ifSpec == "1") {  window.location.href = 'sz?l=1&id='+curevent; }
 	  else { window.location.href = 'sz?id='+curevent; }
   }
-  
+
   function _add(userid) {
     si_already = userid;
     $.ajax({
@@ -2381,7 +2381,7 @@ function delmembersYES() {
         rid: $('#add_role option:selected').val()
       },
       success: function(answer) {
-		
+
         if(answer == "") {
           // Ответ не получен (вряд ли)
         }
@@ -2401,13 +2401,13 @@ function delmembersYES() {
           tr.append("<td><i class='icon-remove' onclick='delActivity_event("+gotrow.a_id+")'></i></td>");
           $('.activitytable tr[uid="'+gotrow.a_uid+'"]').after(tr);
           tr.find(".selectrole [value='"+gotrow.a_role+"']").prop("selected", true);
-		  
+
 		  $("tr[aid='"+gotrow.a_id+"']").animate({'background-color': 'rgba(14,175,113,1.0)'}, 500, function() {
 				$("tr[aid='"+gotrow.a_id+"']").animate({'background-color': "rgba(255,255,255,0.7)"}, 2000, function() {
 					$("tr[aid='"+gotrow.a_id+"']").each(function() { $(this).removeAttr("style"); });
 				});
 		  });
-		  
+
 		  $("tr[aid='"+gotrow.a_id+"']").slideRow('down');
 		  $("tr[uid='"+gotrow.a_uid+"']").slideRow('up', 500, function() { $("tr[uid='"+gotrow.a_uid+"']").remove(); });
           $(".involvednum").html(parseInt($(".involvednum").html())+1);
@@ -2418,17 +2418,17 @@ function delmembersYES() {
           // Уже добавлен
 		  var gotrow = data.gr;
 		  if(gotrow.a_sex == "f") { usersex1 = "а"; usersex2 = "ка"; }
-		  
+
 		  addAlert = $("<div/>").addClass("alert").append('<span><b>'+gotrow.a_name+'</b> уже добавлен'+usersex1+'</span>').css("display","none");
 		  $(".fastmassage").append(addAlert);
 		  addAlert.slideDown(function() { $(this).delay("3500").slideUp(function() { $(this).remove(); }); });
-		  
+
 		  $("tr[aid='"+gotrow.a_id+"']").animate({'background-color': '#ffa200'}, 500, function() {
 				$("tr[aid='"+gotrow.a_id+"']").animate({'background-color': ""}, 2000, function() {
 					$("tr[aid='"+gotrow.a_id+"']").each(function() { $(this).removeAttr("style"); });
 				});
 		  });
-		  
+
 		  $("tr[uid='"+gotrow.a_uid+"']").slideRow('up', 500, function() { $("tr[uid='"+gotrow.a_uid+"']").remove(); });
           $("#add_activity").focus();
         }
@@ -2457,7 +2457,7 @@ function delmembersYES() {
       }
     });
   }
-  
+
   function findbc() {
     si = $("#add_activity").val();
     maycode = /^[0-9]{10}$/;
@@ -2468,12 +2468,12 @@ function delmembersYES() {
       }
     }
   }
-  
+
   function delActivity_event(aid) {
 	  curaid = aid;
 	  render_massage("Удалить студента из мероприятия?","<div class='render_massage_buttons'><a class='btn1' href='' onclick='delActivityYES_event(); $.fancybox.close(); return false;' style='background:#f36b69;'>Удалить</a> <a class='btn1' href='' onclick='$.fancybox.close(); return false;'>Отмена</a></div>");
   }
-  
+
   function delActivityYES_event(activityid) {
       $.ajax({
         data: {
@@ -2487,7 +2487,7 @@ function delmembersYES() {
 			  si_already = "";
 			  $('tr[aid="'+curaid+'"]').remove();
 			  $(".involvednum").html(parseInt($(".involvednum").html())-1);
-			  
+
 			  if($('.activitytable tr').length == '1') {
 				$('.pager').html('');
 				$('.textalert').show();
@@ -2498,6 +2498,3 @@ function delmembersYES() {
 		  }
       });
   }
-  
-  
-  
