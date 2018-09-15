@@ -1,9 +1,9 @@
 <?php accesspage(); accessto("s"); render_doctype(); ?>
 <head>
 	<?php render_meta("Конфигурация","config"); ?>
-	
+
 	<!-- js md5       --> <script src="js/md5.js"></script>
-	
+
 	<script type="text/javascript">
 	var checkEditContent = "";
 	$(function() {
@@ -26,13 +26,13 @@
 		});
 		$("#image").fancybox({ 'content' : '<style>.fancybox-inner h1 { width:auto !important; }</style><h1></h1>'+$("#image").html() });
 	});
-	
+
 	function mainmenu_window(windowname) {
 		$("."+windowname+"").hide('slide', {direction: 'right'}, function() {
 			$(".mainmenu_box").show('slide', {direction: 'left'});
 		});
 	}
-	
+
 	function config_commoninfo_window() {
 		$("#config_organization_form, #config_organization_fullname, #config_organization_shortname, #config_organization_department").val();
 		$(".config_organization_logo_image").attr("src","");
@@ -57,14 +57,14 @@
 			}
 		});
 	}
-	
+
 	function config_smsinfo_window() {
 		$(".config_sms_alert, .config_sms_auth_box, .config_sms_add_box, .btn_sms_auth, .btn_sms_unlink, .config_sms_user_label").hide();
 		$("#config_sms_login, #config_sms_pw").val("");
 		$(".config_sms_user").html("");
 		$(".sms_auth_error_alert, .sms_auth_sender_alert").remove();
 		$("#config_sms_name option[value='']").prop("selected",true);
-		
+
 		$.ajax({
 		  data: {
 			act: "getsmsparams"
@@ -101,22 +101,22 @@
 			}
 		});
 	}
-	
+
 	function config_smsinfo_unlink() {
 		render_massage("Отключить аккаунт?","<div class='render_massage'>Отправка SMS будет невозможна до подключения нового аккаунта.</div><div class='render_massage_buttons'><a class='btn1' href='' onclick='config_smsinfo_unlinkYES(); $.fancybox.close(); return false;' style='background:#f36b69;'>Удалить</a> <a class='btn1' href='' onclick='$.fancybox.close(); return false;'>Отмена</a></div>");
 	}
-	
+
 	function config_smsinfo_unlinkYES() {
 		$(".config_sms_alert, .config_sms_auth_box, .config_sms_add_box, .btn_sms_auth, .btn_sms_unlink, .config_sms_user_label").hide();
 		$("#config_sms_login, #config_sms_pw").val("");
 		$(".config_sms_user").html("");
 		$(".sms_auth_error_alert, .sms_auth_sender_alert").remove();
 		$("#config_sms_name option[value='']").prop("selected",true);
-		
+
 		$(".config_sms_alert, .config_sms_auth_box, .btn_sms_auth").show();
 		config_smsinfo_save();
 	}
-	
+
 	function config_socialinfo_window() {
 		$("#config_vk_id, #config_vk_secret").val("");
 		$("#config_vk_id, #config_vk_secret").prop("disabled",false);
@@ -143,7 +143,7 @@
 			}
 		});
 	}
-	
+
 	function config_socialinfo_prepare() {
 		if($("#config_vk_id").val().trim() == "" || $("#config_vk_secret").val().trim() == "") { return false; }
 		$.ajax({
@@ -165,13 +165,13 @@
 			}
 		});
 	}
-	
+
 	function config_socialinfo_edit() {
 		$("#config_vk_id, #config_vk_secret").prop("disabled",false);
 		$(".btn_socialinfo_prepare").show();
 		$(".btn_socialinfo_activate, .btn_socialinfo_edit").hide();
 	}
-	
+
 	function config_socialinfo_activate() {
 		if($("#config_vk_id").val().trim() == "" || $("#config_vk_secret").val().trim() == "") { return false; }
 		$.ajax({
@@ -194,11 +194,11 @@
 			}
 		});
 	}
-	
+
 	function config_socialinfo_unlink() {
 		render_massage("Отключить авторизацию через соцсети?","<div class='render_massage'>Авторизационные данные пользователей сохранятся, но будут действовать при повторной активации отключаемого приложения.</div><div class='render_massage_buttons'><a class='btn1' href='' onclick='config_socialinfo_unlinkYES(); $.fancybox.close(); return false;' style='background:#f36b69;'>Отключить</a> <a class='btn1' href='' onclick='$.fancybox.close(); return false;'>Отмена</a></div>");
 	}
-	
+
 	function config_socialinfo_unlinkYES() {
 		$.ajax({
 			data: {
@@ -220,7 +220,7 @@
 			}
 		});
 	}
-	
+
 	function config_ratinginfo_window() {
 		$.ajax({
 			data: {
@@ -253,7 +253,7 @@
 			}
 		});
 	}
-	
+
 	function config_commoninfo_save() {
 		if(
 			$("#config_organization_form").val().trim() == ""
@@ -291,7 +291,7 @@
 			}
 		});
 	}
-	
+
 	function config_smsinfo_save() {
 		if($(".btn_sms_unlink").is(":visible") && $("#config_sms_name option:selected").val() == "") { $.fancybox({ 'content' : m_error("Выберите имя отправителя SMS.") }); return false; }
 		$.ajax({
@@ -313,7 +313,7 @@
 			}
 		});
 	}
-	
+
 	function config_smsinfo_auth() {
 		if($("#config_sms_login").val().trim() == "" || $("#config_sms_pw").val() == "") { return false; }
 		$.ajax({
@@ -343,7 +343,7 @@
 			}
 		});
 	}
-	
+
 	function config_ratinginfo_save() {
 		$.ajax({
 			data: {
@@ -376,13 +376,13 @@
 			}
 		});
 	}
-	
+
 	function config_depsinfo_window() {
 		$(".mainmenu_box").hide('slide', {direction: 'left'}, function() {
 			$(".depsinfo_box").show('slide', {direction: 'right'});
 		});
 	}
-	
+
 	function config_depslist_fac_windows() {
 		$.ajax({
 			data: {
@@ -435,7 +435,7 @@
 			}
 		});
 	}
-	
+
 	function config_depslist_dep_save(facid) {
 		if($("div[depid="+facid+"] .dep_shortname .comment").html() == "" || $("div[depid="+facid+"] .dep_fullname .comment").html() == "") { return false; }
 		$.ajax({
@@ -455,7 +455,7 @@
 			}
 		});
 	}
-	
+
 	function config_depslist_groups_windows(facid) {
 		$.ajax({
 			data: {
@@ -503,7 +503,7 @@
 			}
 		});
 	}
-	
+
 	function config_orglist_windows() {
 		$.ajax({
 			data: {
@@ -513,7 +513,7 @@
 				var data = (JSON.parse(answer));
 				if(data.error == "ok") {
 					$(".orglist").html("");
-					
+
 					if((data.order).length !== 0) {
 						for(var i = 0; i<(data.order).length; i++) {
 							for(var c = 0; c<(data.org).length; c++) {
@@ -558,7 +558,7 @@
 					} else {
 						$('.textalert_orglist').show();
 					}
-					
+
 					$(".depsinfo_box").hide('slide', {direction: 'left'}, function() {
 						$(".orglist_box").show('slide', {direction: 'right'});
 					});
@@ -568,7 +568,7 @@
 			}
 		});
 	}
-	
+
 	function config_orglist_sort() {
 		neworder = [];
 		curorder = $(".orglist").children(".pl_row[depid != '']");
@@ -586,11 +586,11 @@
 			}
 		});
 	}
-	
+
 	function delorg(orgid) {
 		render_massage("Удалить подразделение?","<div class='render_massage_buttons'><a class='btn1' href='' onclick='delmembersYES("+orgid+"); $.fancybox.close(); return false;' style='background:#f36b69;'>Удалить</a> <a class='btn1' href='' onclick='$.fancybox.close(); return false;'>Отмена</a></div>");
 	}
-	
+
 	function delmembersYES(orgid) {
 		$.ajax({
 			data: {
@@ -614,14 +614,14 @@
 			}
 		});
 	}
-	
+
 	function config_orglist_addwindow() {
 		$("#config_orglist_shortname, #config_orglist_fullname").val("");
 		$("html, body").animate({ scrollTop: 0 });
 		$(".fillblack, .config_orglist_addwindow").fadeIn();
 		$("#config_orglist_shortname").focus();
 	}
-	
+
 	function config_orglist_add() {
 		if($("#config_orglist_shortname").val().trim() == "" || $("#config_orglist_fullname").val().trim() == "") { return false; }
 		$.ajax({
@@ -646,13 +646,13 @@
 			}
 		});
 	}
-	
+
 	function config_studentsinfo_window() {
 		$(".mainmenu_box").hide('slide', {direction: 'left'}, function() {
 			$(".studentsinfo_box").show('slide', {direction: 'right'});
 		});
 	}
-	
+
 	function config_studentsupload_window() {
 		$(".connectbox_list").html("");
 		$(".studentsupload_confirmtext_inner").html("");
@@ -664,15 +664,15 @@
 		$("html, body").animate({ scrollTop: 0 });
 		$(".fillblack, .studentsupload").fadeIn();
 	}
-	
+
 	function config_studentsupload_settype() {
 		$("input[name=studentsupload_type][value=reload]").prop("checked", true);
 		$(".studentsupload_start").slideUp(null,null,function() {
 			$(".studentsupload_settype").slideDown();
 		});
 	}
-	
-	
+
+
 	var connectboxRows = {
 		nodata: "Не выбрано",
 		id: "Идентификатор студента",
@@ -686,16 +686,17 @@
 		edu_level: "Ступень образования",
 		edu_standard: "Образовательный стандарт",
 		department: "Факультет (аббревиатура)",
+		course: "Номер курса",
 		group_name: "Группа (аббревиатура)",
 		group_num: "Номер группы",
 		pay: "Форма оплаты",
 	}
-	
+
 	var CSVid = null;
-	
+
 	function config_studentsupload_upload() {
 		if($('#config_studentsupload_file')[0].files.length == 0) { return false; }
-		
+
 		if($('#config_studentsupload_file')[0].files[0].size > 3145728) {
 			$.fancybox({ 'content' : m_error("Размер файла превышает 3мб.") });
 			return false;
@@ -704,7 +705,7 @@
 			$.fancybox({ 'content' : m_error("Поддерживается только формат \".csv\"") });
 			return false;
 		}
-		
+
 		var fd = new FormData();
 		fd.append('act', 'studentsupload');
 		fd.append('file', $('#config_studentsupload_file')[0].files[0]);
@@ -728,7 +729,7 @@
 						for (var connectboxRowsKey in connectboxRows) {
 							newColumnSelectOption = $("<option/>").val(connectboxRowsKey).html(connectboxRows[connectboxRowsKey]);
 							newColumnSelect.append(newColumnSelectOption);
-						}; 
+						};
 						newColumn.append(newColumnSelect);
 						newArrowIcon = $("<div/>").addClass("arrow-down");
 						newColumn.append(newArrowIcon);
@@ -758,7 +759,7 @@
 							}
 						});
 					});
-					
+
 					$(".studentsupload_settype").slideUp(null,null,function() {
 						$(".studentsupload_confirmbox").slideDown();
 						$("html, body").animate({ scrollTop: 0 });
@@ -769,7 +770,7 @@
 			}
 		});
 	}
-	
+
 	var su_newdata, su_out, su_newdeps, su_newgroups;
 	function config_studentsupload_connect() {
 		for (var connectboxRowsKey in connectboxRows) {
@@ -778,15 +779,15 @@
 				return false;
 			}
 		}
-		
-		var necessoryRows = ["id", "sname", "fname", "pname", "edu_level", "department", "group_name", "group_num"];
+
+		var necessoryRows = ["id", "sname", "fname", "pname", "edu_level", "department", "course", "group_name", "group_num"];
 		for (var necessoryRowsKey in necessoryRows) {
 			if($(".connectbox select option[value='"+necessoryRows[necessoryRowsKey]+"']:selected").length == 0) {
 				$.fancybox({ 'content' : m_error("Не выбраны обязательные поля") });
 				return false;
 			}
 		}
-		
+
 		sendRows = [];
 		$(".connectbox select").each(function() {
 			if($(this).find("option:selected").val() !== "nodata") {
@@ -796,7 +797,7 @@
 				sendRows.push(newElem);
 			}
 		});
-		
+
 		$.ajax({
 			data: {
 				act: "studentsupload_connect",
@@ -813,7 +814,7 @@
 					su_newdeps = data.newdeps;
 					su_newgroups = data.newgroups;
 					CSVid = data.CSVid;
-					
+
 					studentsupload_confirm_newdata = "";
 					if(data.newdata.length !== 0) { studentsupload_confirm_newdata = ' <a class="btn" href="" onclick="studentsupload_confirm_newdata_show(); return false;">Просмотреть</a>'; }
 					$(".studentsupload_confirmtext_inner").append('<b>Студенты</b><p>Кол-во загружаемых студентов: <b>'+data.datarows+'</b></p><p>Кол-во новых студентов: <b>'+data.newdata.length+'</b>'+studentsupload_confirm_newdata+'</p>');
@@ -827,8 +828,8 @@
 					studentsupload_confirm_newgroups = "";
 					if(data.newgroups.length !== 0) { studentsupload_confirm_newgroups = ' <a class="btn" href="" onclick="studentsupload_confirm_newgroups_show(); return false;">Просмотреть</a>'; }
 					$(".studentsupload_confirmtext_inner").append('<p><br></p><b>Факультеты и группы</b><p>Кол-во новых факультетов: <b>'+data.newdeps.length+'</b>'+studentsupload_confirm_newdeps+'</p><p>Кол-во новых групп: <b>'+data.newgroups.length+'</b>'+studentsupload_confirm_newgroups+'</p>');
-					
-					
+
+
 					$(".studentsupload_confirmbox").slideUp(null,null,function() {
 						$(".studentsupload_confirmtext").slideDown();
 					});
@@ -838,7 +839,7 @@
 			}
 		});
 	}
-	
+
 	function studentsupload_confirm_newdata_show() {
 		render_table = "";
 		for(var i = 0; i<(su_newdata).length; i++) {
@@ -846,7 +847,7 @@
 		}
 		render_massage("Новые студенты","<div class='render_massage'><table class='table_withhead'><tr class='table_head'><td width='20%'>ID</td><td>Студент</td></tr>"+render_table+"</table></div>");
 	}
-	
+
 	function studentsupload_confirm_out_show() {
 		render_table = "";
 		for(var i = 0; i<(su_out).length; i++) {
@@ -854,7 +855,7 @@
 		}
 		render_massage("Студенты, которые перестанут отображаться в рейтинге студентов","<div class='render_massage'><table class='table_withhead'><tr class='table_head'><td width='20%'>ID</td><td>Студент</td></tr>"+render_table+"</table></div>");
 	}
-	
+
 	function studentsupload_confirm_newdeps_show() {
 		render_table = "";
 		for(var i = 0; i<(su_newdeps).length; i++) {
@@ -862,7 +863,7 @@
 		}
 		render_massage("Новые факультеты","<div class='render_massage'><table class='table_withhead'><tr class='table_head'><td>Факультет</td></tr>"+render_table+"</table></div>");
 	}
-	
+
 	function studentsupload_confirm_newgroups_show() {
 		render_table = "";
 		for(var i = 0; i<(su_newgroups).length; i++) {
@@ -870,7 +871,7 @@
 		}
 		render_massage("Новые группы","<div class='render_massage'><table class='table_withhead'><tr class='table_head'><td>Группа</td></tr>"+render_table+"</table></div>");
 	}
-	
+
 	function config_studentsupload_confirm() {
 		$.ajax({
 			data: {
@@ -903,30 +904,30 @@
 	<a class="closemw" href="javascript:closemw('commoninfo');"><i class="icon-remove"></i></a>
 	<h1>Основная информация об организации</h1>
 	<div class="row-fluid form-horizontal" style="width:500px;">
-	
+
 		<div class="control-group">
 			<label class="control-label">Орг.форма:</label>
 			<div class="controls">
 				<input id="config_organization_form" class="span12" type="text" placeholder="Например, ФГБОУ ВО" />
 			</div>
 		</div>
-		
+
 		<div class="control-group">
 			<label class="control-label">Полное наим.:</label>
 			<div class="controls">
 				<input id="config_organization_fullname" class="span12" type="text" placeholder="Например, Санкт-Петербургский государственный университет" />
 			</div>
 		</div>
-		
+
 		<div class="control-group">
 			<label class="control-label">Сокращенное наим.:</label>
 			<div class="controls">
 				<input id="config_organization_shortname" class="span12" type="text" placeholder="Например, СПбГУ" />
 			</div>
 		</div>
-		
+
 		<hr>
-		
+
 		<div class="control-group">
 			<label class="control-label">Векторное лого:</label>
 			<div class="controls">
@@ -940,7 +941,7 @@
 				</div>
 			</div>
 		</div>
-		
+
 		<div class="control-group">
 			<label class="control-label">FAVICON.ICO:</label>
 			<div class="controls">
@@ -954,9 +955,9 @@
 				</div>
 			</div>
 		</div>
-		
+
 		<hr>
-		
+
 		<div class="control-group">
 			<label class="control-label">Координатор системы:</label>
 			<div class="controls">
@@ -966,9 +967,9 @@
 				<input id="config_organization_department" class="span12" type="text" placeholder="Например, Студенческий совет СПбГУ" />
 			</div>
 		</div>
-		
+
 		<hr>
-		
+
 		<div class="control-group">
 			<div class="controls">
 				<a class="btn1" href="" onclick="config_commoninfo_save(); return false;">Сохранить</a>
@@ -983,124 +984,124 @@
 		<span><b>Рассчет баллов (если задана роль):</b><br>ПервичныйБалл = (Роль + Уровень) * КоеффициентСложности<br>Итоговый балл = Округление (ПервичныйБалл + ПервичныйБалл * КолвоДней * КоеффициентДополнительныхДней + ПервичныйБалл * КоеффициентЗвездочка).<br><i>КоеффициентСложности = 0, если галочка "Тяжелое мероприятие" не установлена, иначе - КоеффициентСложности = "Тяжелое" (коеф.).</i></span>
 	</div>
 	<div class="row-fluid form-horizontal" style="width:500px;">
-		
+
 		<b>Баллы за роль в мероприятии<br></b>
-		
+
 		<div class="control-group">
 			<label class="control-label">Участник:</label>
 			<div class="controls">
 				<input id="config_rating_roles_u" class="span12" type="text" />
 			</div>
 		</div>
-		
+
 		<div class="control-group">
 			<label class="control-label">Призер:</label>
 			<div class="controls">
 				<input id="config_rating_roles_p" class="span12" type="text" />
 			</div>
 		</div>
-		
+
 		<div class="control-group">
 			<label class="control-label">Победитель:</label>
 			<div class="controls">
 				<input id="config_rating_roles_w" class="span12" type="text" />
 			</div>
 		</div>
-		
+
 		<div class="control-group">
 			<label class="control-label">Помощник орг.:</label>
 			<div class="controls">
 				<input id="config_rating_roles_l" class="span12" type="text" />
 			</div>
 		</div>
-		
+
 		<div class="control-group">
 			<label class="control-label">Организатор:</label>
 			<div class="controls">
 				<input id="config_rating_roles_m" class="span12" type="text" />
 			</div>
 		</div>
-		
+
 		<div class="control-group">
 			<label class="control-label">Главный орг.:</label>
 			<div class="controls">
 				<input id="config_rating_roles_h" class="span12" type="text" />
 			</div>
 		</div>
-		
+
 		<hr>
-		
+
 		<b>Баллы за уровень мероприятия<br></b>
-		
+
 		<div class="control-group">
 			<label class="control-label">Факультетский:</label>
 			<div class="controls">
 				<input id="config_rating_levels_f" class="span12" type="text" />
 			</div>
 		</div>
-		
+
 		<div class="control-group">
 			<label class="control-label">Университетский:</label>
 			<div class="controls">
 				<input id="config_rating_levels_u" class="span12" type="text" />
 			</div>
 		</div>
-		
+
 		<div class="control-group">
 			<label class="control-label">Городской:</label>
 			<div class="controls">
 				<input id="config_rating_levels_c" class="span12" type="text" />
 			</div>
 		</div>
-		
+
 		<div class="control-group">
 			<label class="control-label">Региональный:</label>
 			<div class="controls">
 				<input id="config_rating_levels_r" class="span12" type="text" />
 			</div>
 		</div>
-		
+
 		<div class="control-group">
 			<label class="control-label">Всероссийский:</label>
 			<div class="controls">
 				<input id="config_rating_levels_v" class="span12" type="text" />
 			</div>
 		</div>
-		
+
 		<div class="control-group">
 			<label class="control-label">Международный:</label>
 			<div class="controls">
 				<input id="config_rating_levels_i" class="span12" type="text" />
 			</div>
 		</div>
-		
+
 		<hr>
-		
+
 		<b>Коеффициенты<br></b>
-		
+
 		<div class="control-group">
 			<label class="control-label">"Тяжелое" мероп.:</label>
 			<div class="controls">
 				<input id="config_rating_complex" class="span12" type="text" />
 			</div>
 		</div>
-		
+
 		<div class="control-group">
 			<label class="control-label">"Звездочка":</label>
 			<div class="controls">
 				<input id="config_rating_muscle" class="span12" type="text" />
 			</div>
 		</div>
-		
+
 		<div class="control-group">
 			<label class="control-label">За доп.день (коеф.):</label>
 			<div class="controls">
 				<input id="config_rating_oneday" class="span12" type="text" />
 			</div>
 		</div>
-		
+
 		<hr>
-		
+
 		<div class="control-group">
 			<div class="controls">
 				<a class="btn1" href="" onclick="config_ratinginfo_save(); return false;">Сохранить</a>
@@ -1115,16 +1116,16 @@
 		<span>Карта активиста использует сервис отправки SMS от компании <b><a href="http://smsaero.ru/" target="_blank">SMSAero</a></b>.<br>Для отправки SMS введите логин и пароль от Вашего аккаунта на сайте <a href="http://smsaero.ru/" target="_blank">SMSAero</a>.</span>
 	</div>
 	<div class="row-fluid form-horizontal" style="width:500px;">
-		
+
 		<div class="config_sms_auth_box">
-		
+
 			<div class="control-group">
 				<label class="control-label">Логин:</label>
 				<div class="controls">
 					<input id="config_sms_login" class="span12" type="text" />
 				</div>
 			</div>
-			
+
 			<div class="control-group">
 				<label class="control-label">Пароль:</label>
 				<div class="controls">
@@ -1132,7 +1133,7 @@
 				</div>
 			</div>
 		</div>
-		
+
 		<div class="control-group">
 			<label class="control-label config_sms_user_label">Аккаунт SMSAero:</label>
 			<div class="controls">
@@ -1140,11 +1141,11 @@
 				<a class="btn btn_sms_auth" href="" onclick="config_smsinfo_auth(); return false;"><i class="icon icon-lock"></i> Авторизоваться</a>
 				<a class="btn btn_sms_unlink" href="" onclick="config_smsinfo_unlink(); return false;"><i class="icon icon-remove"></i> Отключить аккаунт</a>
 			</div>
-			
+
 		</div>
-		
+
 		<div class="config_sms_add_box">
-		
+
 			<div class="control-group">
 				<label class="control-label">Имя отправителя:</label>
 				<div class="controls">
@@ -1155,9 +1156,9 @@
 					</select>
 				</div>
 			</div>
-			
+
 			<hr>
-			
+
 			<div class="control-group">
 				<label class="control-label"></label>
 				<div class="controls">
@@ -1166,11 +1167,11 @@
 					</div>
 				</div>
 			</div>
-		
+
 		</div>
-		
+
 		<hr>
-		
+
 		<div class="control-group">
 			<div class="controls">
 				<a class="btn1" href="" onclick="config_smsinfo_save(); return false;">Сохранить</a>
@@ -1189,30 +1190,30 @@
 		<span>После сохранения введенных данных Вам будет предложено пройти авторизацию для проверки работы приложения (если раннее Вы еще этого не делали).</span>
 	</div>
 	<div class="row-fluid form-horizontal" style="width:500px;">
-		
+
 		<div class="control-group">
 			<label class="control-label">ID приложения:</label>
 			<div class="controls">
 				<input id="config_vk_id" class="span12" type="text" />
 			</div>
 		</div>
-		
+
 		<div class="control-group">
 			<label class="control-label">Защищенный ключ:</label>
 			<div class="controls">
 				<input id="config_vk_secret" class="span12" type="text" />
 			</div>
 		</div>
-		
+
 		<div class="control-group">
 			<div class="controls">
 				<a class="btn btn_socialinfo_prepare" href="" onclick="config_socialinfo_prepare(); return false;">Предварительное сохранение</a>
 				<a class="btn btn_socialinfo_edit" href="" onclick="config_socialinfo_edit(); return false;">Изменить настройки</a>
 			</div>
 		</div>
-			
+
 		<hr>
-		
+
 		<div class="control-group">
 			<div class="controls">
 				<a class="btn1 btn_socialinfo_activate" href="" onclick="javascript:void window.open('https://oauth.vk.com/authorize?client_id='+$('#config_vk_id').val().trim()+'&scope=offline&redirect_uri=<?php echo urlencode(PROTOCOL.$_SERVER['SERVER_NAME'].'/vktoken'); ?>&response_type=code&v=5.32&state=1','vkauthwindow','width=656,height=377,toolbar=0,menubar=0,location=0,status=1,scrollbars=0,resizable=1'); return false;">Активировать</a>
@@ -1225,23 +1226,23 @@
 	<a class="closemw" href="javascript:closemw('config_orglist_addwindow');"><i class="icon-remove"></i></a>
 	<h1>Регистрация подразделения</h1>
 	<div class="row-fluid form-horizontal" style="width:500px;">
-	
+
 		<div class="control-group">
 			<label class="control-label">Сокращенное наим.:</label>
 			<div class="controls">
 				<input id="config_orglist_shortname" class="span12" type="text" placeholder="Например, ССиА" />
 			</div>
 		</div>
-		
+
 		<div class="control-group">
 			<label class="control-label">Полное наим.:</label>
 			<div class="controls">
 				<input id="config_orglist_fullname" class="span12" type="text" placeholder="Например, Совет студентов и аспирантов" />
 			</div>
 		</div>
-		
+
 		<hr>
-		
+
 		<div class="control-group">
 			<div class="controls">
 				<a class="btn1" href="" onclick="config_orglist_add(); return false;">Зарегистрировать</a>
@@ -1252,7 +1253,7 @@
 <div class="mw studentsupload">
 	<a class="closemw" href="javascript:closemw('studentsupload');"><i class="icon-remove"></i></a>
 	<h1>Загрузка списка студентов</h1>
-	
+
 	<div class="studentsupload_settype">
 		<div class="alert alert-success" style="font-size:12px; line-height:12px;">
 			<span>
@@ -1263,12 +1264,12 @@
 				<b>Загрузить дополнительный список студентов (без перевода в «Архив студентов»)</b>
 				<p>Если в файле присутствует студент, которого еще нет в системе, то он будет добавлен в «Список студентов, отражающихся в рейтинге».</p>
 				<p>Студенты, которые не присутствуют в загружаемом файле, но присутствуют в «Списке студентов, отражающихся в рейтинге» остаются в этом же списке и не переводятся в «Архив студентов».</p>
-			
+
 			</span>
 		</div>
-	
+
 		<div class="row-fluid form-horizontal" style="width:500px;">
-			
+
 			<div class="control-group">
 				<div class="controls">
 					<input type="radio" name="studentsupload_type" value="reload" /> Загрузить текущий список студентов<br />
@@ -1276,12 +1277,12 @@
 				</div>
 			</div>
 		</div>
-		
+
 		<div class="row-fluid" style="text-align:center;">
 			<a class="btn1" href="" onclick="config_studentsupload_upload(); return false;">Продолжить</a>
 		</div>
 	</div>
-	
+
 	<div class="studentsupload_confirmtext">
 		<div class="whitebox">
 			<div class="row-fluid whitebox_line">
@@ -1291,12 +1292,12 @@
 				</div>
 			</div>
 		</div>
-		
+
 		<div class="row-fluid" style="text-align:center;">
 			<a class="btn1" href="" onclick="config_studentsupload_confirm(); return false;" style="background:#f36b69;">Выполнить</a>
 		</div>
 	</div>
-	
+
 	<div class="studentsupload_confirmbox">
 		<b>Соотнесите столбцы и соответствующие поля</b>
 		<div class="alert" style="font-size:12px; line-height:12px;">
@@ -1310,18 +1311,18 @@
 				</div>
 			</div>
 		</div>
-		
+
 		<div class="row-fluid" style="text-align:center;">
 			<a class="btn1" href="" onclick="config_studentsupload_connect(); return false;">Продолжить</a>
 		</div>
 	</div>
-	
+
 	<div class="studentsupload_start">
 		<div class="whitebox">
 			<div class="row-fluid whitebox_line">
 				<div class="span12">
 					<b>ТРЕБОВАНИЯ К ЗАГРУЖАЕМОЙ ИНФОРМАЦИИ</b><br>
-					<p>Файл с таблицей в формате .CSV в кодировке cp-1251 (Текст Windows с разделителями-запятыми).<br>
+					<p>Файл с таблицей в формате .CSV в кодировке cp-1251 (При сохранении в Excel выберите "CSV - Текст Windows с разделителями-запятыми"").<br>
 						Столбцы:
 						<ul style="font-size:12px !important; line-height:12px !important;">
 							<li>УНИКАЛЬНЫЙ НОМЕР СТУДЕНЧЕСКОГО БИЛЕТА или ИДЕНТИФИКАТОР СТУДЕНТА <span class="blowit">(который студент будет использовать как логин для входа на сайт)</span></li>
@@ -1336,12 +1337,13 @@
 							<li>ОБРАЗОВАТЕЛЬНЫЙ СТАНДАРТ <span class="blowit">(необязательно)</span></li>
 							<li>Сокращенное название факультета (аббревиатура)</li>
 							<li>Сокращенное название группы (аббревиатура)</li>
+							<li>НОМЕР КУРСА</li>
 							<li>НОМЕР ГРУППЫ</li>
 							<li>ФОРМА ОПЛАТЫ <span class="blowit">(Бюджет = <b>«б»</b>; Коммерция (пвз) = <b>«к»</b>; если не указано, то по умолчанию - бюджет)</span></li>
 						</ul>
 						Первая строка содержит произвольные заголовки столбцов и не читается системой.
 					</p>
-					<div><a href="img/csv-example.png" id="image"><img src="img/csv-example.png" alt="" width="100%" /></a></div>
+					<div><a href="img/csv-example.png" id="image"><img src="img/csv-example.png?2" alt="" width="100%" /></a></div>
 				</div>
 			</div>
 		</div>
@@ -1353,18 +1355,18 @@
 			<span>После загрузки вам будет предложено соотнести столбцы файла и соответствующие поля системы.<br>Только после вашей проверки и соотношения столбцов данные будут внесены в систему.</span>
 		</div>
 		<!-- <br>Указанные факультеты и группы будут зарегистрированы в разделе "Подразделения" &gt; "Факультеты, группы". -->
-		
+
 		<hr>
-		
+
 		<div class="row-fluid form-horizontal" style="width:500px;">
-			
+
 			<div class="control-group">
 				<label class="control-label">Файл (.CSV):</label>
 				<div class="controls">
 					<input id="config_studentsupload_file" class="span12" type="file" />
 				</div>
 			</div>
-			
+
 			<div class="control-group">
 				<div class="controls">
 					<a class="btn1" href="" onclick="config_studentsupload_settype(); return false;" style="background:#f36b69;">Загрузить</a>
@@ -1392,7 +1394,7 @@
 						</div>
 						<div class="row-fluid">
 							<div class="span12">
-							
+
 								<div class="mainmenu_box">
 									<div class="whitebox">
 										<div class="row-fluid whitebox_line">
@@ -1421,7 +1423,7 @@
 										</div>
 									</div>
 								</div>
-								
+
 								<div class="depsinfo_box">
 									<div class="whitebox">
 										<div class="row-fluid whitebox_line">
@@ -1435,7 +1437,7 @@
 									</div>
 									<a class='btn' href='' onclick='mainmenu_window("depsinfo_box"); return false;'>&lt; Меню конфигурации</a>
 								</div>
-								
+
 								<div class="deplist_box">
 									<div class="whitebox">
 										<div class="row-fluid whitebox_line">
@@ -1459,7 +1461,7 @@
 									<hr>
 									<a class='btn' href='' onclick='$(".deplist_box").hide("slide", {direction: "right"}, function() { $(".depsinfo_box").show("slide", {direction: "left"}); }); return false;'>&lt; Подразделения организации</a>
 								</div>
-								
+
 								<div class="grouplist_box">
 									<div class="whitebox">
 										<div class="row-fluid whitebox_line">
@@ -1483,7 +1485,7 @@
 									<hr>
 									<a class='btn' href='' onclick='config_depslist_fac_windows(); return false;'>&lt; Факультеты</a>
 								</div>
-								
+
 								<div class="orglist_box">
 									<div class="whitebox">
 										<div class="row-fluid whitebox_line">
@@ -1511,7 +1513,7 @@
 									<hr>
 									<a class='btn' href='' onclick='$(".orglist_box").hide("slide", {direction: "right"}, function() { $(".depsinfo_box").show("slide", {direction: "left"}); }); return false;'>&lt; Подразделения организации</a>
 								</div>
-								
+
 								<div class="studentsinfo_box">
 									<div class="whitebox">
 										<div class="row-fluid whitebox_line">
