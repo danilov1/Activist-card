@@ -2349,7 +2349,7 @@ elseif($_GET['act'] == "studentsupload_connect") {
 
 	// Обработка курса
 	for($i=0; $i < $dataCSVnum; $i++) {
-		if(!is_numeric($dataCSV[$i][($CONNECTIONS["course"])]) {
+		if(!is_numeric($dataCSV[$i][($CONNECTIONS["course"])])) {
 			errorjson("Номер курса указан в нестандартном формате: `".$dataCSV[$i][($CONNECTIONS["course"])]."`.");
 		}
 		if(
@@ -2571,7 +2571,7 @@ elseif($_GET['act'] == "studentsupload_confirm") {
 		if(!$checkSIN[0]) {
 			$newpwgen = pwgenerator().pwgenerator();
 			$regtoken = md5(uniqid('auth', true).$newpwgen);
-			$RegStudentSQL = "INSERT INTO `users` (`id`, `access`, `sin`, `phone`, `password`, `vkauth`, `vktoken`, `type`, `out`, `code`, `fullname`, `sname`, `fname`, `pname`, `sex`, `birthday`, `post`, `fac`, `dep`, `gen`, `form`, `curcourse`, `groupnum`, `budget`, `created`, `addedby`, `count`, `groups`) VALUES (NULL, 'y', '".$JSONStudentsData[$i][($CONNECTIONS["id"])]."', '".$JSONStudentsData[$i][($CONNECTIONS["phone"])]."', '".$regtoken."', NULL, NULL, 'a', 's', '0123456789', '".$fullName." (".$depName.")', '".$JSONStudentsData[$i][($CONNECTIONS["sname"])]."', '".$JSONStudentsData[$i][($CONNECTIONS["fname"])]."', '".$JSONStudentsData[$i][($CONNECTIONS["pname"])]."', '".$JSONStudentsData[$i][($CONNECTIONS["sex"])]."', ".$JSONStudentsData[$i][($CONNECTIONS["birthday"])].", NULL, '".$depID."', '".$groupID."', '".$JSONStudentsData[$i][($CONNECTIONS["edu_standard"])]."', '".$JSONStudentsData[$i][($CONNECTIONS["edu_type"])]."', '".$JSONStudentsData[$i][($CONNECTIONS["edu_level"])]."-".substr($JSONStudentsData[$i][($CONNECTIONS["group_num"])], 0, 1)."', '".$JSONStudentsData[$i][($CONNECTIONS["group_num"])]."', '".$JSONStudentsData[$i][($CONNECTIONS["pay"])]."', '".date("Y-m-d H:i:s")."', '".LOGGED_ID."', '0', '[]');";
+			$RegStudentSQL = "INSERT INTO `users` (`id`, `access`, `sin`, `phone`, `password`, `vkauth`, `vktoken`, `type`, `out`, `code`, `fullname`, `sname`, `fname`, `pname`, `sex`, `birthday`, `post`, `fac`, `dep`, `gen`, `form`, `curcourse`, `groupnum`, `budget`, `created`, `addedby`, `count`, `groups`) VALUES (NULL, 'y', '".$JSONStudentsData[$i][($CONNECTIONS["id"])]."', '".$JSONStudentsData[$i][($CONNECTIONS["phone"])]."', '".$regtoken."', NULL, NULL, 'a', 's', '0123456789', '".$fullName." (".$depName.")', '".$JSONStudentsData[$i][($CONNECTIONS["sname"])]."', '".$JSONStudentsData[$i][($CONNECTIONS["fname"])]."', '".$JSONStudentsData[$i][($CONNECTIONS["pname"])]."', '".$JSONStudentsData[$i][($CONNECTIONS["sex"])]."', ".$JSONStudentsData[$i][($CONNECTIONS["birthday"])].", NULL, '".$depID."', '".$groupID."', '".$JSONStudentsData[$i][($CONNECTIONS["edu_standard"])]."', '".$JSONStudentsData[$i][($CONNECTIONS["edu_type"])]."', '".$JSONStudentsData[$i][($CONNECTIONS["edu_level"])]."-".$JSONStudentsData[$i][($CONNECTIONS["course"])]."', '".$JSONStudentsData[$i][($CONNECTIONS["group_num"])]."', '".$JSONStudentsData[$i][($CONNECTIONS["pay"])]."', '".date("Y-m-d H:i:s")."', '".LOGGED_ID."', '0', '[]');";
 			if(!mysql_query($RegStudentSQL)) { errorjson("Не удалось зарегистрировать студента. Ошибка базы данных."); }
 		} else {
 		// Обновление информации о студенте
