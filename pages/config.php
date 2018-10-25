@@ -85,6 +85,8 @@
 					  $("#config_sms_name option[value='']").prop("selected",true);
 					  $("#config_sms_name").before('<div class="alert alert-error sms_auth_sender_alert" style="font-size:12px; line-height:12px;"><span>Раннее выбранное имя отправителя <b>'+data.sms_name+'</b> теперь не доступно в Вашем личном кабинете SMSAero. Войдите в личный кабинет на сайте SMSAero для внесения изменений в список имен отправителя.</span></div>');
 				  }
+					if(data.sms_channel) { $("#config_sms_channel option[value='"+data.sms_channel+"']").prop("selected",true); }
+					else { $("#config_sms_channel option[value=4]").prop("selected",true); }
 				  $("html, body").animate({ scrollTop: 0 }); $(".fillblack, .smsinfo").fadeIn();
 			  }
 			  else if(data.error == "sms_auth_new") {
@@ -300,6 +302,7 @@
 				sms_login: $("#config_sms_login").val().trim(),
 				sms_pw: MD5($("#config_sms_pw").val()),
 				sms_name: $("#config_sms_name option:selected").val(),
+				sms_channel: $("#config_sms_channel option:selected").val()
 			},
 			beforeSend: function() { startLoading(); },
 			success: function(answer) {
@@ -335,6 +338,7 @@
 					for(var i = 0; i<(data.sms_senders).length; i++) {
 						$("#config_sms_name").append('<option value="'+data.sms_senders[i]+'">'+data.sms_senders[i]+'</option>');
 					}
+					$("#config_sms_channel option[value=4]").prop("selected",true);
 				} else if(data.error == "sms_auth_error") {
 					$.fancybox({ 'content' : m_error("Неверный логин или пароль") });
 				} else {
@@ -1152,6 +1156,15 @@
 						<span>Список имен отправителя Вы можете настроить на сайте <a href="http://smsaero.ru/" target="_blank">SMSAero</a> в Вашем личном кабинете в разделе "Настройки" &gt; "Подписи отправителя".</span>
 					</div>
 					<select id="config_sms_name" class="span12">
+					</select>
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label">Канал отправки:</label>
+				<div class="controls">
+					<select id="config_sms_channel" class="span12">
+						<option value="4">Инфоканал</option>
+						<option value="7">Рекламный (с буквенной подписью)</option>
 					</select>
 				</div>
 			</div>

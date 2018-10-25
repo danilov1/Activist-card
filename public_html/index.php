@@ -290,7 +290,7 @@ function sendsms($pn, $msg) {
 	if($GLOBALS['config']['sms_login'] == "") { return "SMS-уведомления отключены. Настроить SMS-уведомления можно в разделе Конфигурация."; }
 	$sterrtext = "SMS-уведомление не отправлено: ";
 	$renderans = "";
-	$sendaddress = 'http://gate.smsaero.ru/send?answer=json&user='.$GLOBALS['config']['sms_login'].'&password='.$GLOBALS['config']['sms_pw'].'&to=7'.$pn.'&text='.urlencode($msg).'&from='.$GLOBALS['config']['sms_name'].'';
+	$sendaddress = 'http://gate.smsaero.ru/send?answer=json&user='.$GLOBALS['config']['sms_login'].'&password='.$GLOBALS['config']['sms_pw'].'&to=7'.$pn.'&text='.urlencode($msg).'&from='.$GLOBALS['config']['sms_name'].'&type='.$GLOBALS['config']['sms_channel'].'';
 	$senddata = file_get_contents($sendaddress);
 	if($senddata === false) { $renderans = "".$sterrtext."нет соединения с SMS-центром"; }
 	else {

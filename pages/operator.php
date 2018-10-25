@@ -1852,6 +1852,7 @@ elseif($_GET['act'] == "getsmsparams") {
 		"sms_name" => $GLOBALS['config']['sms_name'],
 		"sms_balance" => $gotbalance["balance"],
 		"sms_senders" => $gotsenders,
+		"sms_channel" => $GLOBALS['config']['sms_channel'],
 		"error" => "ok"
 	);
 	exit(json_encode($sendlist));
@@ -1885,17 +1886,20 @@ elseif($_GET['act'] == "setsmsparams") {
 
 	if(!is([$_GET['sms_login'],$_GET['sms_pw']])) {
 		if(is([$_GET['sms_name']])) {
+			if(!$_GET['sms_channel'] or ($_GET['sms_channel'] !== "4" and $_GET['sms_channel'] !== "7")) { wrongusing(); }
 			$senddata2 = file_get_contents('https://gate.smsaero.ru/senders/?answer=json&user='.$GLOBALS['config']['sms_login'].'&password='.$GLOBALS['config']['sms_pw'].'');
 			if($senddata2 === false) { errorjson("Нет соединения с SMS-центром. Повторите попытку позже."); }
 			$gotsenders = json_decode($senddata2, true);
 			if(array_search($_GET['sms_name'], $gotsenders) === false) { errorjson("Указано недоступное имя отправителя."); }
 			$GLOBALS['config']['sms_name'] = $_GET['sms_name'];
+			$GLOBALS['config']['sms_channel'] = $_GET['sms_channel'];
 			config_save();
 			errorjson("ok");
 		} else {
 			$GLOBALS['config']['sms_login'] = "";
 			$GLOBALS['config']['sms_pw'] = "";
 			$GLOBALS['config']['sms_name'] = "";
+			$GLOBALS['config']['sms_channel'] = "";
 			config_save();
 			errorjson("ok");
 		}
@@ -1918,6 +1922,7 @@ elseif($_GET['act'] == "setsmsparams") {
 	$GLOBALS['config']['sms_login'] = $_GET['sms_login'];
 	$GLOBALS['config']['sms_pw'] = $_GET['sms_pw'];
 	$GLOBALS['config']['sms_name'] = $_GET['sms_name'];
+	$GLOBALS['config']['sms_channel'] = $_GET['sms_channel'];
 	config_save();
 	errorjson("ok");
 }
