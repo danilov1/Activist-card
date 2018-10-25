@@ -8,9 +8,9 @@ if($_GET['act'] == "h") {
 	accessto("s,k,t");
 	if(!$_GET['term']) { wrongusing(); }
 	if(strlen($_GET['term'])<2) { wrongusing(); }
-	
+
 	$sendlist = array();
-	$getholders = mysql_query("SELECT `id`,`type`,`fullname` from `users` WHERE `type` !='a' AND `fullname` LIKE '%".$_GET['term']."%'  LIMIT 5;");
+	$getholders = mysql_query("SELECT `id`,`type`,`fullname`,`access` from `users` WHERE `access` = 'y' AND `type` !='a' AND `fullname` LIKE '%".$_GET['term']."%'  LIMIT 5;");
 	while($holder = mysql_fetch_array($getholders)) {
 		$newholder = array(
 			"id" => $holder[0],
@@ -25,7 +25,7 @@ elseif($_GET['act'] == "a") {
 	accessto("s,k,t");
 	if(!$_GET['term']) { wrongusing(); }
 	if(strlen($_GET['term'])<2) { wrongusing(); }
-	
+
 	$sendlist = array();
 	$getas = mysql_query("SELECT `id`,`type`,`fullname`,`dep` from `users` WHERE `type` ='a' AND `out` ='s' AND `fullname` LIKE '%".$_GET['term']."%'  LIMIT 5;");
 	while($as = mysql_fetch_array($getas)) {
@@ -42,7 +42,7 @@ elseif($_GET['act'] == "d") {
 	accessto("s,k,t,a");
 	if(!$_GET['term']) { wrongusing(); }
 	if(strlen($_GET['term'])<2) { wrongusing(); }
-	
+
 	$sendlist = array();
 	$getas = mysql_query("SELECT `id`,`type`,`name` from `deps` WHERE `type` ='d' AND `name` LIKE '%".$_GET['term']."%'  LIMIT 5;");
 	while($as = mysql_fetch_array($getas)) {
@@ -59,7 +59,7 @@ elseif($_GET['act'] == "e") {
 	accessto("s,k");
 	if(!$_GET['term']) { wrongusing(); }
 	if(strlen($_GET['term'])<2) { wrongusing(); }
-	
+
 	$sendlist = array();
 	$getas = mysql_query("SELECT `id`,`name` from `events` WHERE `name` LIKE '%".$_GET['term']."%'  LIMIT 5;");
 	while($as = mysql_fetch_array($getas)) {

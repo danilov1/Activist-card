@@ -6,28 +6,14 @@ ini_set('post_max_size', '2M');
 date_default_timezone_set('Europe/Moscow');
 if(isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') { define("PROTOCOL", "https://"); } else { define("PROTOCOL", "http://"); }
 
-define("filesversion", "040918");
+define("filesversion", "251018");
 
-// Проверка .htaccess
-if(!file_exists('.htaccess')) {
-	$htaccess = fopen(".htaccess", "a+");
-	fwrite($htaccess, "RewriteEngine On
-RewriteCond %{ENV:HTTPS} !on [NC]
-RewriteRule ^(.*)$ https://{HTTP_HOST}/$1 [R,L]
-RewriteRule ^([^/.]+)$ index.php [L]
-DirectoryIndex index.php
-AddDefaultCharset utf-8
-Options -Indexes");
-	fclose($htaccess);
-	if(!file_exists('.htaccess')) { exit("Ошибка записи .htaccess файла. Установите права на запись."); }
-}
+// Загрузка конфигурации БД
+$GLOBALS['config_db'] = include '../settings/config_db.php';
+foreach ($GLOBALS['config_db'] as $key => $value) { if($GLOBALS['config_db'][$key] == "") { unset($GLOBALS['config_db'][$key]); } }
 
-// Загрузка конфигурации
-$config_file = file_get_contents("../settings/config_global.json");
-$GLOBALS['config'] = json_decode($config_file, true);
-
-// Проверка БД
-if($GLOBALS['config']['mysql_user'] == "") {
+// Проверка .htaccess и БД
+if(!file_exists('.htaccess') or !$GLOBALS['config_db']['mysql_user']) {
 	header("Location: setup.php");
 	exit();
 }
@@ -41,11 +27,16 @@ foreach ($_POST as $key => $value) { $_POST[$key] = addslashes($value); if($_POS
 foreach ($_COOKIE as $key => $value) { $_COOKIE[$key] = addslashes($value); if($_COOKIE[$key] == "") { unset($_COOKIE[$key]); } }
 
 // Подключение к БД
-if(!mysql_connect('localhost', $GLOBALS['config']['mysql_user'], $GLOBALS['config']['mysql_pw'])) {
+if(!mysql_connect('localhost', $GLOBALS['config_db']['mysql_user'], $GLOBALS['config_db']['mysql_pw'])) {
 	exit("Ошибка подключения к БД.");
 }
 mysql_set_charset('utf8');
-mysql_select_db($GLOBALS['config']['mysql_db']);
+mysql_select_db($GLOBALS['config_db']['mysql_db']);
+
+// Загрузка конфигурации системы
+$config_load = mysql_query("SELECT `key`,`value` from `config` WHERE 1;");
+$GLOBALS['config'] = array();
+while($config_set = mysql_fetch_array($config_load)) { $GLOBALS['config'][$config_set[0]] = $config_set[1]; }
 
 // Проверка прав доступа
 function access_check() {
@@ -102,6 +93,10 @@ function accessto($access_list) {
 	if(array_search(LOGGED_ACCESS, $access_types) === false) { errorjson("Ошибка доступа"); }
 }
 
+// Авторизация через систему организации
+include '../settings/anotherAuth.php';
+
+// Стандартная авторизация
 function gologin() {
 	if(LOGGEDIN == "YES") { errorjson("ok"); }
 	else {
@@ -147,9 +142,9 @@ function gologin() {
 				$newtime = time()+3600*24*20;
 				$fromunix = date("Y-m-d H:i:s", $newtime);
 				$currenttime = date("Y-m-d H:i:s", time());
-				$findtokens = "DELETE FROM `".$GLOBALS['config']['mysql_db']."`.`tokens` WHERE `tokens`.`deadline`<='".$currenttime."';";
+				$findtokens = "DELETE FROM `".$GLOBALS['config_db']['mysql_db']."`.`tokens` WHERE `tokens`.`deadline`<='".$currenttime."';";
 				if(!mysql_query($findtokens)) { errorjson("Ошибка базы данных. Повторите попытку позже. #1"); }
-				$authreq = "INSERT INTO `".$GLOBALS['config']['mysql_db']."`.`tokens` (`token`, `lastip`, `deadline`, `user`) VALUES ('".$newtoken."', '".$curip."', '".$fromunix."', '".$getaccess[0]."')";
+				$authreq = "INSERT INTO `".$GLOBALS['config_db']['mysql_db']."`.`tokens` (`token`, `lastip`, `deadline`, `user`) VALUES ('".$newtoken."', '".$curip."', '".$fromunix."', '".$getaccess[0]."')";
 				if(!mysql_query($authreq)) { errorjson("Ошибка базы данных. Повторите попытку позже. #2"); }
 				setcookie("a",$newtoken,$newtime,"/","",false,true);
 				errorjson("ok");
@@ -514,45 +509,30 @@ function countStudentsRating($studentID) {
 	if(!mysql_query($recounts)) { errorjson("Ошибка базы данных. Повторите попытку позже."); }
 }
 
-// Авторизация через систему организации
-function anotherAuth($username, $password) {
-	/*
-	require_once('../plugins/request/Requests.php');
-	Requests::register_autoloader();
-	try {
-		$request = Requests::post('https://__ВУЗ__/login/index.php', array(), array(
-			'username' => $username,
-			'password' => $password,
-			'rememberusername' => '0'
-		));
-		$isRequest = $request->url;
-	} catch (Exception $e) {}
-	if(isset($isRequest)) {
-		if($isRequest == "http://__ВУЗ__/my/") {
-			return "success";
-		} else {
-			return "failed";
-		}
-	}
-	else { errorjson("Авторизация edu.pgu.ru не отвечает"); }
-	*/
-}
-
 function config_empty() {
 	$GLOBALS['config'] = array();
 	config_save();
 }
 
 function config_save() {
-	$fp = fopen('../settings/config_global.json', 'w');
-	fwrite($fp, json_encode($GLOBALS['config'], JSON_PRETTY_PRINT)); // php 5.6
-	fclose($fp);
+	if(!mysql_query("TRUNCATE TABLE `config`;")) { errorjson("Ошибка базы данных. Повторите попытку позже."); }
+	foreach($GLOBALS['config'] as $key => $value) {
+		$config_check = mysql_query("SELECT `key`,`value` from `config` WHERE `key`='{$key}' LIMIT 1;");
+		$config_check = mysql_fetch_row($config_check);
+		if($config_check[0]) {
+			$sql = "UPDATE `".$GLOBALS['config_db']['mysql_db']."`.`config` SET `value` = '{$value}' WHERE `config`.`key` ='{$key}';";
+		} else {
+			$sql = "INSERT INTO `".$GLOBALS['config_db']['mysql_db']."`.`config` (`key`, `value`) VALUES ('{$key}', '{$value}');";
+		}
+		if(!mysql_query($sql)) { errorjson("Ошибка базы данных. Повторите попытку позже."); }
+	}
 }
 
 function vk_auth_link($callack_page) {
 	echo 'https://oauth.vk.com/authorize?client_id='.$GLOBALS['config']['vk_id'].'&scope=offline&redirect_uri='.urlencode(PROTOCOL.$_SERVER['SERVER_NAME'].'/'.$callack_page).'&response_type=code&v=5.32&state=1';
 }
 
+// Маршрутизатор
 $__page = $_SERVER['REQUEST_URI'];
 $__page = parse_url($__page);
 $__page = substr($__page["path"], 1);

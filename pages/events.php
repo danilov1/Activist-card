@@ -1,6 +1,6 @@
 <?php accesspage(); render_doctype(); ?><head>
 	<?php render_meta("Мероприятия","events"); ?>
-	
+
 	<style>
 		.ui-datepicker { font-size:90%; }
 	</style>
@@ -10,7 +10,7 @@
 	var global_eid, global_name, global_place, global_date_since, global_date_for, global_time_since, global_time_for, global_level, global_holderid, global_fixers, global_holdername, global_dep, global_comment, global_outside, global_complex, global_tags;
 	var cursearch = "";
 	var goonit = "yes";
-	
+
 	$(document).ready(function () {
 		init_events();
 	});
@@ -57,7 +57,7 @@
 			</div>
 			<div class="controls">
 				<label class="checkbox">
-					<input id="add_date_if" type="checkbox" onChange="changedate()">Дата окончания совпадает 
+					<input id="add_date_if" type="checkbox" onChange="changedate()">Дата окончания совпадает
 					<input id="add_date_for" class="span12" type="text" placeholder="00.00.0000" />
 				</label>
 			</div>
@@ -75,6 +75,7 @@
 				<select id="add_dep" class="span12" onChange="">
 					<option value="" selected></option>
 					<?php
+					$GLOBALS['config']['organizations_order'] = json_decode($GLOBALS['config']['organizations_order'], true);
 					for($i=0; $i<count($GLOBALS['config']['organizations_order']); $i++) {
 						$loaddep = mysql_query("SELECT `id`,`type`,`name` from `deps` WHERE `id` = '".$GLOBALS['config']['organizations_order'][$i]."'");
 						$department = mysql_fetch_row($loaddep);
@@ -273,7 +274,7 @@
 											<button class="btn span2" style="float:right; margin-bottom:10px;" onClick="findevents(); return false;"><i class="icon-search"></i></button>
 										</div>
 									</div>
-									
+
 								</div>
 									<div class="span2"><a class="btn1 btnadd" href="" onclick="addwindow_events(); return false;">Добавить</a></div>
 								<?php

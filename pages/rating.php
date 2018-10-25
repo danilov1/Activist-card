@@ -1,11 +1,11 @@
 <?php accesspage(); render_doctype(); ?>
 <head>
 	<?php render_meta("Рейтинг","rating"); ?>
-	
+
 	<style>
 		@media screen and (max-width: 768px) { .owncourse, .hideit, .curdep { display:none; } }
 	</style>
-	
+
 	<script type="text/javascript">
 	var curdate = "<?php echo date("d.m.Y"); ?>";
 	var globalsid, global_surname, global_firstname, global_patronumic, global_sex, global_birthday, global_phone, global_gen, global_facid, global_groupid, global_course, global_groupnum, global_level, global_budget, global_created, curpage;
@@ -17,7 +17,7 @@
 	var isoncheck = "n";
 	var goonit = "yes";
 	var icons_array = [];
-	
+
 	$(function () {
 		init_rating();
 	});
@@ -94,12 +94,6 @@
 			</div>
 		</div>
 		<div class="control-group">
-			<label class="control-label">Обр. стандарт:</label>
-			<div class="controls">
-				<select id="add_gen" class="span12" onChange="$('#add_level').focus();"><option value=""></option><option value="2">2</option><option value="3">3</option><option value="3+">3+</option></select>
-			</div>
-		</div>
-		<div class="control-group">
 			<label class="control-label">Программа:</label>
 			<div class="controls">
 				<select id="add_level" class="span12"><option value=""></option><option value="c">СПО</option><option value="b">бакалавриат</option><option value="m">магистратура</option><option value="s">специалитет</option></select>
@@ -141,7 +135,7 @@
 ?>
 <div class="hiddenbox" style="display:none;">
 	<div class="box_student" style="position:relative; width:600px;">
-		
+
 		<h1 style="width:665px;">Карта активиста</h1>
 		<?php if(LOGGED_ACCESS == "s") { ?>
 		<div class="editblock">
@@ -173,7 +167,7 @@
 				</ul>
 			</div>
 		</div>
-		<?php	
+		<?php
 		}
 	?>
 		<div class="greybox"><div class="event_info_inner" style="margin-bottom:10px;">
@@ -208,7 +202,7 @@
 								<div class="span6 userline"><div><span><?php echo LOGGED_FIRSTNAME.' '.LOGGED_SURNAME; ?></span> | <a class="logout" href="#">Выход</a></div></div>
 							</div>
 						</div>
-						
+
 						<div class="row-fluid">
 							<div class="row-fluid filter">
 								<div class="span3">
@@ -267,4 +261,3 @@
 	<?php render_footer(); ?>
 </body>
 </html>
-	

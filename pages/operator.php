@@ -256,12 +256,12 @@ elseif($_GET['act'] == "getusers") {
 	$presearch = $_GET['query'];
 	$presearch = trim($presearch);
 	if($presearch == "") {
-		$pregetlist = mysql_query("SELECT `id`,`type`,`fullname`,`dep` from `users` WHERE `type` !='a' ORDER BY `id` DESC LIMIT ".$pagenum.", ".$maxrows.";");
-		$fornum = mysql_query("SELECT `id`,`type`,`fullname`,`dep` from `users` WHERE `type` !='a' ORDER BY `id` DESC;");
+		$pregetlist = mysql_query("SELECT `id`,`type`,`fullname`,`dep` from `users` WHERE `access` = 'y' AND `type` !='a' ORDER BY `id` DESC LIMIT ".$pagenum.", ".$maxrows.";");
+		$fornum = mysql_query("SELECT `id`,`type`,`fullname`,`dep` from `users` WHERE `access` = 'y' AND `type` !='a' ORDER BY `id` DESC;");
 	}
 	else {
-		$pregetlist = mysql_query("SELECT `id`,`type`,`fullname`,`dep` from `users` WHERE `type` !='a' AND `fullname` LIKE '%".$presearch."%' ORDER BY `id` DESC LIMIT ".$pagenum.", ".$maxrows.";");
-		$fornum = mysql_query("SELECT `id`,`type`,`fullname`,`dep` from `users` WHERE `type` !='a' AND `fullname` LIKE '%".$presearch."%' ORDER BY `id` DESC;");
+		$pregetlist = mysql_query("SELECT `id`,`type`,`fullname`,`dep` from `users` WHERE `access` = 'y' AND `type` !='a' AND `fullname` LIKE '%".$presearch."%' ORDER BY `id` DESC LIMIT ".$pagenum.", ".$maxrows.";");
+		$fornum = mysql_query("SELECT `id`,`type`,`fullname`,`dep` from `users` WHERE `access` = 'y' AND `type` !='a' AND `fullname` LIKE '%".$presearch."%' ORDER BY `id` DESC;");
 	}
 	$getnum = mysql_num_rows($fornum);
 	if($getnum == 0) { errorjson("notfound"); }
@@ -672,7 +672,7 @@ elseif($_GET['act'] == "getevent") {
 
 // Регистрация и редактирование пользователя
 elseif(($_GET['act'] == "adduser") or ($_GET['act'] == "edituser")) {
-	accessto("s,k"); // доступ только для ССиА и КМ
+	accessto("s,k");
 	// При попытке редактирования проверить id пользователя
 	if($_GET['act'] == "edituser") {
 		if(!$_GET['id']) { wrongusing(1); }
@@ -709,7 +709,7 @@ elseif(($_GET['act'] == "adduser") or ($_GET['act'] == "edituser")) {
 	$depname = "";
 	// Если студент
 	if($_GET['type'] == "a") {
-		if((!$_GET['course']) or (!$_GET['gen']) or (!$_GET['level']) or (!$_GET['budget']) or (!$_GET['groupnum'])) { wrongusing(); }
+		if((!$_GET['course']) or (!$_GET['level']) or (!$_GET['budget']) or (!$_GET['groupnum'])) { wrongusing(); }
 		// Проверка даты рождения
 		if(isset($_GET['birthday']) and $_GET['birthday'] !== "00.00.0000") {
 			$userbd = "'".datecheck($_GET['birthday'], "Дата рождения введена неверно")."'";
@@ -722,10 +722,6 @@ elseif(($_GET['act'] == "adduser") or ($_GET['act'] == "edituser")) {
 		$pregetfac = mysql_query("SELECT `id`,`name` from `deps` WHERE `id`='".$checkdep[2]."' LIMIT 1");
 		$getfac = mysql_fetch_row($pregetfac);
 		$depname = " (".$getfac[1].")";
-		$setgen = "0";
-		// Образовательный стандарт (3 и 3+)
-		if($_GET['gen'] !== "2" and $_GET['gen'] !== "3" and $_GET['gen'] !== "3+") { wrongusing(); }
-		else { $setgen = "'".$_GET['gen']."'"; }
 
 		if(($_GET['budget'] !== "y") and ($_GET['budget'] !== "n")) { wrongusing(); }
 		// Проверка номера группы
@@ -761,7 +757,6 @@ elseif(($_GET['act'] == "adduser") or ($_GET['act'] == "edituser")) {
 		$inputpost = "'".htmlentities($_GET['post'], ENT_QUOTES, "UTF-8")."'";
 		$groupnum = "NULL";
 		$curcode = "NULL";
-		$setgen = "NULL";
 		$setform = "NULL";
 		$setcourse = "NULL";
 		$budget = "NULL";
@@ -775,10 +770,10 @@ elseif(($_GET['act'] == "adduser") or ($_GET['act'] == "edituser")) {
 	if($_GET['act'] == "adduser") {
 		$newpwgen = pwgenerator();
 		$regtoken = md5(uniqid('auth', true).$newpwgen);
-		$addusereq = "INSERT INTO `".$GLOBALS['config']['mysql_db']."`.`users` (`id`, `access`, `phone`, `password`, `type`, `out`, `sin`, `code`, `fullname`, `sname`, `fname`, `pname`, `sex`, `birthday`, `post`, `fac`, `dep`, `gen`, `form`, `curcourse`, `groupnum`, `budget`, `created`, `addedby`, `count`, `groups`) VALUES (NULL, 'y', '".$_GET['phone']."', '".$newpwgen."', '".$_GET['type']."', 's', '".$_GET['phone']."', ".$curcode.", '".$u_name1." ".$u_name2." ".$u_name3."".$depname."', '".$u_name1."', '".$u_name2."', '".$u_name3."', '".$_GET['sex']."', ".$userbd.", ".$inputpost.", ".$setfac.", '".$checkdep[0]."', ".$setgen.", ".$setform.", ".$setcourse.", ".$groupnum.", ".$budget.", '".date("Y-m-d")." ".date("H:i:s")."', '".LOGGED_ID."', '0','[]');";
+		$addusereq = "INSERT INTO `".$GLOBALS['config_db']['mysql_db']."`.`users` (`id`, `access`, `phone`, `password`, `type`, `out`, `sin`, `code`, `fullname`, `sname`, `fname`, `pname`, `sex`, `birthday`, `post`, `fac`, `dep`, `form`, `curcourse`, `groupnum`, `budget`, `created`, `addedby`, `count`, `groups`) VALUES (NULL, 'y', '".$_GET['phone']."', '".$newpwgen."', '".$_GET['type']."', 's', '".$_GET['phone']."', ".$curcode.", '".$u_name1." ".$u_name2." ".$u_name3."".$depname."', '".$u_name1."', '".$u_name2."', '".$u_name3."', '".$_GET['sex']."', ".$userbd.", ".$inputpost.", ".$setfac.", '".$checkdep[0]."', ".$setform.", ".$setcourse.", ".$groupnum.", ".$budget.", '".date("Y-m-d")." ".date("H:i:s")."', '".LOGGED_ID."', '0','[]');";
 	} elseif($_GET['act'] == "edituser") {
 		if($_GET['type'] == "a") {
-			$addusereq = "UPDATE  `".$GLOBALS['config']['mysql_db']."`.`users` SET  `phone` =  '".$_GET['phone']."',
+			$addusereq = "UPDATE  `".$GLOBALS['config_db']['mysql_db']."`.`users` SET  `phone` =  '".$_GET['phone']."',
 `fullname` = '".$u_name1." ".$u_name2." ".$u_name3."".$depname."',
 `sname` =  '".$u_name1."',
 `fname` =  '".$u_name2."',
@@ -787,13 +782,12 @@ elseif(($_GET['act'] == "adduser") or ($_GET['act'] == "edituser")) {
 `birthday` =  ".$userbd.",
 `fac` = '".$getfac[0]."',
 `dep` =  '".$checkdep[0]."',
-`gen` =  ".$setgen.",
 `form` =  ".$setform.",
 `curcourse` =  ".$setcourse.",
 `groupnum` =  ".$groupnum.",
 `budget` =  ".$budget." WHERE `users`.`id` =".$_GET['id'].";";
 		} else {
-			$addusereq = "UPDATE  `".$GLOBALS['config']['mysql_db']."`.`users` SET  `phone` =  '".$_GET['phone']."',
+			$addusereq = "UPDATE  `".$GLOBALS['config_db']['mysql_db']."`.`users` SET  `phone` =  '".$_GET['phone']."',
 `type` =  '".$_GET['type']."',
 `sin` = '".$_GET['phone']."',
 `fullname` = '".$u_name1." ".$u_name2." ".$u_name3."".$depname."',
@@ -805,7 +799,6 @@ elseif(($_GET['act'] == "adduser") or ($_GET['act'] == "edituser")) {
 `post` =  ".$inputpost.",
 `fac` = '',
 `dep` =  '".$checkdep[0]."',
-`gen` =  ".$setgen.",
 `form` =  ".$setform.",
 `curcourse` =  ".$setcourse.",
 `groupnum` =  ".$groupnum.",
@@ -833,7 +826,7 @@ elseif($_GET['act'] == "changebook") {
 	$pretrycode = mysql_query("SELECT `id`,`code` from `users` WHERE `code`='".$_GET['newcode']."' LIMIT 1");
 	$trycode = mysql_fetch_row($pretrycode);
 	if($trycode[1]) { errorjson("Студент с такой картой уже существует"); }
-	$ccreq = "UPDATE  `".$GLOBALS['config']['mysql_db']."`.`users` SET  `code` =  '".$_GET['newcode']."' WHERE  `users`.`id` =".$_GET['sid'].";";
+	$ccreq = "UPDATE  `".$GLOBALS['config_db']['mysql_db']."`.`users` SET  `code` =  '".$_GET['newcode']."' WHERE  `users`.`id` =".$_GET['sid'].";";
 	if(!mysql_query($ccreq)) { errorjson("Ошибка базы данных. Повторите попытку позже."); }
 	else { errorjson("ok"); }
 }
@@ -845,16 +838,23 @@ elseif($_GET['act'] == "deluser") {
 	$precheckuid = mysql_query("SELECT `id`,`phone` from `users` WHERE `id`='".$_GET['id']."' LIMIT 1");
 	$checkuid = mysql_fetch_row($precheckuid);
 	if(!$checkuid[1]) { errorjson("Пользователь не найден"); }
-	$precheckheid = mysql_query("SELECT `id`,`name`,`holder` from `events` WHERE `holder`='".$_GET['id']."' LIMIT 1");
+	if(LOGGED_ID == $_GET['id']) { errorjson("Вы не можете удалить сами себя."); }
+	/*$precheckheid = mysql_query("SELECT `id`,`name`,`holder` from `events` WHERE `holder`='".$_GET['id']."' LIMIT 1");
 	$checkheid = mysql_fetch_row($precheckheid);
-	if($checkheid[1]) { errorjson("Пользователя невозможно удалить, т.к. он является ответственным за одно или более уже внесенных мероприятий"); }
+	if($checkheid[1]) {
+	errorjson("Пользователя невозможно удалить, т.к. он является ответственным за одно или более уже внесенных мероприятий");
+	*/
+	$updateUser = "UPDATE `".$GLOBALS['config_db']['mysql_db']."`.`users` SET `access` = 'n', `sin` = '', `phone` = '', `password` = '".pwgenerator()."', `vkauth` = NULL, `vktoken` = NULL, `post` = ''
+	WHERE  `users`.`id` =".$_GET['id'].";";
+	if(!mysql_query($updateUser)) { errorjson("Ошибка базы данных. Повторите попытку позже."); }
+	errorjson("ok");
+	/*
+		$deluserreq1 = "DELETE FROM `".$GLOBALS['config_db']['mysql_db']."`.`users` WHERE `users`.`id` = ".$_GET['id']."";
+		if(!mysql_query($deluserreq1)) { errorjson("Ошибка базы данных. Повторите попытку позже."); }
 
-	$deluserreq1 = "DELETE FROM `".$GLOBALS['config']['mysql_db']."`.`users` WHERE `users`.`id` = ".$_GET['id']."";
-	if(!mysql_query($deluserreq1)) { errorjson("Ошибка базы данных. Повторите попытку позже."); }
-
-	$deluserreq2 = "DELETE FROM `".$GLOBALS['config']['mysql_db']."`.`activity` WHERE `activity`.`user` = ".$_GET['id']."";
-	if(!mysql_query($deluserreq2)) { errorjson("Ошибка базы данных. Запрос выполнен неполностью. Немедленно обратитесь к администратору."); }
-	else { errorjson("ok"); }
+		$deluserreq2 = "DELETE FROM `".$GLOBALS['config_db']['mysql_db']."`.`activity` WHERE `activity`.`user` = ".$_GET['id']."";
+		if(!mysql_query($deluserreq2)) { errorjson("Ошибка базы данных. Запрос выполнен неполностью. Немедленно обратитесь к администратору."); }
+	*/
 }
 
 // Загрузка групп департаментов
@@ -963,12 +963,12 @@ elseif(($_GET['act'] == "addevent") or ($_GET['act'] == "editevent")) {
 	if($_GET['complex'] == "true") { $complex = "y"; }
 
 	if($_GET['act'] == "addevent") {
-		$addeventreq = "INSERT INTO `".$GLOBALS['config']['mysql_db']."`.`events` (`id`, `name`, `place`, `date`, `date_for`, `time_since`, `time_for`, `comment`, `level`, `dep`, `holder`, `created`, `author`,`fixers`,`outside`,`complex`,`tags`) VALUES (NULL, '".htmlentities($_GET['name'], ENT_QUOTES, 'UTF-8')."', ".$setplace.", '".$datestart."', ".$dateend.", '".$_GET['time_start']."', '".$_GET['time_finish']."', ".$comment.", '".$_GET['level']."', ".$setdep.", '".$_GET['holder']."', '".date("Y-m-d")." ".date("H:i:s")."', '".LOGGED_ID."', '".$fixers."','".$outside."','".$complex."','".$tags."');";
+		$addeventreq = "INSERT INTO `".$GLOBALS['config_db']['mysql_db']."`.`events` (`id`, `name`, `place`, `date`, `date_for`, `time_since`, `time_for`, `comment`, `level`, `dep`, `holder`, `created`, `author`,`fixers`,`outside`,`complex`,`tags`) VALUES (NULL, '".htmlentities($_GET['name'], ENT_QUOTES, 'UTF-8')."', ".$setplace.", '".$datestart."', ".$dateend.", '".$_GET['time_start']."', '".$_GET['time_finish']."', ".$comment.", '".$_GET['level']."', ".$setdep.", '".$_GET['holder']."', '".date("Y-m-d")." ".date("H:i:s")."', '".LOGGED_ID."', '".$fixers."','".$outside."','".$complex."','".$tags."');";
 		if(!mysql_query($addeventreq)) { errorjson("Ошибка базы данных. Повторите попытку позже."); }
 		else { errorjson("ok"); }
 	}
 	elseif($_GET['act'] == "editevent") {
-		$addeventreq = "UPDATE  `".$GLOBALS['config']['mysql_db']."`.`events` SET  `name` =  '".htmlentities($_GET['name'], ENT_QUOTES, 'UTF-8')."',
+		$addeventreq = "UPDATE  `".$GLOBALS['config_db']['mysql_db']."`.`events` SET  `name` =  '".htmlentities($_GET['name'], ENT_QUOTES, 'UTF-8')."',
 `place` =  ".$setplace.",
 `date` =  '".$datestart."',
 `date_for` =  ".$dateend.",
@@ -1028,15 +1028,15 @@ elseif($_GET['act'] == "delevent") {
 					}
 				}
 
-				if(!mysql_query("UPDATE  `".$GLOBALS['config']['mysql_db']."`.`users` SET  `count` = `count` -".$decount."".$sqlcountByTags." WHERE  `users`.`id` =".$getactive[1].";")) {
+				if(!mysql_query("UPDATE  `".$GLOBALS['config_db']['mysql_db']."`.`users` SET  `count` = `count` -".$decount."".$sqlcountByTags." WHERE  `users`.`id` =".$getactive[1].";")) {
 					errorjson("Ошибка базы данных. Повторите попытку позже. #1");
 				}
 			}
 		}
 	}
 
-	if(!mysql_query("DELETE FROM `".$GLOBALS['config']['mysql_db']."`.`events` WHERE `events`.`id` = ".$_GET['eid'].";")) { errorjson("Ошибка базы данных. Повторите попытку позже. #2"); }
-	if(!mysql_query("DELETE FROM `".$GLOBALS['config']['mysql_db']."`.`activity` WHERE `activity`.`event` = ".$_GET['eid'].";")) { errorjson("Ошибка базы данных. Повторите попытку позже. #3"); }
+	if(!mysql_query("DELETE FROM `".$GLOBALS['config_db']['mysql_db']."`.`events` WHERE `events`.`id` = ".$_GET['eid'].";")) { errorjson("Ошибка базы данных. Повторите попытку позже. #2"); }
+	if(!mysql_query("DELETE FROM `".$GLOBALS['config_db']['mysql_db']."`.`activity` WHERE `activity`.`event` = ".$_GET['eid'].";")) { errorjson("Ошибка базы данных. Повторите попытку позже. #3"); }
 	else { errorjson("ok"); }
 }
 
@@ -1078,7 +1078,7 @@ elseif($_GET['act'] == "addactive") {
 		$countup = activityPoints($_GET['eid'],$_GET['rid'],'n');
 		$curtime = date("Y-m-d")." ".date("H:i:s");
 
-		$addactivereq1 = "INSERT INTO `".$GLOBALS['config']['mysql_db']."`.`activity` (`id`, `event`, `user`, `role`, `created`, `addedby`, `complex`) VALUES (NULL, '".$_GET['eid']."', '".$checkuid[0]."', '".$_GET['rid']."', '".$curtime."', '".LOGGED_ID."', 'n');";
+		$addactivereq1 = "INSERT INTO `".$GLOBALS['config_db']['mysql_db']."`.`activity` (`id`, `event`, `user`, `role`, `created`, `addedby`, `complex`) VALUES (NULL, '".$_GET['eid']."', '".$checkuid[0]."', '".$_GET['rid']."', '".$curtime."', '".LOGGED_ID."', 'n');";
 		if(!mysql_query($addactivereq1)) { errorjson("Ошибка базы данных. Повторите попытку позже."); }
 
 		$_precheckeid = mysql_query("SELECT `id`,`date` from `events` WHERE `id`='".$_GET['eid']."' LIMIT 1");
@@ -1094,7 +1094,7 @@ elseif($_GET['act'] == "addactive") {
 				}
 			}
 
-			$addactivereq2 = "UPDATE  `".$GLOBALS['config']['mysql_db']."`.`users` SET  `count` = `count` +".$countup."".$sqlcountByTags." WHERE  `users`.`id` =".$checkuid[0].";";
+			$addactivereq2 = "UPDATE  `".$GLOBALS['config_db']['mysql_db']."`.`users` SET  `count` = `count` +".$countup."".$sqlcountByTags." WHERE  `users`.`id` =".$checkuid[0].";";
 			if(!mysql_query($addactivereq2)) { errorjson("Ошибка базы данных. Повторите попытку позже."); }
 		}
 
@@ -1202,7 +1202,7 @@ elseif($_GET['act'] == "editrole") {
 	$recount = activityPoints($getactive[1],$_GET['rid'],$_GET['cv']);
 	$jhgjh = $getactive[1].", ".$getactive[2].", ".$getactive[5]." - ".$getactive[1].", ".$_GET['rid'].", ".$_GET['cv'];
 
-	$recountreq1 = "UPDATE  `".$GLOBALS['config']['mysql_db']."`.`activity` SET  `role` =  '".$_GET['rid']."', `complex` =  '".$_GET['cv']."' WHERE  `activity`.`id` =".$_GET['aid'].";";
+	$recountreq1 = "UPDATE  `".$GLOBALS['config_db']['mysql_db']."`.`activity` SET  `role` =  '".$_GET['rid']."', `complex` =  '".$_GET['cv']."' WHERE  `activity`.`id` =".$_GET['aid'].";";
 	if(!mysql_query($recountreq1)) { errorjson("Ошибка базы данных. Повторите попытку позже. #1"); }
 
 	$_precheckeid = mysql_query("SELECT `id`,`date` from `events` WHERE `id`='".$getactive[1]."' LIMIT 1");
@@ -1218,7 +1218,7 @@ elseif($_GET['act'] == "editrole") {
 			}
 		}
 
-		$recountreq2 = "UPDATE  `".$GLOBALS['config']['mysql_db']."`.`users` SET  `count` = `count` -".$decount." +".$recount."".$sqlcountByTags." WHERE  `users`.`id` =".$getactive[4].";";
+		$recountreq2 = "UPDATE  `".$GLOBALS['config_db']['mysql_db']."`.`users` SET  `count` = `count` -".$decount." +".$recount."".$sqlcountByTags." WHERE  `users`.`id` =".$getactive[4].";";
 		if(!mysql_query($recountreq2)) { errorjson("Ошибка базы данных. Повторите попытку позже. #2"); }
 	}
 	errorjson("ok");
@@ -1255,7 +1255,7 @@ elseif($_GET['act'] == "delactive") {
 	$curcount = mysql_fetch_row(mysql_query("SELECT `id`,`count` from `users` WHERE `id`=".$getactive[2]." LIMIT 1"));
 	$setcount = $curcount[1] - $decount;
 
-	$delactivereq = "DELETE FROM `".$GLOBALS['config']['mysql_db']."`.`activity` WHERE `activity`.`id` =".$_GET['aid'].";";
+	$delactivereq = "DELETE FROM `".$GLOBALS['config_db']['mysql_db']."`.`activity` WHERE `activity`.`id` =".$_GET['aid'].";";
 	if(!mysql_query($delactivereq)) { errorjson("Ошибка базы данных. Повторите попытку позже."); }
 
 	$_precheckeid = mysql_query("SELECT `id`,`date` from `events` WHERE `id`='".$getactive[1]."' LIMIT 1");
@@ -1271,7 +1271,7 @@ elseif($_GET['act'] == "delactive") {
 			}
 		}
 
-		$updatereq = "UPDATE  `".$GLOBALS['config']['mysql_db']."`.`users` SET  `count` =  '".$setcount."'".$sqlcountByTags." WHERE  `users`.`id` =".$getactive[2].";";
+		$updatereq = "UPDATE  `".$GLOBALS['config_db']['mysql_db']."`.`users` SET  `count` =  '".$setcount."'".$sqlcountByTags." WHERE  `users`.`id` =".$getactive[2].";";
 		if(!mysql_query($updatereq)) { errorjson("Ошибка базы данных. Повторите попытку позже. Запрос выполнен неполностью. Немедленно обратитесь к администратору."); }
 	}
 	errorjson("ok");
@@ -1288,7 +1288,7 @@ elseif($_GET['act'] == "getactive") {
 	elseif($_GET['by'] == "sin") { $getby = 'sin'; }
 	else { wrongusing(); }
 
-	$pregetstudent = mysql_query("SELECT `id`,`phone`,`code`,`sname`,`fname`,`pname`,`sex`,`birthday`,`dep`,`curcourse`,`created`,`addedby`,`groupnum`,`budget`,`count`,`sin`,`gen`,`out`,`groups` from `users` WHERE `".$getby."`='".$_GET['uid']."' AND `type`='a' LIMIT 1");
+	$pregetstudent = mysql_query("SELECT `id`,`phone`,`code`,`sname`,`fname`,`pname`,`sex`,`birthday`,`dep`,`curcourse`,`created`,`addedby`,`groupnum`,`budget`,`count`,`sin`,`out`,`groups` from `users` WHERE `".$getby."`='".$_GET['uid']."' AND `type`='a' LIMIT 1");
 	$getstudent = mysql_fetch_row($pregetstudent);
 	if(!$getstudent[1]) { errorjson("s_notexist"); } // не найден или не студент
 	if(LOGGED_ACCESS == "s") {
@@ -1351,7 +1351,6 @@ elseif($_GET['act'] == "getactive") {
 		"group_id" => $getdep[0],
 		"edulevel" => $edul,
 		"educourse" => $educ,
-		"gen" => $getstudent[16],
 		"groupnum" => $getstudent[12],
 		"budget" => $getstudent[13],
 		"points" => $getstudent[14],
@@ -1493,10 +1492,10 @@ elseif(($_GET['act'] == "depadd") or ($_GET['act'] == "depedit")) {
 		$precheckdep = mysql_query("SELECT `id`,`type` from `deps` WHERE `id`='".$_GET['id']."' LIMIT 1");
 		$checkdep = mysql_fetch_row($precheckdep);
 		if(!$checkdep[1]) { errorjson("Подразделение не найдено"); }
-		$depaddreq = "UPDATE  `".$GLOBALS['config']['mysql_db']."`.`deps` SET  `type` = '".$_GET['type']."', `name` = '".htmlentities($_GET['name'], ENT_QUOTES, "UTF-8")."' WHERE  `deps`.`id` =".$_GET['id'].";";
+		$depaddreq = "UPDATE  `".$GLOBALS['config_db']['mysql_db']."`.`deps` SET  `type` = '".$_GET['type']."', `name` = '".htmlentities($_GET['name'], ENT_QUOTES, "UTF-8")."' WHERE  `deps`.`id` =".$_GET['id'].";";
 	}
 	elseif($_GET['act'] == "depedit") {
-		$depaddreq = "INSERT INTO `".$GLOBALS['config']['mysql_db']."`.`deps` (`id`, `type`, `name`) VALUES (NULL, '".$_GET['type']."', '".$_GET['name']."');";
+		$depaddreq = "INSERT INTO `".$GLOBALS['config_db']['mysql_db']."`.`deps` (`id`, `type`, `name`) VALUES (NULL, '".$_GET['type']."', '".$_GET['name']."');";
 	}
 
 	if(!mysql_query($depaddreq)) { errorjson("Ошибка базы данных. Повторите попытку позже."); }
@@ -1515,7 +1514,7 @@ elseif($_GET['act'] == "depdel") {
 	$checkuser = mysql_fetch_row($precheckuser);
 	if($checkuser[1]) { errorjson("Удаление невозможно, т.к. в системе зарегистрированы пользователи, принадлежащие к данному подразделению."); }
 
-	$depdelreq = "DELETE FROM `".$GLOBALS['config']['mysql_db']."`.`deps` WHERE `deps`.`id` = ".$_GET['id'].";";
+	$depdelreq = "DELETE FROM `".$GLOBALS['config_db']['mysql_db']."`.`deps` WHERE `deps`.`id` = ".$_GET['id'].";";
 	if(!mysql_query($depdelreq)) { errorjson("Ошибка базы данных. Повторите попытку позже."); }
 	else { errorjson("ok"); }
 }
@@ -1535,7 +1534,7 @@ elseif($_GET['act'] == "cpw") {
 	}
 	if(strlen($_GET['new']) !== 32) { wrongusing(); }
 	//if(!pwcheck($_GET['new'])) { errorjson("Неверный формат пароля"); }
-	$authreq = "UPDATE `".$GLOBALS['config']['mysql_db']."`.`users` SET `password` = '".$_GET['new']."' WHERE `users`.`id` =".LOGGED_ID.";";
+	$authreq = "UPDATE `".$GLOBALS['config_db']['mysql_db']."`.`users` SET `password` = '".$_GET['new']."' WHERE `users`.`id` =".LOGGED_ID.";";
 	if(!mysql_query($authreq)) { errorjson("Ошибка базы данных. Повторите попытку позже."); }
 	errorjson("ok");
 }
@@ -1550,7 +1549,7 @@ elseif($_GET['act'] == "genpw") {
 	if(!$checkuid[1]) { errorjson("Пользователь не найден"); }
 
 	$gennewpw = pwgenerator();
-	$newpwreq = "UPDATE  `".$GLOBALS['config']['mysql_db']."`.`users` SET `password` = '".$gennewpw."' WHERE  `users`.`id` =".$_GET['uid'].";";
+	$newpwreq = "UPDATE  `".$GLOBALS['config_db']['mysql_db']."`.`users` SET `password` = '".$gennewpw."' WHERE  `users`.`id` =".$_GET['uid'].";";
 	if($_GET['as'] == "y") {
 		$notifyres = sendsms($checkuid[1], "Сайт: ".PROTOCOL.$_SERVER['SERVER_NAME']." Логин: ".$checkuid[3]." Пароль: ".$gennewpw."");
 		if($notifyres !== "sent") { exit('{"error":"ok_notify","notifyres":"'.$notifyres.'"}'); }
@@ -1600,7 +1599,7 @@ elseif($_GET['act'] == "savetempsz") {
 	$temp = mysql_fetch_row($gettemps);
 	if(!$temp[1]) { errorjson("Шаблон не найден"); }
 
-	$edittemp = "UPDATE  `".$GLOBALS['config']['mysql_db']."`.`temp_sz` SET
+	$edittemp = "UPDATE  `".$GLOBALS['config_db']['mysql_db']."`.`temp_sz` SET
 	`header` = '".htmlentities($_GET['temp1'], ENT_QUOTES, "UTF-8")."',
 	`title` =  '".htmlentities($_GET['temp2'], ENT_QUOTES, "UTF-8")."',
 	`post` =  '".htmlentities($_GET['temp3'], ENT_QUOTES, "UTF-8")."',
@@ -1626,7 +1625,7 @@ elseif($_GET['act'] == "newtempsz") {
 	$findsame = mysql_fetch_row($prefindsame);
 	if($findsame[1]) { errorjson("Шаблон с таким названием уже существует"); }
 
-	$newtemp = "INSERT INTO `".$GLOBALS['config']['mysql_db']."`.`temp_sz` (`id`, `name`, `header`, `title`, `post`, `sign`, `content`, `holder`, `area`)
+	$newtemp = "INSERT INTO `".$GLOBALS['config_db']['mysql_db']."`.`temp_sz` (`id`, `name`, `header`, `title`, `post`, `sign`, `content`, `holder`, `area`)
 	 VALUES (NULL, '".$_GET['name']."', '".htmlentities($_GET['temp1'], ENT_QUOTES, "UTF-8")."', '".htmlentities($_GET['temp2'], ENT_QUOTES, "UTF-8")."', '".htmlentities($_GET['temp3'], ENT_QUOTES, "UTF-8")."', '".htmlentities($_GET['temp4'], ENT_QUOTES, "UTF-8")."', '".htmlentities($_GET['temp5'], ENT_QUOTES, "UTF-8")."', '".LOGGED_ID."', '".$setholder."');";
 	if(!mysql_query($newtemp)) { errorjson("Ошибка базы данных. Повторите попытку позже."); }
 	$sendlist["newid"] = mysql_insert_id();
@@ -1645,7 +1644,7 @@ elseif($_GET['act'] == "deltempsz") {
 	$temp = mysql_fetch_row($gettemps);
 	if(!$temp[1]) { errorjson("Шаблон не найден"); }
 
-	$deltemp = "DELETE FROM `".$GLOBALS['config']['mysql_db']."`.`temp_sz` WHERE `temp_sz`.`id` = ".$_GET['id']."";
+	$deltemp = "DELETE FROM `".$GLOBALS['config_db']['mysql_db']."`.`temp_sz` WHERE `temp_sz`.`id` = ".$_GET['id']."";
 	if(!mysql_query($deltemp)) { errorjson("Ошибка базы данных. Повторите попытку позже."); }
 	errorjson("ok");
 }
@@ -1685,7 +1684,7 @@ elseif($_GET['act'] == "getinvolvedsz") {
 	$sendlist = Array();
 
 	while($erend = mysql_fetch_array($pregetlist)) {
-		$pregetuser = mysql_query("SELECT `id`,`sname`,`fname`,`pname`,`dep`,`curcourse`,`groupnum`,`gen` from `users` WHERE `id` ='".$erend[2]."' LIMIT 1;");
+		$pregetuser = mysql_query("SELECT `id`,`sname`,`fname`,`pname`,`dep`,`curcourse`,`groupnum` from `users` WHERE `id` ='".$erend[2]."' LIMIT 1;");
 		$getuser = mysql_fetch_row($pregetuser);
 
 		$pregetdep = mysql_query("SELECT `id`,`area`,`name` from `deps` WHERE `id`='".$getuser[4]."' LIMIT 1");
@@ -1725,7 +1724,7 @@ elseif($_GET['act'] == "getstudentsz") {
 
 	if(!$_GET['sid']) { wrongusing(); }
 
-	$pregetuser = mysql_query("SELECT `id`,`sname`,`fname`,`pname`,`dep`,`curcourse`,`groupnum`,`sex`,`gen` from `users` WHERE `id` ='".$_GET['sid']."' LIMIT 1;");
+	$pregetuser = mysql_query("SELECT `id`,`sname`,`fname`,`pname`,`dep`,`curcourse`,`groupnum`,`sex` from `users` WHERE `id` ='".$_GET['sid']."' LIMIT 1;");
 	$getuser = mysql_fetch_row($pregetuser);
 	if(!$getuser[1]) { errorjson("Пользователь не найден"); }
 
@@ -1785,13 +1784,12 @@ elseif($_GET['act'] == "printsz") {
 	for($i = 0; $i<count($lists); $i++) {
 		$searchlist = 'СПИСОК('.$lists[$i][0].')';
 		$newlist = "<div class=\"ollist\"><ol>";
-		//$newlist = "<div class=\"ollist\">";
 		if(strpos($replavedtext,$searchlist) == false) { continue; }
 		$studlist = $lists[$i][1];
 
 		for($c = 0; $c<count($studlist); $c++) {
 
-			$pregetuser = mysql_query("SELECT `id`,`sname`,`fname`,`pname`,`dep`,`curcourse`,`groupnum`,`gen` from `users` WHERE `id` ='".$studlist[$c]."' LIMIT 1;");
+			$pregetuser = mysql_query("SELECT `id`,`sname`,`fname`,`pname`,`dep`,`curcourse`,`groupnum` from `users` WHERE `id` ='".$studlist[$c]."' LIMIT 1;");
 			$getuser = mysql_fetch_row($pregetuser);
 			if(!$getuser[1]) { errorjson("Некоторые студенты не найдены. Составьте список заново."); }
 			$pregetdep = mysql_query("SELECT `id`,`area`,`name` from `deps` WHERE `id`='".$getuser[4]."' LIMIT 1");
@@ -1804,21 +1802,10 @@ elseif($_GET['act'] == "printsz") {
 			if(mb_strlen($getuser[3], "UTF-8")<2) { $newpname = ""; } else { $newpname = " ".$getuser[3]; }
 			$name = $getuser[1]." ".$getuser[2]."".$newpname;
 
-			list($edul, $educ) = split('[-]', $getuser[5]);
-			if($edul == "c") { $edul = "1"; }
-			if($edul == "b") { $edul = "2"; }
-			if($edul == "m") { $edul = "3"; }
-			if($edul == "s") { $edul = "4"; }
-			$educode = $getuser[7].".".$edul.".1"; // .1 - очная форма
-
-			//$studinfo = $name." ".$getfac[1]."-".$educode."-(".$getdep[2].")-".$getuser[6].";";
-			$studinfo = $name." ".$getfac[1]."-".$getdep[2]."-".$getuser[6].";";
-			//if($c==(count($studlist)-1)) { $studinfo = mb_substr($studinfo, 0, -1, "UTF-8"); $studinfo = $studinfo."."; }
+			$studinfo = $name." ".$getfac[1]."(".$getdep[2].")-".$getuser[6].";";
 			$newlist .= "<li>".$studinfo."</li>";
-			//$newlist .= $studinfo;
 		}
 		$newlist .= "</ol></div>";
-		//$newlist .= "</div>";
 		$replavedtext = str_replace($searchlist, $newlist, $replavedtext);
 	}
 
@@ -1939,8 +1926,8 @@ elseif($_GET['act'] == "setsmsparams") {
 elseif($_GET['act'] == "getratingparams") {
 	accessto("s");
 	$sendlist = array(
-		"rating_roles" => $GLOBALS['config']['rating_roles'],
-		"rating_levels" => $GLOBALS['config']['rating_levels'],
+		"rating_roles" => json_decode($GLOBALS['config']['rating_roles'], true),
+		"rating_levels" => json_decode($GLOBALS['config']['rating_levels'], true),
 		"rating_complex" => $GLOBALS['config']['rating_complex'],
 		"rating_muscle" => $GLOBALS['config']['rating_muscle'],
 		"rating_oneday" => $GLOBALS['config']['rating_oneday'],
@@ -2004,18 +1991,20 @@ elseif($_GET['act'] == "setratingparams") {
 	settype($_GET['rating_muscle'], "float");
 	settype($_GET['rating_oneday'], "float");
 
-	$GLOBALS['config']['rating_roles']['u'] = $_GET['rating_roles_u'];
-	$GLOBALS['config']['rating_roles']['p'] = $_GET['rating_roles_p'];
-	$GLOBALS['config']['rating_roles']['w'] = $_GET['rating_roles_w'];
-	$GLOBALS['config']['rating_roles']['l'] = $_GET['rating_roles_l'];
-	$GLOBALS['config']['rating_roles']['m'] = $_GET['rating_roles_m'];
-	$GLOBALS['config']['rating_roles']['h'] = $_GET['rating_roles_h'];
-	$GLOBALS['config']['rating_levels']['f'] = $_GET['rating_levels_f'];
-	$GLOBALS['config']['rating_levels']['u'] = $_GET['rating_levels_u'];
-	$GLOBALS['config']['rating_levels']['c'] = $_GET['rating_levels_c'];
-	$GLOBALS['config']['rating_levels']['r'] = $_GET['rating_levels_r'];
-	$GLOBALS['config']['rating_levels']['v'] = $_GET['rating_levels_v'];
-	$GLOBALS['config']['rating_levels']['i'] = $_GET['rating_levels_i'];
+	$rating_roles['u'] = $_GET['rating_roles_u'];
+	$rating_roles['p'] = $_GET['rating_roles_p'];
+	$rating_roles['w'] = $_GET['rating_roles_w'];
+	$rating_roles['l'] = $_GET['rating_roles_l'];
+	$rating_roles['m'] = $_GET['rating_roles_m'];
+	$rating_roles['h'] = $_GET['rating_roles_h'];
+	$GLOBALS['config']['rating_roles'] = json_encode($rating_roles);
+	$rating_levels['f'] = $_GET['rating_levels_f'];
+	$rating_levels['u'] = $_GET['rating_levels_u'];
+	$rating_levels['c'] = $_GET['rating_levels_c'];
+	$rating_levels['r'] = $_GET['rating_levels_r'];
+	$rating_levels['v'] = $_GET['rating_levels_v'];
+	$rating_levels['i'] = $_GET['rating_levels_i'];
+	$GLOBALS['config']['rating_levels'] = json_encode($rating_levels);
 	$GLOBALS['config']['rating_complex'] = $_GET['rating_complex'];
 	$GLOBALS['config']['rating_muscle'] = $_GET['rating_muscle'];
 	$GLOBALS['config']['rating_oneday'] = $_GET['rating_oneday'];
@@ -2135,7 +2124,7 @@ elseif($_GET['act'] == "getdeps_fac" or $_GET['act'] == "getdeps_groups" or $_GE
 		$faclist[] = $newfac;
 		unset($newfac);
 	}
-	if($_GET['act'] == "getdeps_fac") { $sendlist["fac"] = $faclist; } elseif($_GET['act'] == "getdeps_org") { $sendlist["org"] = $faclist; $sendlist["order"] = $GLOBALS['config']['organizations_order']; } else { $sendlist["groups"] = $faclist; }
+	if($_GET['act'] == "getdeps_fac") { $sendlist["fac"] = $faclist; } elseif($_GET['act'] == "getdeps_org") { $sendlist["org"] = $faclist; $sendlist["order"] = json_decode($GLOBALS['config']['organizations_order'], true); } else { $sendlist["groups"] = $faclist; }
 	$sendlist["error"] = "ok";
 	exit(json_encode($sendlist));
 }
@@ -2146,7 +2135,7 @@ elseif($_GET['act'] == "getdeps_dep_save") {
 	$checkdep = mysql_query("SELECT `id`,`type` from `deps` WHERE `id`='".$_GET['id']."' AND `type`='i' OR `type`='g'  OR `type`='d' LIMIT 1;");
 	$checkdep = mysql_fetch_row($checkdep);
 	if(!$checkdep[0]) { errorjson("Редактируемые подразделения/группы не зарегистрированы."); }
-	$authreq = "UPDATE `".$GLOBALS['config']['mysql_db']."`.`deps` SET `name` = '".htmlentities($_GET['short'], ENT_QUOTES, "UTF-8")."', `full` = '".htmlentities($_GET['full'], ENT_QUOTES, "UTF-8")."' WHERE `deps`.`id` =".$_GET['id'].";";
+	$authreq = "UPDATE `".$GLOBALS['config_db']['mysql_db']."`.`deps` SET `name` = '".htmlentities($_GET['short'], ENT_QUOTES, "UTF-8")."', `full` = '".htmlentities($_GET['full'], ENT_QUOTES, "UTF-8")."' WHERE `deps`.`id` =".$_GET['id'].";";
 	if(!mysql_query($authreq)) { errorjson("Ошибка базы данных. Повторите попытку позже.".mysql_error()); }
 	errorjson("ok");
 }
@@ -2164,7 +2153,7 @@ elseif($_GET['act'] == "config_orglist_sort") {
 		if(!$getEl[0]) { errorjson("Новый порядок не применен. Одино из подразделений не найдено."); }
 		$neworder[] = $getneworder[$i];
 	}
-	$GLOBALS['config']['organizations_order'] = $neworder;
+	$GLOBALS['config']['organizations_order'] = json_encode($neworder);
 	config_save();
 	errorjson("ok");
 }
@@ -2175,10 +2164,12 @@ elseif($_GET['act'] == "deps_org_add") {
 	$checkdep = mysql_query("SELECT `id`,`name`,`type` from `deps` WHERE `type`='d' AND `name` = '".htmlentities($_GET['short'], ENT_QUOTES, "UTF-8")."'; LIMIT 1;");
 	$checkdep = mysql_fetch_row($checkdep);
 	if($checkdep[0]) { errorjson("Указанное сокращение уже добавлено."); }
-	$addreq = "INSERT INTO `".$GLOBALS['config']['mysql_db']."`.`deps` (`id`, `type`, `area`, `name`, `full`)
+	$addreq = "INSERT INTO `".$GLOBALS['config_db']['mysql_db']."`.`deps` (`id`, `type`, `area`, `name`, `full`)
 	 VALUES (NULL, 'd', NULL, '".htmlentities($_GET['short'], ENT_QUOTES, "UTF-8")."', '".htmlentities($_GET['full'], ENT_QUOTES, "UTF-8")."');";
 	if(!mysql_query($addreq)) { errorjson("Ошибка базы данных. Повторите попытку позже."); }
+	$GLOBALS['config']['organizations_order'] = json_decode($GLOBALS['config']['organizations_order'], true);
 	array_unshift($GLOBALS['config']['organizations_order'], "".mysql_insert_id()."");
+	$GLOBALS['config']['organizations_order'] = json_encode($GLOBALS['config']['organizations_order']);
 	config_save();
 	errorjson("ok");
 }
@@ -2188,19 +2179,25 @@ elseif($_GET['act'] == "deldep_org") {
 	accessto("s");
 	if(!$_GET['id'] or !is_numeric($_GET['id'])) { wrongusing(); }
 
-	$checkdep = mysql_query("SELECT `id` from `deps` WHERE `id`='".$_GET['id']."' AND `type` = 'd' LIMIT 1");
+	$checkdep = mysql_query("SELECT `id` from `deps` WHERE `id`='".$_GET['id']."' AND `type` = 'd' LIMIT 1;");
 	$checkdep = mysql_fetch_row($checkdep);
 	if(!$checkdep[0]) { errorjson("Подразделение не найдено"); }
 
-	$checkeevent = mysql_query("SELECT `id`,`dep` from `events` WHERE `dep`='".$_GET['id']."' LIMIT 1");
+	$checkeevent = mysql_query("SELECT `id`,`dep` from `events` WHERE `dep`='".$_GET['id']."' LIMIT 1;");
 	$checkeevent = mysql_fetch_row($checkeevent);
 	if($checkeevent[0]) { errorjson("Подразделение невозможно удалить, т.к. оно является организатором одного или более уже внесенных мероприятий"); }
 
-	$deldepreq = "DELETE FROM `".$GLOBALS['config']['mysql_db']."`.`deps` WHERE `deps`.`id` = ".$_GET['id']."";
+	$checkdepusers = mysql_query("SELECT `id`,`dep` from `users` WHERE `dep`='".$_GET['id']."' LIMIT 1;");
+	$checkdepusers = mysql_fetch_row($checkdepusers);
+	if($checkdepusers[0]) { errorjson("Подразделение невозможно удалить, т.к. к нему прикреплены пользователи системы."); }
+
+	$deldepreq = "DELETE FROM `".$GLOBALS['config_db']['mysql_db']."`.`deps` WHERE `deps`.`id` = ".$_GET['id']."";
 	if(!mysql_query($deldepreq)) { errorjson("Ошибка базы данных. Повторите попытку позже."); }
 
+	$GLOBALS['config']['organizations_order'] = json_decode($GLOBALS['config']['organizations_order'], true);
 	unset($GLOBALS['config']['organizations_order'][array_search(''.$_GET['id'].'',$GLOBALS['config']['organizations_order'])]);
 	$GLOBALS['config']['organizations_order'] = array_values($GLOBALS['config']['organizations_order']);
+	$GLOBALS['config']['organizations_order'] = json_encode($GLOBALS['config']['organizations_order']);
 	config_save();
 
 	errorjson("ok");
@@ -2220,7 +2217,7 @@ elseif($_GET['act'] == "studentsupload_connect") {
     $data = str_getcsv($csvFile[0],";");
 
 	// Проверка выборки
-	$allRows = array("nodata", "id", "sname", "fname", "pname", "sex", "birthday", "phone", "edu_type", "edu_level", "edu_standard", "department", "course", "group_name", "group_num", "pay");
+	$allRows = array("nodata", "id", "sname", "fname", "pname", "sex", "birthday", "phone", "edu_type", "edu_level", "department", "course", "group_name", "group_num", "pay");
 	$necessoryRows = array("id", "sname", "fname", "pname", "edu_level", "department", "course", "group_name", "group_num");
 
 	$samerows = array();
@@ -2437,23 +2434,6 @@ elseif($_GET['act'] == "studentsupload_connect") {
 		}
 	}
 
-	// Обработка образовательного стандарта
-	if(!isset($CONNECTIONS["edu_standard"])) {
-		$CONNECTIONS["edu_standard"] = count($dataCSV[0]);
-	}
-
-	for($i=0; $i < $dataCSVnum; $i++) {
-		if(!isset($dataCSV[$i][($CONNECTIONS["edu_standard"])])) {
-			$dataCSV[$i][($CONNECTIONS["edu_standard"])] = ""; continue;
-		}
-		if(trim($dataCSV[$i][($CONNECTIONS["edu_standard"])]) == "" or trim($dataCSV[$i][($CONNECTIONS["edu_standard"])]) == "-") {
-			$dataCSV[$i][($CONNECTIONS["edu_standard"])] = ""; continue;
-		}
-		if(mb_strlen($dataCSV[$i][($CONNECTIONS["edu_standard"])], "UTF-8") > 15) {
-			errorjson("Поле 'Образовательный стандарт' не может превышать 15 символов. Рекомендуется использовать номер поколения образовательного стандарта, например, '3+' или '2'.");
-		}
-	}
-
 	// Обработка формы оплаты
 	if(!isset($CONNECTIONS["pay"])) {
 		$CONNECTIONS["pay"] = count($dataCSV[0]);
@@ -2571,18 +2551,17 @@ elseif($_GET['act'] == "studentsupload_confirm") {
 		if(!$checkSIN[0]) {
 			$newpwgen = pwgenerator().pwgenerator();
 			$regtoken = md5(uniqid('auth', true).$newpwgen);
-			$RegStudentSQL = "INSERT INTO `users` (`id`, `access`, `sin`, `phone`, `password`, `vkauth`, `vktoken`, `type`, `out`, `code`, `fullname`, `sname`, `fname`, `pname`, `sex`, `birthday`, `post`, `fac`, `dep`, `gen`, `form`, `curcourse`, `groupnum`, `budget`, `created`, `addedby`, `count`, `groups`) VALUES (NULL, 'y', '".$JSONStudentsData[$i][($CONNECTIONS["id"])]."', '".$JSONStudentsData[$i][($CONNECTIONS["phone"])]."', '".$regtoken."', NULL, NULL, 'a', 's', '0123456789', '".$fullName." (".$depName.")', '".$JSONStudentsData[$i][($CONNECTIONS["sname"])]."', '".$JSONStudentsData[$i][($CONNECTIONS["fname"])]."', '".$JSONStudentsData[$i][($CONNECTIONS["pname"])]."', '".$JSONStudentsData[$i][($CONNECTIONS["sex"])]."', ".$JSONStudentsData[$i][($CONNECTIONS["birthday"])].", NULL, '".$depID."', '".$groupID."', '".$JSONStudentsData[$i][($CONNECTIONS["edu_standard"])]."', '".$JSONStudentsData[$i][($CONNECTIONS["edu_type"])]."', '".$JSONStudentsData[$i][($CONNECTIONS["edu_level"])]."-".$JSONStudentsData[$i][($CONNECTIONS["course"])]."', '".$JSONStudentsData[$i][($CONNECTIONS["group_num"])]."', '".$JSONStudentsData[$i][($CONNECTIONS["pay"])]."', '".date("Y-m-d H:i:s")."', '".LOGGED_ID."', '0', '[]');";
+			$RegStudentSQL = "INSERT INTO `users` (`id`, `access`, `sin`, `phone`, `password`, `vkauth`, `vktoken`, `type`, `out`, `code`, `fullname`, `sname`, `fname`, `pname`, `sex`, `birthday`, `post`, `fac`, `dep`, `form`, `curcourse`, `groupnum`, `budget`, `created`, `addedby`, `count`, `groups`) VALUES (NULL, 'y', '".$JSONStudentsData[$i][($CONNECTIONS["id"])]."', '".$JSONStudentsData[$i][($CONNECTIONS["phone"])]."', '".$regtoken."', NULL, NULL, 'a', 's', '0123456789', '".$fullName." (".$depName.")', '".$JSONStudentsData[$i][($CONNECTIONS["sname"])]."', '".$JSONStudentsData[$i][($CONNECTIONS["fname"])]."', '".$JSONStudentsData[$i][($CONNECTIONS["pname"])]."', '".$JSONStudentsData[$i][($CONNECTIONS["sex"])]."', ".$JSONStudentsData[$i][($CONNECTIONS["birthday"])].", NULL, '".$depID."', '".$groupID."', '".$JSONStudentsData[$i][($CONNECTIONS["edu_type"])]."', '".$JSONStudentsData[$i][($CONNECTIONS["edu_level"])]."-".$JSONStudentsData[$i][($CONNECTIONS["course"])]."', '".$JSONStudentsData[$i][($CONNECTIONS["group_num"])]."', '".$JSONStudentsData[$i][($CONNECTIONS["pay"])]."', '".date("Y-m-d H:i:s")."', '".LOGGED_ID."', '0', '[]');";
 			if(!mysql_query($RegStudentSQL)) { errorjson("Не удалось зарегистрировать студента. Ошибка базы данных."); }
 		} else {
 		// Обновление информации о студенте
-			$UpdateStudentSQL = "UPDATE `".$GLOBALS['config']['mysql_db']."`.`users` SET `out` = 's',
+			$UpdateStudentSQL = "UPDATE `".$GLOBALS['config_db']['mysql_db']."`.`users` SET `out` = 's',
 `sname` = '".$JSONStudentsData[$i][($CONNECTIONS["sname"])]."',
 `fname` = '".$JSONStudentsData[$i][($CONNECTIONS["fname"])]."',
 `pname` = '".$JSONStudentsData[$i][($CONNECTIONS["pname"])]."',
 `fullname` = '".$fullName." (".$depName.")',
 `sex` = '".$JSONStudentsData[$i][($CONNECTIONS["sex"])]."',
 `birthday` = ".$JSONStudentsData[$i][($CONNECTIONS["birthday"])].",
-`gen` = '".$JSONStudentsData[$i][($CONNECTIONS["edu_standard"])]."',
 `form` = '".$JSONStudentsData[$i][($CONNECTIONS["edu_type"])]."',
 `fac` = '".$depID."',
 `dep` =  '".$groupID."',
@@ -2598,7 +2577,7 @@ elseif($_GET['act'] == "studentsupload_confirm") {
 		$allStudents = mysql_query("SELECT `id`,`sin`,`fullname` from `users` WHERE `type`='a' AND `out`='s';");
 		while($OutStudent = mysql_fetch_array($allStudents)) {
 			if(array_search($OutStudent[1], $IDList) === false) {
-				$DestroyStudentSQL = "UPDATE `".$GLOBALS['config']['mysql_db']."`.`users` SET `out`='o' WHERE `users`.`sin` ='".$OutStudent[1]."';";
+				$DestroyStudentSQL = "UPDATE `".$GLOBALS['config_db']['mysql_db']."`.`users` SET `out`='o' WHERE `users`.`sin` ='".$OutStudent[1]."';";
 				if(!mysql_query($DestroyStudentSQL)) { errorjson("Не удалось перевести студента в Архив студентов. Ошибка базы данных."); }
 			}
 		}

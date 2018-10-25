@@ -126,10 +126,10 @@ else if($_POST['act'] == "addlist" or $_POST['act'] == "editlist") {
 	}
 
 	if($_POST['act'] == "addlist") {
-		$addlistreq = "INSERT INTO `".$GLOBALS['config']['mysql_db']."`.`lists` (`id`, `name`, `rights`, `public`, `icon`, `content`, `holder`) VALUES (NULL, '".htmlentities($_POST['name'], ENT_QUOTES, "UTF-8")."', '".$list_rights."', 'n', '".$list_icon."', '[]', '".LOGGED_ID."');";
+		$addlistreq = "INSERT INTO `".$GLOBALS['config_db']['mysql_db']."`.`lists` (`id`, `name`, `rights`, `public`, `icon`, `content`, `holder`) VALUES (NULL, '".htmlentities($_POST['name'], ENT_QUOTES, "UTF-8")."', '".$list_rights."', 'n', '".$list_icon."', '[]', '".LOGGED_ID."');";
 	} else {
 		if($_POST['newicon'] == "n") { $list_icon = $checklist[2]; }
-		$addlistreq = "UPDATE `".$GLOBALS['config']['mysql_db']."`.`lists` SET `name` = '".htmlentities($_POST['name'], ENT_QUOTES, "UTF-8")."', `rights` = '".$list_rights."', `icon` = '".$list_icon."' WHERE `lists`.`id` = '".$_POST['lid']."';";
+		$addlistreq = "UPDATE `".$GLOBALS['config_db']['mysql_db']."`.`lists` SET `name` = '".htmlentities($_POST['name'], ENT_QUOTES, "UTF-8")."', `rights` = '".$list_rights."', `icon` = '".$list_icon."' WHERE `lists`.`id` = '".$_POST['lid']."';";
 		$uploadfile = "content/svg/".$list_icon;
 	}
 
@@ -155,7 +155,7 @@ else if($_POST['act'] == "listpublicicon") {
 		);
 		exit(json_encode($sendlist));
 	}
-	$listpubliciconreq = "UPDATE `".$GLOBALS['config']['mysql_db']."`.`lists` SET `public` = '".$_POST['public']."' WHERE `lists`.`id` = '".$_POST['lid']."';";
+	$listpubliciconreq = "UPDATE `".$GLOBALS['config_db']['mysql_db']."`.`lists` SET `public` = '".$_POST['public']."' WHERE `lists`.`id` = '".$_POST['lid']."';";
 	if(!mysql_query($listpubliciconreq)) { errorjson("Ошибка базы данных. Повторите попытку позже."); }
 	$sendlist = array(
 		"error" => "ok",
@@ -254,11 +254,11 @@ else if($_POST['act'] == "dellist") {
 		unset($ownlist[$pos]);
 		$newownlist = array_values($ownlist);
 		$newownlist = json_encode($newownlist);
-		$newownlistreq = "UPDATE `".$GLOBALS['config']['mysql_db']."`.`users` SET `groups` = '".$newownlist."' WHERE `users`.`id` = '".$list_members[$i][0]."';";
+		$newownlistreq = "UPDATE `".$GLOBALS['config_db']['mysql_db']."`.`users` SET `groups` = '".$newownlist."' WHERE `users`.`id` = '".$list_members[$i][0]."';";
 		if(!mysql_query($newownlistreq)) { errorjson("Ошибка базы данных. Повторите попытку позже."); }
 	}
 
-	$dellistreq = "DELETE FROM `".$GLOBALS['config']['mysql_db']."`.`lists` WHERE `lists`.`id` = ".$_POST['lid'].";";
+	$dellistreq = "DELETE FROM `".$GLOBALS['config_db']['mysql_db']."`.`lists` WHERE `lists`.`id` = ".$_POST['lid'].";";
 	if(!mysql_query($dellistreq)) { errorjson("Ошибка базы данных. Повторите попытку позже."); }
 
 	$uploadfile = "content/svg/".$list[4];
@@ -415,13 +415,13 @@ else if($_POST['act'] == "getlist") {
 	array_unshift($membersjson, array(''.$_POST['hid'].'',''));
 	$injson = addslashes(json_encode($membersjson));
 
-	$addinlistreq = "UPDATE `".$GLOBALS['config']['mysql_db']."`.`lists` SET `content` = '".$injson."' WHERE `lists`.`id` = '".$_POST['lid']."';";
+	$addinlistreq = "UPDATE `".$GLOBALS['config_db']['mysql_db']."`.`lists` SET `content` = '".$injson."' WHERE `lists`.`id` = '".$_POST['lid']."';";
 	if(!mysql_query($addinlistreq)) { errorjson("Ошибка базы данных. Повторите попытку позже."); }
 
 	$ownlist = json_decode($getuser[7]);
 	$ownlist[] = $_POST['lid'];
 	$newownlist = json_encode($ownlist);
-	$newownlistreq = "UPDATE `".$GLOBALS['config']['mysql_db']."`.`users` SET `groups` = '".$newownlist."' WHERE `users`.`id` = '".$_POST['hid']."';";
+	$newownlistreq = "UPDATE `".$GLOBALS['config_db']['mysql_db']."`.`users` SET `groups` = '".$newownlist."' WHERE `users`.`id` = '".$_POST['hid']."';";
 	if(!mysql_query($newownlistreq)) { errorjson("Ошибка базы данных. Повторите попытку позже."); }
 
 	$newpname = "";
@@ -471,7 +471,7 @@ else if($_POST['act'] == "getlist") {
 		$neworder[] = array(''.$getneworder[$i].'',$getoldorder[(array_search($getneworder[$i], $oldorder))][1]);
 	}
 	$injson = addslashes(json_encode($neworder));
-	$sortlistreq = "UPDATE `".$GLOBALS['config']['mysql_db']."`.`lists` SET `content` = '".$injson."' WHERE `lists`.`id` = '".$_POST['lid']."';";
+	$sortlistreq = "UPDATE `".$GLOBALS['config_db']['mysql_db']."`.`lists` SET `content` = '".$injson."' WHERE `lists`.`id` = '".$_POST['lid']."';";
 	if(!mysql_query($sortlistreq)) { errorjson("Ошибка базы данных. Повторите попытку позже."); }
 	errorjson("ok");
 } else if($_POST['act'] == "delfromlist") {
@@ -496,7 +496,7 @@ else if($_POST['act'] == "getlist") {
 	unset($list_members[$pos]);
 	$neworder = array_values($list_members);
 	$injson = addslashes(json_encode($neworder));
-	$sortlistreq = "UPDATE `".$GLOBALS['config']['mysql_db']."`.`lists` SET `content` = '".$injson."' WHERE `lists`.`id` = '".$_POST['lid']."';";
+	$sortlistreq = "UPDATE `".$GLOBALS['config_db']['mysql_db']."`.`lists` SET `content` = '".$injson."' WHERE `lists`.`id` = '".$_POST['lid']."';";
 	if(!mysql_query($sortlistreq)) { errorjson("Ошибка базы данных. Повторите попытку позже."); }
 
 	$pregetown = mysql_query("SELECT `id`,`groups` from `users` WHERE `id`='".$_POST['hid']."' LIMIT 1;");
@@ -507,7 +507,7 @@ else if($_POST['act'] == "getlist") {
 	unset($ownlist[$pos]);
 	$newownlist = array_values($ownlist);
 	$newownlist = json_encode($newownlist);
-	$newownlistreq = "UPDATE `".$GLOBALS['config']['mysql_db']."`.`users` SET `groups` = '".$newownlist."' WHERE `users`.`id` = '".$_POST['hid']."';";
+	$newownlistreq = "UPDATE `".$GLOBALS['config_db']['mysql_db']."`.`users` SET `groups` = '".$newownlist."' WHERE `users`.`id` = '".$_POST['hid']."';";
 	if(!mysql_query($newownlistreq)) { errorjson("Ошибка базы данных. Повторите попытку позже."); }
 
 	errorjson("ok");
@@ -535,7 +535,7 @@ else if($_POST['act'] == "getlist") {
 	if($pos === false) { errorjson("Изменения не внесены. Студент в списке не найден."); }
 	$list_members[$pos][1] = htmlentities(stripslashes($setcontent), ENT_QUOTES, 'UTF-8');
 	$injson = addslashes(json_encode($list_members));
-	$sortlistreq = "UPDATE `".$GLOBALS['config']['mysql_db']."`.`lists` SET `content` = '".$injson."' WHERE `lists`.`id` = '".$_POST['lid']."';";
+	$sortlistreq = "UPDATE `".$GLOBALS['config_db']['mysql_db']."`.`lists` SET `content` = '".$injson."' WHERE `lists`.`id` = '".$_POST['lid']."';";
 	if(!mysql_query($sortlistreq)) { errorjson("Ошибка базы данных. Повторите попытку позже."); }
 
 	errorjson("ok");
@@ -543,7 +543,7 @@ else if($_POST['act'] == "getlist") {
 // Отвязка аккаунта ВКонтакте
 else if($_POST['act']  == "vkunlink") {
 	accessto("a,t,k,s");
-	$vkauthreq = "UPDATE `".$GLOBALS['config']['mysql_db']."`.`users` SET `vkauth` = NULL,
+	$vkauthreq = "UPDATE `".$GLOBALS['config_db']['mysql_db']."`.`users` SET `vkauth` = NULL,
 	`vktoken` = NULL WHERE `users`.`id` =".LOGGED_ID.";"; // удаление ключа
 	if(!mysql_query($vkauthreq)) { errorjson("Ошибка базы данных. Повторите попытку позже."); }
 	errorjson("ok");
