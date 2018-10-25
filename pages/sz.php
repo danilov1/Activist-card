@@ -12,7 +12,7 @@ render_doctype();
 	<?php render_meta("Печать с/з","sz"); ?>
 	<!-- jquery color  --> <script src="js/jquery-color.js"></script>
 	<!-- inline editor --> <script type="text/javascript" src="js/tinymce/tinymce.min.js"></script>
-	
+
 	<style>
 	.greybox div.span12 { overflow:hidden; position:relative; margin-top:10px; }
 	.greybox .row-fluid { margin-top:10px; }
@@ -49,7 +49,7 @@ render_doctype();
 		$(".loadlogo, .fillblack, .blocksample, .form_savebtns span, .btn_savecur, .btn_deltemp").hide();
 		$(".form_tempselector select [value='']").prop("selected", true);
 		$("#newtemp_name").keypress(function(e) { if(e.keyCode == 13) { if($("#newtemp_name").val() !== "") { createTemp(); } } });
-		
+
 		$(".temp2").html("<p><strong>служебная записка</strong><br></p>");
 		$(".temp3").html("<p>"+dd+"."+mm+"."+yy+"<br></p>");
 		tinymce.init({
@@ -71,7 +71,7 @@ function renderSPECIALSZ($SpecHEADER, $SpecSIGN) {
 	$(".temp2").html(HTML.decode("<p><b>служебная записка.</b></p>"));
 	$(".temp3").html("<p>"+dd+"."+mm+"."+yy+"<br></p>");
 	$(".temp4").html(HTML.decode("<?php echo $SpecSIGN; ?>"));
-	$(".temp5").html(HTML.decode("<p>Прошу вас освободить от учебных занятий следующих студентов, принимающих участие в мероприятии &quot;<?php echo $SpecNAME; ?>&quot;<?php echo $SpecDATE; ?>, с выставлением высшего балла по БРС:</p>"));
+	$(".temp5").html(HTML.decode("<p>Прошу вас освободить от учебных занятий следующих студентов, принимающих участие в мероприятии &quot;<?php echo $SpecNAME; ?>&quot;<?php echo $SpecDATE; ?>:</p>"));
 	list_addfromevent(1);
 	$(".form_savebtns span, .btn_savecur, .btn_deltemp").show();
 	$(".form_ready").slideDown(300);
@@ -90,7 +90,7 @@ if(isset($_GET['l']) and BYEVENT == "YES") {
 }
 ?>
 	});
-	
+
 	<?php
 	echo "var pre_header = '<p>Ректору ФГБОУ ВПО \"Пятигорский государственный лингвистический университет\"<br>Горбунову А.П.<br>председателя Совета студентов и аспирантов ПГЛУ<br>Ревазовой А.А.</p>';";
 	?>
@@ -151,7 +151,7 @@ if(isset($_GET['l']) and BYEVENT == "YES") {
 								<div class="span4 userline"><div><span><?php echo LOGGED_FIRSTNAME.' '.LOGGED_SURNAME; ?></span> | <a class="logout" href="#">Выход</a></div></div>
 							</div>
 						</div>
-						
+
 						<div class="greybox form_tempselector"><div class="event_info_inner span12" style="margin-top:0 !important;">
 							<div class="row-fluid">
 								<select onchange="fillByTemp();" style="width:100%;">
@@ -183,7 +183,7 @@ if(isset($_GET['l']) and BYEVENT == "YES") {
 							</div>
 							<!--<div class="editicon"><a href="#" onclick="$('.form_ready').slideUp(); $('.form_edit').slideDown(); return false;"><i class="icon-edit icon-white"></i> изменить</a></div>-->
 						</div></div>
-						
+
 						<div class="blocksample">
 							<div class="greybox block_students" style="display:none;"><div class="event_info_inner span12">
 								<!--<a class="btn btn-mini closemw" href="" style="right:45px;"><i class="icon-list"></i></a>--><a class="btn btn-mini closemw btn_dellist" href=""><i class="icon-remove"></i></a>
@@ -209,12 +209,12 @@ if(isset($_GET['l']) and BYEVENT == "YES") {
 								</table>
 							</div></div>
 						</div>
-						
+
 						<div class="list_blocks">
 						</div>
-						
+
 						<div class="row-fluid form_line"><hr style="border:1px solid #eee;" /></div>
-						
+
 						<div class="row-fluid form_print">
 							<div align="right">
 								<a href="" class="btn" onclick="printSZ('y'); return false;"><i class="icon-search"></i> Предварительный просмотр</a>

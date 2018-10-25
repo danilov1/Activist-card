@@ -244,9 +244,9 @@ function timecheck($tc_time) {
 
 function activityPoints($up_event, $up_role, $up_complex) {
 	// Роли
-	$roles = $GLOBALS['config']['rating_roles'];
+	$roles = json_decode($GLOBALS['config']['rating_roles'], true);
 	// Уровни
-	$levels = $GLOBALS['config']['rating_levels'];
+	$levels = json_decode($GLOBALS['config']['rating_levels'], true);
 	// Коеффициент за "тяжелое" мероприятие
 	$complex = $GLOBALS['config']['rating_complex']; // от всего
 	// Коеффициент за "мускул"
