@@ -40,7 +40,7 @@ render_doctype();
 		.greybox .btn_downloadlist { top:0; right:35px; }
 	}
 	@media (max-width: 480px) {
-		.c3,.c4,.c5 { display:none; }
+		.c3,.c5 { display:none; }
 	}
 	@media print { @page { size:auto; } body { display:none; } }
 	</style>
@@ -91,9 +91,6 @@ if(isset($_GET['l']) and BYEVENT == "YES") {
 ?>
 	});
 
-	<?php
-	echo "var pre_header = '<p>Ректору ФГБОУ ВПО \"Пятигорский государственный лингвистический университет\"<br>Горбунову А.П.<br>председателя Совета студентов и аспирантов ПГЛУ<br>Ревазовой А.А.</p>';";
-	?>
 	var today = new Date();
 	var dd = today.getDate();
 	var mm = ("0" + (today.getMonth() + 1)).slice(-2);
@@ -198,10 +195,9 @@ if(isset($_GET['l']) and BYEVENT == "YES") {
 											<td width="5%" class="c1 center"><b>№</b></td>
 											<td class='c2'><a class="sort2" href=""><b>ФИО</b></a></td>
 											<td width="5%" class='c3'><a href="" class="sort3"><b>Курс</b></a></td>
-											<td width="15%" class='c4'><a href="" class="sort4"><b>Институт/ВШ</b></a></td>
-											<td width="5%" class='c5'><a href="" class="sort5"><b>Обр.код</b></a></td>
-											<td width="20%" class='c6'><a href="" class="sort6"><b>Группа</b></a></td>
-											<td width="3%" class='c7'><b></b></td>
+											<td width="15%" class='c4'><a href="" class="sort4"><b>Факультет</b></a></td>
+											<td width="20%" class='c5'><a href="" class="sort5"><b>Группа</b></a></td>
+											<td width="3%" class='c6'><b></b></td>
 										</tr>
 									</thead>
 									<tbody>

@@ -7,13 +7,13 @@ $(document).ready(function () {
     $(".closemw").click(function(e) { $('.searchinput').focus(); });
     $("#add_phone").mask("(999)999-99-99");
     var setFocusSearcher = setInterval(function() { var elem = $(".searchinput"); if(elem.is(":focus")) { clearTimeout(setFocusSearcher); } else { elem.focus(); } }, 500);
-    page(1);
+    page_staff(1);
   });
-  
+
   var globaluid, global_type, global_surname, global_firstname, global_patronumic, global_sex, global_phone, global_dep, global_depid, global_post, global_created, curpage;
   var cursearch = "";
-  
-  function page(setcurpage, hideload) {
+
+  function page_staff(setcurpage, hideload) {
     curpage = setcurpage - 1;
     $.ajax({
       data: {
@@ -41,15 +41,7 @@ $(document).ready(function () {
           $('.userstable').append(tr);
           tr.click(function() { user($(this).attr("id").substr(2)); });
         }
-        var countpages;
-        $(".pager").html("");
-        for(var ai=0; ai < Math.ceil(data.allrows/data.maxrows); ai++) {
-          apager = $('<a/>');
-          if(ai == curpage) { apager.addClass("active"); }
-          apager.attr("href","javascript:page("+(ai+1)+")");
-          apager.append(""+(ai+1)+"");
-          $(".pager").append(apager);
-        }
+        pager("staff",curpage,5,data.maxrows,data.allrows,$(".pager"));
       } else if(data.error == "notfound") {
         $('.pager').html('');
         $('.textalert').show();
@@ -78,14 +70,14 @@ $(document).ready(function () {
         global_depid = data.department_id;
         global_post = data.post;
         global_created = data.added;
-        
+
         var accesstype;
         if(data.type == "s") { accesstype = "администратор"; }
         else if(data.type == "k") { accesstype = "специалист"; }
         else if(data.type == "t") { accesstype = "преподаватель"; }
         var infobox = $(".box_user_info");
         infobox.html("<b>ФИО:</b> "+data.surname+" "+data.firstname+" "+data.patronymic+"<br /><b>Тип доступа:</b> "+accesstype+"<br /><b>Номер телефона:</b> +7"+data.phone+"<br /><b>Подразделение:</b> "+data.department_name+"<br /><b>Должность:</b> "+data.post+"");
-        
+
         if(data.events) {
           var tablehead = '<tr class="table_head"><td width="12%"><b>Дата</b></td><td><b>Наименование мероприятия</b></td><td width="17%"><b>Уровень</b></td><td class="center" width="17%"><i class="icon-user icon-white"></i></td></tr>';
           $('.owntable').append(tablehead);
@@ -95,15 +87,15 @@ $(document).ready(function () {
             var dates = "";
             if(getdata[i].e_date_for !== null) { dates = "c &nbsp;" + getdata[i].e_date_since + "<br />по "+getdata[i].e_date_for; }
             else { dates = getdata[i].e_date_since; }
-            
-            var elevel;         
+
+            var elevel;
             if(getdata[i].e_level == "f") { elevel = "факультет"; }
             else if(getdata[i].e_level == "u") { elevel = "университет"; }
             else if(getdata[i].e_level == "c") { elevel = "город"; }
             else if(getdata[i].e_level == "r") { elevel = "регион"; }
             else if(getdata[i].e_level == "v") { elevel = "страна"; }
             else if(getdata[i].e_level == "i") { elevel = "международный"; }
-            
+
             tr = $('<tr/>');
             tr.attr("eid", ""+getdata[i].e_id+"");
             tr.append("<td class=\"blowit center\">" + dates + "</td>");
@@ -115,7 +107,7 @@ $(document).ready(function () {
         } else {
           $(".box_user_add").append("<p class=\"center\"><b>Мероприятий нет</b></p>");
         }
-        
+
         var incontent = $(".box_user").html();
         $.fancybox({ 'width' : 500, 'content' : incontent });
         clearLoading();
@@ -129,21 +121,21 @@ $(document).ready(function () {
           'height' : 250,
           'content' : m_error('Пользователь не найден!')
         });
-        
+
       } else {
         clearLoading();
         $.fancybox({ 'content' : data.error });
       }
     });
   }
-  
+
   function finduser() {
     ui = $(".searchinput").val();
     if((ui == "") || (ui == " ")) { cursearch = ""; }
     else { cursearch = ui; }
     page(1);
   }
-  
+
   function reguser() {
     if(($("#add_type option:selected").val() == "") || ($("#add_surname").val() == "") || ($("#add_firstname").val() == "") || ($("#add_patronymic").val() == "") || ($("#add_sex option:selected").val() == "") || ($("#add_phone").val() == "") || ($("#add_dep option:selected").val() == "") || ($("#add_post").val() == "")) {
       $.fancybox({ 'content' : 'Заполните все поля' });
@@ -182,7 +174,7 @@ $(document).ready(function () {
       });
     }
   }
-  
+
   function addwindow() {
     $("#savebtn").hide();
     $("#regbtn").show();
@@ -193,7 +185,7 @@ $(document).ready(function () {
     $(".fillblack, .addwindow").fadeIn(400);
     $("#add_type").focus();
   }
-  
+
   function editwindow() {
     $("#savebtn").show();
     $("#regbtn").hide();
@@ -247,7 +239,7 @@ $(document).ready(function () {
       });
     }
   }
-  
+
   function returnaccess() {
 	  render_massage("Восстановление доступа","<div class='render_massage'>При восстановлении доступа будет сгенерирован новый пароль</div><div class='render_massage_buttons'><a class='btn1' href='' onclick='returnaccessYES(); $.fancybox.close(); return false;' style='background:#f36b69;'>Восстановить по SMS</a> <a class='btn1' href='' onclick='returnaccessYES(1); $.fancybox.close(); return false;' style='background:#f36b69;'>Отобразить новый пароль</a> <a class='btn1' href='' onclick='$.fancybox.close(); return false;'>Отмена</a></div>");
   }
@@ -290,7 +282,7 @@ $(document).ready(function () {
 	  }
     });
   }
-  
+
   function deluser() {
     if(confirm("Вы уверены, что хотите удалить этого пользователя. Если да, нажмите \"OK\".")) {
       $.ajax({

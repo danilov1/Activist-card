@@ -8,7 +8,7 @@
 
 	<script type="text/javascript">
 	var curdate = "<?php echo date("d.m.Y"); ?>";
-	var globalsid, global_surname, global_firstname, global_patronumic, global_sex, global_birthday, global_phone, global_gen, global_facid, global_groupid, global_course, global_groupnum, global_level, global_budget, global_created, curpage;
+	var global_access, globalsid, global_sinid, global_surname, global_firstname, global_patronumic, global_sex, global_birthday, global_phone, global_facid, global_groupid, global_course, global_groupnum, global_level, global_budget, global_created, curpage;
 	var cursearch = "";
 	var cursearchdep = "";
 	var cursearchcourse = "";
@@ -31,6 +31,12 @@
 	<a class="closemw" href="javascript:closemw('addwindow'); if($('#savebtn').is(':visible')) { student(globalsid); }"><i class="icon-remove"></i></a>
 	<h1>Регистрация студента</h1>
 	<div class="row-fluid form-horizontal" style="width:500px;">
+		<div class="control-group">
+			<label class="control-label">ID:</label>
+			<div class="controls">
+				<input id="add_id" class="span12" type="text" />
+			</div>
+		</div>
 		<div class="control-group">
 			<label class="control-label">Фамилия:</label>
 			<div class="controls">

@@ -676,7 +676,7 @@ elseif(($_GET['act'] == "adduser") or ($_GET['act'] == "edituser")) {
 	// При попытке редактирования проверить id пользователя
 	if($_GET['act'] == "edituser") {
 		if(!$_GET['id']) { wrongusing(1); }
-		$precheckuid = mysql_query("SELECT `id`,`phone`,`code` from `users` WHERE `id`='".$_GET['id']."' LIMIT 1");
+		$precheckuid = mysql_query("SELECT `id`,`phone`,`code`,`sin`,`sname`,`fname`,`pname` from `users` WHERE `id`='".$_GET['id']."' LIMIT 1");
 		$checkuid = mysql_fetch_row($precheckuid);
 		if(!$checkuid[1]) { errorjson("Пользователь не найден"); }
 		// Последний администратор
@@ -709,7 +709,11 @@ elseif(($_GET['act'] == "adduser") or ($_GET['act'] == "edituser")) {
 	$depname = "";
 	// Если студент
 	if($_GET['type'] == "a") {
-		if((!$_GET['course']) or (!$_GET['level']) or (!$_GET['budget']) or (!$_GET['groupnum'])) { wrongusing(); }
+		if((!$_GET['sin']) or (!$_GET['course']) or (!$_GET['level']) or (!$_GET['budget']) or (!$_GET['groupnum'])) { wrongusing(); }
+		// Проверка прав на редактирование ID и ФИО
+		if(LOGGED_ACCESS !== "s" and ($checkuid[4] !== $_GET['surname']) or ($checkuid[5] !== $_GET['firstname']) or ($checkuid[6] !== $_GET['patronymic'])) { errorjson("Редактирвать ID и ФИО студента может только пользователь с правами администратора"); }
+		// Проверка длины ID
+		if(mb_strlen($_GET['sin'], "UTF-8") < 1 or mb_strlen($_GET['sin'], "UTF-8") > 15) { errorjson("Длина ID должна быть от 1 до 15 символов"); }
 		// Проверка даты рождения
 		if(isset($_GET['birthday']) and $_GET['birthday'] !== "00.00.0000") {
 			$userbd = "'".datecheck($_GET['birthday'], "Дата рождения введена неверно")."'";
@@ -725,7 +729,6 @@ elseif(($_GET['act'] == "adduser") or ($_GET['act'] == "edituser")) {
 
 		if(($_GET['budget'] !== "y") and ($_GET['budget'] !== "n")) { wrongusing(); }
 		// Проверка номера группы
-		if(!is_numeric($_GET['groupnum'])) { errorjson("Номер группы может состоять только из цифр"); }
 		if($_GET['act'] == "adduser") {
 			if(!$_GET['barcode']) { wrongusing(); }
 			else {
@@ -736,7 +739,13 @@ elseif(($_GET['act'] == "adduser") or ($_GET['act'] == "edituser")) {
 				$checkcode = mysql_fetch_row($precheckcode);
 				if($checkcode[1]) { errorjson("Студент с таким кодом уже существует"); }
 			}
-		} else { $curcode = "'".$checkuid[1]."'";; }
+		} else {
+			// Проверка повтора id
+			$checkid = mysql_query("SELECT `id`,`sin` from `users` WHERE `sin`='".$_GET['sin']."' AND `id`!='".$_GET['id']."' LIMIT 1;");
+			$checkid = mysql_fetch_row($checkid);
+			if($checkid[0]) { errorjson("Студент с таким id уже зарегистрирован"); }
+			$curcode = "'".$checkuid[1]."'";
+		}
 		// Добавление недостающих данных
 		$inputpost = "NULL";
 		$groupnum = "'".$_GET['groupnum']."'";
@@ -746,7 +755,7 @@ elseif(($_GET['act'] == "adduser") or ($_GET['act'] == "edituser")) {
 		$budget = "'".$_GET['budget']."'";
 		$setfac = "'".$checkdep[2]."'";
 	}
-	// Если сотрудник университета или системы
+	// Если сотрудник
 	elseif(($_GET['type'] == "t") or ($_GET['type'] == "k") or ($_GET['type'] == "s")) {
 		if(!$_GET['post']) { wrongusing(7); }
 		$precheckdep = mysql_query("SELECT `id`,`type` from `deps` WHERE `id`='".$_GET['depid']."' AND `type`='d' LIMIT 1");
@@ -773,7 +782,8 @@ elseif(($_GET['act'] == "adduser") or ($_GET['act'] == "edituser")) {
 		$addusereq = "INSERT INTO `".$GLOBALS['config_db']['mysql_db']."`.`users` (`id`, `access`, `phone`, `password`, `type`, `out`, `sin`, `code`, `fullname`, `sname`, `fname`, `pname`, `sex`, `birthday`, `post`, `fac`, `dep`, `form`, `curcourse`, `groupnum`, `budget`, `created`, `addedby`, `count`, `groups`) VALUES (NULL, 'y', '".$_GET['phone']."', '".$newpwgen."', '".$_GET['type']."', 's', '".$_GET['phone']."', ".$curcode.", '".$u_name1." ".$u_name2." ".$u_name3."".$depname."', '".$u_name1."', '".$u_name2."', '".$u_name3."', '".$_GET['sex']."', ".$userbd.", ".$inputpost.", ".$setfac.", '".$checkdep[0]."', ".$setform.", ".$setcourse.", ".$groupnum.", ".$budget.", '".date("Y-m-d")." ".date("H:i:s")."', '".LOGGED_ID."', '0','[]');";
 	} elseif($_GET['act'] == "edituser") {
 		if($_GET['type'] == "a") {
-			$addusereq = "UPDATE  `".$GLOBALS['config_db']['mysql_db']."`.`users` SET  `phone` =  '".$_GET['phone']."',
+			$addusereq = "UPDATE  `".$GLOBALS['config_db']['mysql_db']."`.`users` SET `sin` = '".$_GET['sin']."',
+`phone` =  '".$_GET['phone']."',
 `fullname` = '".$u_name1." ".$u_name2." ".$u_name3."".$depname."',
 `sname` =  '".$u_name1."',
 `fname` =  '".$u_name2."',
@@ -835,7 +845,7 @@ elseif($_GET['act'] == "changebook") {
 elseif($_GET['act'] == "deluser") {
 	accessto("s");
 	if(!$_GET['id']) { wrongusing(); }
-	$precheckuid = mysql_query("SELECT `id`,`phone` from `users` WHERE `id`='".$_GET['id']."' LIMIT 1");
+	$precheckuid = mysql_query("SELECT `id`,`phone` from `users` WHERE `id`='".$_GET['id']."' AND `type`!='a' LIMIT 1");
 	$checkuid = mysql_fetch_row($precheckuid);
 	if(!$checkuid[1]) { errorjson("Пользователь не найден"); }
 	if(LOGGED_ID == $_GET['id']) { errorjson("Вы не можете удалить сами себя."); }
@@ -1335,6 +1345,7 @@ elseif($_GET['act'] == "getactive") {
 	}
 
 	$readyinfo = array(
+		"access" => 1,
 		"id" => $getstudent[0],
 		"out" => $getstudent[17],
 		"sinid" => $getstudent[15],
@@ -1362,6 +1373,7 @@ elseif($_GET['act'] == "getactive") {
 	if(LOGGED_ACCESS == "t" or LOGGED_ACCESS == "a") { unset($readyinfo["phone"]); unset($readyinfo["birthday"]); unset($readyinfo["code"]); }
 	if(LOGGED_ACCESS == "a") { unset($readyinfo["sinid"]); unset($readyinfo["group"]); unset($readyinfo["group_id"]); unset($readyinfo["groupnum"]); unset($readyinfo["budget"]); }
 	if(LOGGED_ACCESS !== "s") {
+		$readyinfo["access"] = 0;
 		unset($readyinfo["added"]);
 		unset($readyinfo["added_date"]);
 	}
@@ -1673,7 +1685,7 @@ elseif($_GET['act'] == "getinvolvedsz") {
 
 	$rolesql = "";
 	for($i = 0; $i < count($rolelist); $i++) {
-		if(!array_key_exists($rolelist[$i], $roles)) { errorjson("Неверно задана роль"); }
+		if(!array_key_exists($rolelist[$i], $roles)) { errorjson("Неверно задана роль1"); }
 		$rolesql .= "`role` = '".$rolelist[$i]."'";
 		if($i !== (count($rolelist)-1)) { $rolesql .= " OR "; }
 	}
@@ -1697,14 +1709,12 @@ elseif($_GET['act'] == "getinvolvedsz") {
 		if($edul == "b") { $edul = "2"; }
 		if($edul == "m") { $edul = "3"; }
 		if($edul == "s") { $edul = "4"; }
-		$educode = $getuser[7].".".$edul.".1"; // .1 - очная форма
 
 		$newinlist = array(
 			"a_id" => $getuser[0],
 			"a_sname" => $getuser[1],
 			"a_fname" => $getuser[2],
 			"a_pname" => $getuser[3],
-			"a_educode" => $educode,
 			"a_course" => $educ,
 			"a_dep" => $getfac[1],
 			"a_group" => $getdep[2],
@@ -1996,6 +2006,7 @@ elseif($_GET['act'] == "setratingparams") {
 	settype($_GET['rating_muscle'], "float");
 	settype($_GET['rating_oneday'], "float");
 
+	$rating_roles['b'] = 0; // без роли
 	$rating_roles['u'] = $_GET['rating_roles_u'];
 	$rating_roles['p'] = $_GET['rating_roles_p'];
 	$rating_roles['w'] = $_GET['rating_roles_w'];
@@ -2117,7 +2128,6 @@ elseif($_GET['act'] == "getdeps_fac" or $_GET['act'] == "getdeps_groups" or $_GE
 	} else {
 		if((!$_GET['id']) or !is_numeric($_GET['id'])) { wrongusing(); }
 		$pregetdeps = mysql_query("SELECT `id`,`type`,`name`,`full`,`area` from `deps` WHERE `area` = '".$_GET['id']."' AND `type`='g';");
-		if(mysql_num_rows($pregetdeps) == 0) { errorjson("Для данного подразделения группы не зарегистрированы."); }
 	}
 	$faclist = array();
 	while($getdeps = mysql_fetch_array($pregetdeps)) {
@@ -2179,6 +2189,27 @@ elseif($_GET['act'] == "deps_org_add") {
 	errorjson("ok");
 }
 
+elseif($_GET['act'] == "deps_fac_add" or $_GET['act'] == "deps_groups_add") {
+	accessto("s");
+	if(!$_GET['short'] or !$_GET['full']) { wrongusing(); }
+	$type = "i";
+	$ifgroup = "";
+	$ifgroupDB = "NULL";
+	if($_GET['act'] == "deps_groups_add") {
+		if(!$_GET['facid']) { wrongusing(); }
+		$type = "g";
+		$ifgroup = " AND `area` = '".$_GET['facid']."'";
+		$ifgroupDB = "'".$_GET['facid']."'";
+	}
+	$checkdep = mysql_query("SELECT `id`,`name`,`type`,`area` from `deps` WHERE `type`='".$type."' AND `name` = '".htmlentities($_GET['short'], ENT_QUOTES, "UTF-8")."'".$ifgroup." LIMIT 1;");
+	$checkdep = mysql_fetch_row($checkdep);
+	if($checkdep[0]) { errorjson("Указанное сокращение уже добавлено."); }
+	$addreq = "INSERT INTO `".$GLOBALS['config_db']['mysql_db']."`.`deps` (`id`, `type`, `area`, `name`, `full`)
+	 VALUES (NULL, '".$type."', $ifgroupDB, '".htmlentities($_GET['short'], ENT_QUOTES, "UTF-8")."', '".htmlentities($_GET['full'], ENT_QUOTES, "UTF-8")."');";
+	if(!mysql_query($addreq)) { errorjson("Ошибка базы данных. Повторите попытку позже."); }
+	errorjson("ok");
+}
+
 // Удаление подразделения, организующего мероприятия
 elseif($_GET['act'] == "deldep_org") {
 	accessto("s");
@@ -2205,6 +2236,31 @@ elseif($_GET['act'] == "deldep_org") {
 	$GLOBALS['config']['organizations_order'] = json_encode($GLOBALS['config']['organizations_order']);
 	config_save();
 
+	errorjson("ok");
+}
+
+// Удаление факультета или группы
+elseif($_GET['act'] == "deldep_fac" or $_GET['act'] == "deldep_group") {
+	accessto("s");
+	if(!$_GET['id'] or !is_numeric($_GET['id'])) { wrongusing(); }
+
+	$checkdep = mysql_query("SELECT `id`,`type` from `deps` WHERE `id`='".$_GET['id']."' AND (`type` = 'i' OR `type` = 'g') LIMIT 1;");
+	$checkdep = mysql_fetch_row($checkdep);
+	if(!$checkdep[0]) { errorjson("Подразделение не найдено"); }
+
+	$type = "dep";
+	if($_GET['act'] == "deldep_fac") {
+		$type = "fac";
+		$checkdep = mysql_query("SELECT `id`,`area` from `deps` WHERE `area`='".$_GET['id']."' LIMIT 1;");
+		$checkdep = mysql_fetch_row($checkdep);
+		if($checkdep[0]) { errorjson("Факультет невозможно удалить, т.к. к нему прикреплены группы."); }
+	}
+	$checkdepusers = mysql_query("SELECT `id`,`".$type."` from `users` WHERE `".$type."`='".$_GET['id']."' LIMIT 1;");
+	$checkdepusers = mysql_fetch_row($checkdepusers);
+	if($checkdepusers[0]) { errorjson("Подразделение невозможно удалить, т.к. к нему прикреплены студенты."); }
+
+	$deldepreq = "DELETE FROM `".$GLOBALS['config_db']['mysql_db']."`.`deps` WHERE `deps`.`id` = ".$_GET['id']."";
+	if(!mysql_query($deldepreq)) { errorjson("Ошибка базы данных. Повторите попытку позже."); }
 	errorjson("ok");
 }
 
@@ -2261,7 +2317,7 @@ elseif($_GET['act'] == "studentsupload_connect") {
 	$checkIDs = array();
 	$repeatedIDs = array();
 	for($i=0; $i < $dataCSVnum; $i++) {
-		if(mb_strlen($dataCSV[$i][($CONNECTIONS["id"])], "UTF-8") > 50) { errorjson("Длина идентификатора не может превышать 50 символов"); }
+		if(mb_strlen($dataCSV[$i][($CONNECTIONS["id"])], "UTF-8") > 15) { errorjson("Длина идентификатора не может превышать 15 символов"); }
 		if(array_search($dataCSV[$i][($CONNECTIONS["id"])], $checkIDs)) {
 			$repeatedIDs[] = $dataCSV[$i][($CONNECTIONS["id"])];
 		} else {
@@ -2369,9 +2425,6 @@ elseif($_GET['act'] == "studentsupload_connect") {
 			or mb_strlen($dataCSV[$i][($CONNECTIONS["group_num"])], "UTF-8") > 10
 		) {
 			errorjson("Номер группы не может быть меньше 1 и больше 10 символов");
-		}
-		if(!is_numeric(mb_substr($dataCSV[$i][($CONNECTIONS["group_num"])], 0, 1, "UTF-8"))) {
-			errorjson("Номер группы указан в нестандартном формате. Первый символ номера группы должен быть цифрой, которая в дальнейшем будет использоваться как номер курса.");
 		}
 	}
 

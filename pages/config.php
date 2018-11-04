@@ -396,15 +396,18 @@
 				var data = (JSON.parse(answer));
 				if(data.error == "ok") {
 					$(".deplist").html("");
+					if((data.fac).length == 0) { $(".textalert_depslist_fac").show(); }
+					else { $(".textalert_depslist_fac").hide(); }
 					for(var i = 0; i<(data.fac).length; i++) {
 						newfac = '\
 						<div class="pl_row" depid="'+data.fac[i].id+'">\
 							<div class="pl_row_box">\
 								<div class="row-fluid">\
-									<div class="span2 dep_type">Факультет</div>\
+									<div class="span1 dep_type">Факул.</div>\
 									<div class="span3 dep_shortname"><div class="comment" contenteditable="true" spellcheck="false">'+data.fac[i].short+'</div></div>\
 									<div class="span5 dep_fullname"><div class="comment" contenteditable="true" spellcheck="false">'+data.fac[i].full+'</div></div>\
 									<div class="span2"><a class="btn btnadd" href="" onclick="config_depslist_groups_windows('+data.fac[i].id+'); return false;">Группы &gt;</a></div>\
+									<div class="span1 funcside"><a href="" class="btn_edit" onclick="delfac('+data.fac[i].id+'); return false;"><i class="icon-remove"></i></a></div>\
 								</div>\
 							</div>\
 						</div>';
@@ -460,6 +463,7 @@
 		});
 	}
 
+	_facid = null;
 	function config_depslist_groups_windows(facid) {
 		$.ajax({
 			data: {
@@ -469,16 +473,20 @@
 			success: function(answer) {
 				var data = (JSON.parse(answer));
 				if(data.error == "ok") {
+					_facid = facid;
 					$(".grouplist_box #box_title").html($("div[depid="+facid+"] .dep_fullname .comment").html());
 					$(".grouplist").html("");
+					if((data.groups).length == 0) { $(".textalert_depslist_groups").show(); }
+					else { $(".textalert_depslist_groups").hide(); }
 					for(var i = 0; i<(data.groups).length; i++) {
 						newfac = '\
 						<div class="pl_row" depid="'+data.groups[i].id+'">\
 							<div class="pl_row_box">\
 								<div class="row-fluid">\
-									<div class="span2 dep_type">Группа</div>\
+									<div class="span1 dep_type">Группа</div>\
 									<div class="span3 dep_shortname"><div class="comment" contenteditable="true" spellcheck="false" tabindex="-1">'+HTML.decode(data.groups[i].short)+'</div></div>\
-									<div class="span5 dep_fullname"><div class="comment" contenteditable="true" spellcheck="false" tabindex="-1">'+HTML.decode(data.groups[i].full)+'</div></div>\
+									<div class="span7 dep_fullname"><div class="comment" contenteditable="true" spellcheck="false" tabindex="-1">'+HTML.decode(data.groups[i].full)+'</div></div>\
+									<div class="span1 funcside"><a href="" class="btn_edit" onclick="delgroup('+data.groups[i].id+'); return false;"><i class="icon-remove"></i></a></div>\
 								</div>\
 							</div>\
 						</div>';
@@ -619,11 +627,81 @@
 		});
 	}
 
+	function delfac(facid) {
+		render_massage("Удалить факультет и все входящие в него группы?","<div class='render_massage_buttons'><a class='btn1' href='' onclick='delfacYES("+facid+"); $.fancybox.close(); return false;' style='background:#f36b69;'>Удалить</a> <a class='btn1' href='' onclick='$.fancybox.close(); return false;'>Отмена</a></div>");
+	}
+
+	function delfacYES(facid) {
+		$.ajax({
+			data: {
+				act: "deldep_fac",
+				id: facid
+			},
+			beforeSend: function() {
+				$(".deplist .pl_row[depid='"+facid+"']").slideUp(100);
+			},
+			success: function(answer) {
+				var data = (JSON.parse(answer));
+				if(data.error == "ok") {
+					$(".deplist .pl_row[depid='"+facid+"']").slideUp(100, function() {
+						$(".deplist .pl_row[depid='"+facid+"']").remove();
+						if($(".deplist .pl_row[depid != '']").length == 0) { $('.textalert_depslist_fac').slideDown(); }
+					});
+				} else {
+					$.fancybox({ 'content' : m_error(data.error) });
+					$(".deplist .pl_row[depid='"+facid+"']").slideDown(100);
+				}
+			}
+		});
+	}
+
+	function delgroup(groupid) {
+		render_massage("Удалить группу?","<div class='render_massage_buttons'><a class='btn1' href='' onclick='delgroupYES("+groupid+"); $.fancybox.close(); return false;' style='background:#f36b69;'>Удалить</a> <a class='btn1' href='' onclick='$.fancybox.close(); return false;'>Отмена</a></div>");
+	}
+
+	function delgroupYES(groupid) {
+		$.ajax({
+			data: {
+				act: "deldep_group",
+				id: groupid
+			},
+			beforeSend: function() {
+				$(".grouplist .pl_row[depid='"+groupid+"']").slideUp(100);
+			},
+			success: function(answer) {
+				var data = (JSON.parse(answer));
+				if(data.error == "ok") {
+					$(".grouplist .pl_row[depid='"+groupid+"']").slideUp(100, function() {
+						$(".grouplist .pl_row[depid='"+groupid+"']").remove();
+						if($(".grouplist .pl_row[depid != '']").length == 0) { $('.textalert_depslist_groups').slideDown(); }
+					});
+				} else {
+					$.fancybox({ 'content' : m_error(data.error) });
+					$(".grouplist .pl_row[depid='"+groupid+"']").slideDown(100);
+				}
+			}
+		});
+	}
+
 	function config_orglist_addwindow() {
 		$("#config_orglist_shortname, #config_orglist_fullname").val("");
 		$("html, body").animate({ scrollTop: 0 });
 		$(".fillblack, .config_orglist_addwindow").fadeIn();
 		$("#config_orglist_shortname").focus();
+	}
+
+	function config_depslist_fac_addwindow() {
+		$("#config_depslist_fac_shortname, #config_depslist_fac_fullname").val("");
+		$("html, body").animate({ scrollTop: 0 });
+		$(".fillblack, .config_depslist_fac_addwindow").fadeIn();
+		$("#config_depslist_fac_shortname").focus();
+	}
+
+	function config_depslist_groups_addwindow() {
+		$("#config_depslist_groups_shortname, #config_depslist_groups_fullname").val("");
+		$("html, body").animate({ scrollTop: 0 });
+		$(".fillblack, .config_depslist_groups_addwindow").fadeIn();
+		$("#config_depslist_groups_shortname").focus();
 	}
 
 	function config_orglist_add() {
@@ -643,6 +721,57 @@
 							closemw("config_orglist_addwindow");
 						},
 						'content' : m_ok('Организация успешно зарегистрирована!')
+					});
+				} else {
+					$.fancybox({ 'content' : m_error(data.error) });
+				}
+			}
+		});
+	}
+
+	function config_depslist_fac_add() {
+		if($("#config_depslist_fac_shortname").val().trim() == "" || $("#config_depslist_fac_fullname").val().trim() == "") { return false; }
+		$.ajax({
+			data: {
+				act: "deps_fac_add",
+				short: $("#config_depslist_fac_shortname").val().trim(),
+				full: $("#config_depslist_fac_fullname").val().trim()
+			},
+			success: function(answer) {
+				var data = (JSON.parse(answer));
+				if(data.error == "ok") {
+					$.fancybox({
+						'afterClose':function () {
+							config_depslist_fac_windows();
+							closemw("config_depslist_fac_addwindow");
+						},
+						'content' : m_ok('Факультет успешно зарегистрирован!')
+					});
+				} else {
+					$.fancybox({ 'content' : m_error(data.error) });
+				}
+			}
+		});
+	}
+
+	function config_depslist_groups_add() {
+		if($("#config_depslist_groups_shortname").val().trim() == "" || $("#config_depslist_groups_fullname").val().trim() == "") { return false; }
+		$.ajax({
+			data: {
+				act: "deps_groups_add",
+				facid: _facid,
+				short: $("#config_depslist_groups_shortname").val().trim(),
+				full: $("#config_depslist_groups_fullname").val().trim()
+			},
+			success: function(answer) {
+				var data = (JSON.parse(answer));
+				if(data.error == "ok") {
+					$.fancybox({
+						'afterClose':function () {
+							config_depslist_groups_windows(_facid);
+							closemw("config_depslist_groups_addwindow");
+						},
+						'content' : m_ok('Группа успешно зарегистрирована!')
 					});
 				} else {
 					$.fancybox({ 'content' : m_error(data.error) });
@@ -1080,7 +1209,7 @@
 
 		<hr>
 
-		<b>Коеффициенты<br></b>
+		<b>Коэффициенты<br></b>
 
 		<div class="control-group">
 			<label class="control-label">"Тяжелое" мероп.:</label>
@@ -1258,6 +1387,62 @@
 		<div class="control-group">
 			<div class="controls">
 				<a class="btn1" href="" onclick="config_orglist_add(); return false;">Зарегистрировать</a>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="mw config_depslist_fac_addwindow">
+	<a class="closemw" href="javascript:closemw('config_depslist_fac_addwindow');"><i class="icon-remove"></i></a>
+	<h1>Регистрация факультета</h1>
+	<div class="row-fluid form-horizontal" style="width:500px;">
+
+		<div class="control-group">
+			<label class="control-label">Сокращенное наим.:</label>
+			<div class="controls">
+				<input id="config_depslist_fac_shortname" class="span12" type="text" placeholder="Например, ЭФ" />
+			</div>
+		</div>
+
+		<div class="control-group">
+			<label class="control-label">Полное наим.:</label>
+			<div class="controls">
+				<input id="config_depslist_fac_fullname" class="span12" type="text" placeholder="Например, Экономический факультет" />
+			</div>
+		</div>
+
+		<hr>
+
+		<div class="control-group">
+			<div class="controls">
+				<a class="btn1" href="" onclick="config_depslist_fac_add(); return false;">Зарегистрировать</a>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="mw config_depslist_groups_addwindow">
+	<a class="closemw" href="javascript:closemw('config_depslist_groups_addwindow');"><i class="icon-remove"></i></a>
+	<h1>Регистрация группы</h1>
+	<div class="row-fluid form-horizontal" style="width:500px;">
+
+		<div class="control-group">
+			<label class="control-label">Сокращенное наим.:</label>
+			<div class="controls">
+				<input id="config_depslist_groups_shortname" class="span12" type="text" placeholder="Например, МЭ" />
+			</div>
+		</div>
+
+		<div class="control-group">
+			<label class="control-label">Полное наим.:</label>
+			<div class="controls">
+				<input id="config_depslist_groups_fullname" class="span12" type="text" placeholder="Например, Мировая экономика" />
+			</div>
+		</div>
+
+		<hr>
+
+		<div class="control-group">
+			<div class="controls">
+				<a class="btn1" href="" onclick="config_depslist_groups_add(); return false;">Зарегистрировать</a>
 			</div>
 		</div>
 	</div>
@@ -1452,22 +1637,27 @@
 								<div class="deplist_box">
 									<div class="whitebox">
 										<div class="row-fluid whitebox_line">
-											<div><b>Факультеты</b></div>
+											<div class="span6"><b>Факультеты</b></div>
+											<div class="span6" style="text-align:right;"><a href="" class="btn1 btnadd" style="display:inline-block;" onclick="config_depslist_fac_addwindow(); return false;">Добавить</a></div>
 										</div>
 									</div>
 									<div class="table_head">
 										<div>
 											<div style="margin:0 10px;">
 												<div class="row-fluid" style="height:30px;">
-													<div class="span2" style="padding-top:5px;"><b>Тип</b></div>
+													<div class="span1" style="padding-top:5px;"><b>Тип</b></div>
 													<div class="span3" style="padding-top:5px;"><b>Сокращенное название</b></div>
 													<div class="span5" style="padding-top:5px;"><b>Полное название</b></div>
+													<div class="span1"></div>
 													<div class="span1"></div>
 												</div>
 											</div>
 										</div>
 									</div>
 									<div class="deplist">
+									</div>
+									<div class="lowerbox">
+										<div class="center textalert_depslist_fac">Ни одного факультета не зарегистрировано</div>
 									</div>
 									<hr>
 									<a class='btn' href='' onclick='$(".deplist_box").hide("slide", {direction: "right"}, function() { $(".depsinfo_box").show("slide", {direction: "left"}); }); return false;'>&lt; Подразделения организации</a>
@@ -1476,22 +1666,27 @@
 								<div class="grouplist_box">
 									<div class="whitebox">
 										<div class="row-fluid whitebox_line">
-											<div><b id="box_title"></b></div>
+											<div class="span6"><b id="box_title"></b></div>
+											<div class="span6" style="text-align:right;"><a href="" class="btn1 btnadd" style="display:inline-block;" onclick="config_depslist_groups_addwindow(); return false;">Добавить</a></div>
 										</div>
 									</div>
 									<div class="table_head">
 										<div>
 											<div style="margin:0 10px;">
 												<div class="row-fluid" style="height:30px;">
-													<div class="span2" style="padding-top:5px;"><b>Тип</b></div>
+													<div class="span1" style="padding-top:5px;"><b>Тип</b></div>
 													<div class="span3" style="padding-top:5px;"><b>Сокращенное название</b></div>
 													<div class="span5" style="padding-top:5px;"><b>Полное название</b></div>
+													<div class="span1"></div>
 													<div class="span1"></div>
 												</div>
 											</div>
 										</div>
 									</div>
 									<div class="grouplist">
+									</div>
+									<div class="lowerbox">
+										<div class="center textalert_depslist_groups">В выбранном факультете не зарегистрировано ни одной группы</div>
 									</div>
 									<hr>
 									<a class='btn' href='' onclick='config_depslist_fac_windows(); return false;'>&lt; Факультеты</a>

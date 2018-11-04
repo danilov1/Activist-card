@@ -131,9 +131,8 @@ function downloadlist(listid) {
 	for(var c = 0; c<curtable.children().length; c++) {
 		render_text += curtable.children().eq(c).find(".c2").text();
 		render_text += " "+curtable.children().eq(c).find(".c4").text();
-		render_text += "-"+curtable.children().eq(c).find(".c5").text();
-		render_text += "-("+curtable.children().eq(c).find(".c6 .datashow_group").text()+")";
-		render_text += "-"+curtable.children().eq(c).find(".c6 .datashow_groupnum").text()+"";
+		render_text += "("+curtable.children().eq(c).find(".c5 .datashow_group").text()+")";
+		render_text += "-"+curtable.children().eq(c).find(".c5 .datashow_groupnum").text()+"";
 		if(c !== (curtable.children().length - 1)) { render_text += "\n"; }
 	}
 	var pom = document.createElement('a');
@@ -286,9 +285,8 @@ function addstudent(studentid, listnum) {
 				tr.append("<td class='c2'><span id='datashow_snane'>"+alist.a_sname+"</span> <span id='datashow_fnane'>"+alist.a_fname+"</span> <span id='datashow_pnane'>"+alist.a_pname+"</span></td>");
 				tr.append("<td class='c3'>" + alist.a_course + "</td>");
 				tr.append("<td class='c4'>" + alist.a_dep + "</td>");
-				tr.append("<td class='c5'>" + alist.a_educode + "</td>");
-				tr.append("<td class='c6'><span class='datashow_group'>" + alist.a_group + "</span> <span class='datashow_groupnum'>" + alist.a_gnum + "</span></td>");
-				tr.append("<td class='c7'><i class='icon-remove' onclick='delthis($(this), "+listblock+");'></i></td>");
+				tr.append("<td class='c5'><span class='datashow_group'>" + alist.a_group + "</span> <span class='datashow_groupnum'>" + alist.a_gnum + "</span></td>");
+				tr.append("<td class='c6'><i class='icon-remove' onclick='delthis($(this), "+listblock+");'></i></td>");
 				$(".databox_"+listnum+" table tbody").prepend(tr);
 				setNums(listnum);
 				$(".databox_"+listnum+" tr[aid='"+alist.a_id+"']").animate({'background-color': '#bde0a0'}, 500, function() {
@@ -314,7 +312,7 @@ function list_addnew() {
 	newlistblock.addClass("databox_"+listblock);
 	newlistblock.attr("list_id",listblock);
 	newlistblock.find("h2").html("Список студентов - \"СПИСОК("+listblock+")\"");
-	$(".databox_"+listblock+" .sort1, .databox_"+listblock+" .sort2, .databox_"+listblock+" .sort3, .databox_"+listblock+" .sort4, .databox_"+listblock+" .sort5, .databox_"+listblock+" .sort6").attr("onclick","sortTable("+listblock+",$(this).parent().attr('class')); return false;");
+	$(".databox_"+listblock+" .sort1, .databox_"+listblock+" .sort2, .databox_"+listblock+" .sort3, .databox_"+listblock+" .sort4, .databox_"+listblock+" .sort5").attr("onclick","sortTable("+listblock+",$(this).parent().attr('class')); return false;");
 		$(".databox_"+listblock+" .btn_dellist").attr("onclick","dellist_sz("+listblock+"); return false;");
 		$(".databox_"+listblock+" .btn_downloadlist").attr("onclick","downloadlist("+listblock+"); return false;");
 
@@ -362,7 +360,7 @@ function list_addfromevent(ifall) {
 			newlistblock.addClass("databox_"+listblock);
 			newlistblock.attr("list_id",listblock);
 			newlistblock.find("h2").html("Список студентов - \"СПИСОК("+listblock+")\"");
-			$(".databox_"+listblock+" .sort1, .databox_"+listblock+" .sort2, .databox_"+listblock+" .sort3, .databox_"+listblock+" .sort4, .databox_"+listblock+" .sort5, .databox_"+listblock+" .sort6").attr("onclick","sortTable("+listblock+",$(this).parent().attr('class')); return false;");
+			$(".databox_"+listblock+" .sort1, .databox_"+listblock+" .sort2, .databox_"+listblock+" .sort3, .databox_"+listblock+" .sort4, .databox_"+listblock+" .sort5").attr("onclick","sortTable("+listblock+",$(this).parent().attr('class')); return false;");
 			$(".databox_"+listblock+" .btn_dellist").attr("onclick","dellist_sz("+listblock+"); return false;");
 			$(".databox_"+listblock+" .btn_downloadlist").attr("onclick","downloadlist("+listblock+"); return false;");
 
@@ -375,9 +373,8 @@ function list_addfromevent(ifall) {
 				  tr.append("<td class='c2'><span id='datashow_snane'>"+alist[i].a_sname+"</span> <span id='datashow_fnane'>"+alist[i].a_fname+"</span> <span id='datashow_pnane'>"+alist[i].a_pname+"</span></td>");
 				  tr.append("<td class='c3'>" + alist[i].a_course + "</td>");
 				tr.append("<td class='c4'>" + alist[i].a_dep + "</td>");
-				tr.append("<td class='c5'>" + alist[i].a_educode + "</td>");
-				tr.append("<td class='c6'><span class='datashow_group'>" + alist[i].a_group + "</span> <span class='datashow_groupnum'>" + alist[i].a_gnum + "</span></td>");
-				tr.append("<td class='c7'><i class='icon-remove' onclick='delthis($(this), "+listblock+");'></i></td>");
+				tr.append("<td class='c5'><span class='datashow_group'>" + alist[i].a_group + "</span> <span class='datashow_groupnum'>" + alist[i].a_gnum + "</span></td>");
+				tr.append("<td class='c6'><i class='icon-remove' onclick='delthis($(this), "+listblock+");'></i></td>");
 				  $(".databox_"+listblock+" table tbody").append(tr);
 				}
 				closemw("window_addfromevent");
@@ -1445,7 +1442,9 @@ function showlist(iconid) {
 		  getstudby = "i";
 		  var data = JSON.parse(answer);
 		  if(data.error == "ok") {
+      global_access = data.access;
 			globalsid = data.id;
+      global_sinid = data.sinid;
 			global_surname = data.surname;
 			global_firstname = data.firstname;
 			global_patronumic = data.patronymic;
@@ -1455,7 +1454,6 @@ function showlist(iconid) {
 			global_facid = data.department_id;
 			global_groupid = data.group_id;
 			global_course = data.educourse;
-			global_gen = data.gen;
 			global_level = data.edulevel;
 			global_budget = data.budget;
 			global_groupnum = data.groupnum;
@@ -1476,7 +1474,7 @@ function showlist(iconid) {
 			else if(data.edulevel == "c") { edulevel = "СПО"; }
 			if(global_budget == "y") { curbudget = "бюд."; } else { curbudget = "пвз"; }
 			infobox.append("<br /><b>"+data.department+" ("+data.group+") - "+data.groupnum+"</b>; <i>"+edulevel+"</i>"); // , "+curbudget+"
-			$(".box_student h1").html("Карта активиста (sin: "+data.sinid+")");
+			$(".box_student h1").html("Карта активиста (ID: "+HTML.encode(data.sinid)+")");
 			if(data.phone) {
 				formatnewphone = data.phone;
 				formatnewphone = formatnewphone.replace(/(\d{3})(\d{3})(\d{2})(\d{2})/, '($1)$2-$3-$4');
@@ -1612,6 +1610,7 @@ function showlist(iconid) {
     $("#savebtn").show();
     $("#regbtn").hide();
     $(".addwindow h1").html("Редактирование данных студента");
+    $("#add_id").val(HTML.decode(global_sinid));
     $("#add_surname").val(HTML.decode(global_surname));
     $("#add_firstname").val(HTML.decode(global_firstname));
     $("#add_patronymic").val(HTML.decode(global_patronumic));
@@ -1621,11 +1620,14 @@ function showlist(iconid) {
     $("#add_phone").mask("(999)999-99-99");
     $("#add_faculty [value='"+global_facid+"']").prop("selected", true);
     loadgroups(1);
-	$("#add_gen [value='"+global_gen+"']").prop("selected", true);
     $("#add_course [value='"+global_course+"']").prop("selected", true);
     $("#add_level [value='"+global_level+"']").prop("selected", true);
     $("#add_budget [value='"+global_budget+"']").prop("selected", true);
     $("#add_groupnum").val(global_groupnum);
+    $("#add_id, #add_surname, #add_firstname, #add_patronymic").prop("disabled", false).attr("style","");
+    if(global_access !== 1) {
+      $("#add_id, #add_surname, #add_firstname, #add_patronymic").prop("disabled", true).attr("style","border:none;");;
+    }
     $.fancybox.close();
     $(".fillblack, .addwindow").fadeIn(400);
   }
@@ -1678,7 +1680,7 @@ function showlist(iconid) {
   }
 
   function onsave() {
-    if(($("#add_surname").val() == "") || ($("#add_firstname").val() == "") || ($("#add_patronymic").val() == "") || ($("#add_sex option:selected").val() == "") || ($("#add_faculty option:selected").val() == "") || ($("#add_group option:selected").val() == "") || ($("#add_course option:selected").val() == "") || ($("#add_gen option:selected").val() == "") || ($("#add_level option:selected").val() == "") || ($("#add_budget option:selected").val() == "") || ($("#add_groupnum").val() == "")) {
+    if((($("#add_id").val() == "") || $("#add_surname").val() == "") || ($("#add_firstname").val() == "") || ($("#add_patronymic").val() == "") || ($("#add_sex option:selected").val() == "") || ($("#add_faculty option:selected").val() == "") || ($("#add_group option:selected").val() == "") || ($("#add_course option:selected").val() == "") || ($("#add_level option:selected").val() == "") || ($("#add_budget option:selected").val() == "") || ($("#add_groupnum").val() == "")) {
       $.fancybox({ 'content' : 'Заполните все поля' });
     } else {
       phoneformat = $("#add_phone").val().replace(/[-()]/g,"");
@@ -1689,6 +1691,7 @@ function showlist(iconid) {
 			type: "a",
 			as: "n",
 			phone: phoneformat,
+      sin: $("#add_id").val(),
 			surname: $("#add_surname").val(),
 			firstname: $("#add_firstname").val(),
 			patronymic: $("#add_patronymic").val(),
@@ -1697,7 +1700,6 @@ function showlist(iconid) {
 			depid: $("#add_group option:selected").val(),
 			groupnum: $("#add_groupnum").val(),
 			course: $("#add_course option:selected").val(),
-			gen: $("#add_gen option:selected").val(),
 			level: $("#add_level option:selected").val(),
 			budget: $("#add_budget option:selected").val()
 		  },

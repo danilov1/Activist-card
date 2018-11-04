@@ -6,7 +6,7 @@ ini_set('post_max_size', '2M');
 date_default_timezone_set('Europe/Moscow');
 if(isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') { define("PROTOCOL", "https://"); } else { define("PROTOCOL", "http://"); }
 
-define("filesversion", "251018");
+define("filesversion", "2.4.20181105");
 
 // Загрузка конфигурации БД
 $GLOBALS['config_db'] = include '../settings/config_db.php';
