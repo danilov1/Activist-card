@@ -479,8 +479,11 @@ function isThisAcademicYear($datestart) {
 
 function countStudentsRating($studentID) {
 	$editcount = 0;
-	$sqlcountByTagsText = "";
 	$sqlcountByTags = array();
+	$pregetByATags = mysql_query("SELECT `id`,`type` from `tags` WHERE `type` = 'a';");
+	while($getByATags = mysql_fetch_array($pregetByATags)) {
+		$sqlcountByTags["".$getByATags[0].""] = 0;
+	}
 	$pregetactive = mysql_query("SELECT `id`,`user`,`event`,`role`,`complex` from `activity` WHERE `user`='".$studentID."'");
 	if(mysql_num_rows($pregetactive) > 0) {
 		while($getactive = mysql_fetch_array($pregetactive)) {
@@ -490,23 +493,24 @@ function countStudentsRating($studentID) {
 				$currentActivityPoints = activityPoints($getactive[2],$getactive[3],$getactive[4]);
 				$editcount = $editcount + $currentActivityPoints;
 
+				$sqlcountByTagsText = "";
 				$countByTags = json_decode($checkeid[2]);
-				$pregetByATags = mysql_query("SELECT `id`,`type` from `tags` WHERE `type` = 'a';");
-				while($getByATags = mysql_fetch_array($pregetByATags)) {
-					if(in_array($getByATags[0], $countByTags)) {
-						if(!isset($sqlcountByTags["".$getByATags[0].""])) { $sqlcountByTags["".$getByATags[0].""] = $currentActivityPoints; }
-						else { $sqlcountByTags["".$getByATags[0].""] += $currentActivityPoints; }
+				foreach($countByTags as $countByTags_id => $countByTags_value) {
+					if(array_key_exists($countByTags_value, $sqlcountByTags)) {
+						$sqlcountByTags["".$countByTags_value.""] += $currentActivityPoints;
 					}
-				}
-				foreach($sqlcountByTags as $sqlcountByTags_id => $sqlcountByTags_value) {
-					$sqlcountByTagsText .= ", `ic_".$sqlcountByTags_id."` = ".$sqlcountByTags_value."";
 				}
 			}
 		}
 	}
 
-	$recounts = "UPDATE  `".$GLOBALS['config']['mysql_db']."`.`users` SET  `count` = ".$editcount."".$sqlcountByTagsText." WHERE  `users`.`id` =".$studentID.";";
-	if(!mysql_query($recounts)) { errorjson("Ошибка базы данных. Повторите попытку позже."); }
+	$sqlcountByTagsText = "";
+	foreach($sqlcountByTags as $sqlcountByTags_id => $sqlcountByTags_value) {
+		$sqlcountByTagsText .= ", `ic_".$sqlcountByTags_id."` = ".$sqlcountByTags_value."";
+	}
+
+	$recounts = "UPDATE  `".$GLOBALS['config_db']['mysql_db']."`.`users` SET `count` = ".$editcount."".$sqlcountByTagsText." WHERE  `users`.`id` =".$studentID.";";
+	if(!mysql_query($recounts)) { errorjson("Ошибка базы данных. Повторите попытку позже.".mysql_error()); }
 }
 
 function config_empty() {
