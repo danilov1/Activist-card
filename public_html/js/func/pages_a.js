@@ -24,8 +24,8 @@ function activity() {
 				  var dates = "";
 				  if(getdata[i].date_for !== null) { dates = "" + getdata[i].date_since + "<br />"+getdata[i].date_for; }
 				  else { dates = getdata[i].date_since; }
-				  
-				  var role;					
+
+				  var role;
 				  if(getdata[i].role == "u") { role = "участник"; }
 				  else if(getdata[i].role == "p") { role = "призер"; }
 				  else if(getdata[i].role == "w") { role = "победитель"; }
@@ -33,13 +33,13 @@ function activity() {
 				  else if(getdata[i].role == "m") { role = "организатор"; }
 				  else if(getdata[i].role == "h") { role = "главный организатор"; }
 				  else if(getdata[i].role == "b") { role = "-"; }
-				  
+
 				  points = getdata[i].points;
 				  if(getdata[i].points == "0") { points = "-"; }
-				  
+
 				  complex = "";
 				  if(getdata[i].complex == "y") { complex = " <img style=\"vertical-align:top; width:15px; opacity:0.8;\" src=\"img/muscle_black.svg\">"; }
-				  
+
 				  tr = $('<tr/>');
 				  tr.append("<td class=\"blowit center curmydate\">" + dates + "</td>");
 				  tr.append("<td class=\"curmyevent\"><a class=\"link\" href=\"events-"+getdata[i].eid+"\" style='text-decoration:none;'>" + getdata[i].name + "</a></td>");
@@ -147,15 +147,15 @@ function page_events(setcurpage) {
 						if(getdata[i].e_date_for !== null) { dates = "" + getdata[i].e_date_since + "<br />"+getdata[i].e_date_for; }
 						else { dates = getdata[i].e_date_since; }
 						times = getdata[i].e_time_since + "-"+getdata[i].e_time_for;
-						
-						var elevel;					
+
+						var elevel;
 						if(getdata[i].e_level == "f") { elevel = "факультет"; }
 						else if(getdata[i].e_level == "u") { elevel = "университет"; }
 						else if(getdata[i].e_level == "c") { elevel = "город"; }
 						else if(getdata[i].e_level == "r") { elevel = "регион"; }
 						else if(getdata[i].e_level == "v") { elevel = "страна"; }
 						else if(getdata[i].e_level == "i") { elevel = "мировой"; }
-						
+
 						tr = $('<tr/>');
 						tr.addClass("rowclick");
 						if(getdata[i].e_access == "yes") { tr.addClass("rowedit"); }
@@ -190,7 +190,7 @@ function page_events(setcurpage) {
 	$(".filter button, .filter input, .filter select").blur();
     page_events(1);
   }
-  
+
 /* GROUPS */
 function init_groups() {
 	$(".loadlogo, .fillblack, .textalert").hide();
@@ -218,10 +218,10 @@ function page_groups(setcurpage) {
 					var getdata = data.lists;
 					var tr;
 					for (var i = 0; i < getdata.length; i++) {
-						
+
 						addicon = "";
 						if(getdata[i].l_icon !== "n") { addicon = "<img class='inlinesvg' src='content/svg/"+getdata[i].l_icon+"' /> "; }
-						
+
 						tr = $('<tr/>');
 						tr.addClass("rowclick");
 						tr.attr("eid", ""+getdata[i].l_id+"");
@@ -294,19 +294,19 @@ function page_rating(setcurpage, hideload) {
 							listsicons += newicon+" ";
 						}
 					}
-					
+
 					tr = $('<tr/>');
 					tr.addClass("rowclick");
 					tr.attr("id","id" + getdata[i].id + "");
 					tr.addClass("center");
-					
+
 					if($(".searchinput").val().trim() == "" && cursearchdep == "" && cursearchcourse == "" && cursearchtagA == "") {
 						tr.append("<td>" + getdata[i].rate + "</td>");
 					} else {
 						tr.append("<td>" + getdata[i].rate_filter + "</td>");
 					}
-					
-					
+
+
 					tr.append("<td class=\"curpoints blowit\"><b>" + getdata[i].points + "</b></td>");
 					tr.append("<td class=\"curfio\">" + listsicons + "" + getdata[i].name + "</td>");
 					tr.append("<td class=\"blowit owncourse\">" + getdata[i].course + "</td>");
@@ -326,7 +326,7 @@ function page_rating(setcurpage, hideload) {
 						if((numpages-endnum) <= 0) { endnum = numpages; next = "n"; }
 					} else { startnum = 1; endnum = onpage; }
 				}
-				
+
 				$(".pager").html("");
 				if(prev == "y") {
 					apager = $('<a/>');
@@ -343,10 +343,10 @@ function page_rating(setcurpage, hideload) {
 					apager.attr("href","javascript:page_rating("+(endnum+1)+")");
 					apager.html("..."); $(".pager").append(apager);
 				}
-				
+
 				$(".points b").html(data.scores);
 				$(".rank b").html(data.current);
-			
+
 			} else if(data.error == "notfound") {
 				$('.ratingtable').html('<tr class="table_head center"><td width="9%"><b>Место</b></td><td width="9%"><b>Баллы</b></td><td><b>ФИО активиста</b></td><td width="5%" class="owncourse"><b>Курс</b></td><td width="29%"><b>Институт/ВШ</b></td></tr>');
 				$('.pager').html('');
@@ -384,7 +384,7 @@ function showlist(iconid) {
 			global_sex = data.sex;
 			global_course = data.educourse;
 			global_level = data.edulevel;
-			
+
 			var infobox = $(".box_student_info");
 			var edulevel;
 			if(data.edulevel == "b") { edulevel = "бак."; }
@@ -392,12 +392,12 @@ function showlist(iconid) {
 			else if(data.edulevel == "m") { edulevel = "маг."; }
 			else if(data.edulevel == "c") { edulevel = "СПО"; }
 			if(data.patronymic.length < 2) {
-				infobox.html("<b style='text-transform:uppercase; color:#4b8ab5;'>"+data.surname+" "+data.firstname+"</b> <b>("+data.department+" "+data.educourse+" курс "+edulevel+")</b>");
+				infobox.html("<b style='text-transform:uppercase; color:#0081ca;'>"+data.surname+" "+data.firstname+"</b> <b>("+data.department+" "+data.educourse+" курс "+edulevel+")</b>");
 			} else {
-				infobox.html("<b style='text-transform:uppercase; color:#4b8ab5;'>"+data.surname+" "+data.firstname+" "+data.patronymic+"</b> <b>("+data.department+" "+data.educourse+" курс "+edulevel+")</b>");
+				infobox.html("<b style='text-transform:uppercase; color:#0081ca;'>"+data.surname+" "+data.firstname+" "+data.patronymic+"</b> <b>("+data.department+" "+data.educourse+" курс "+edulevel+")</b>");
 			}
 			$(".box_student h1").html("Карта активиста");
-			
+
 			var infobox_lists = $(".box_student_lists");
 			infobox_lists.html("");
 			if(data.lists.length == 0) { infobox_lists.hide(); }
@@ -407,7 +407,7 @@ function showlist(iconid) {
 					$(".box_student_lists").append('<div class="greybox"><div class="event_info_inner" style="margin-bottom:-1px;"><div><img class="inlinesvg" src="content/svg/'+data.lists[c][3]+'" alt="'+data.lists[c][1]+'" style="margin:0 8px 0 0; vertical-align:middle;"><span style="display:inline-block; vertical-align:middle; padding:3px 0 0 0; color:#666;"><a target="_blank" href="groups-'+data.lists[c][0]+'">'+data.lists[c][1]+'</a></span></div></div></div>');
 				}
 			}
-			
+
 			if(data.events) {
 			  var tablehead = '<tr class="table_head"><td class="hideit" width=""><b>№</b></td><td class="hideit" width="12%"><b>Дата</b></td><td><b>Наименование мероприятия</b></td><td width="17%"><b>Статус</b></td><td class="event_holder" width="17%"><b>Ответственный</b></td><td width="7%"><b>Баллы</b></td></tr>';
 			  $('.owntable').append(tablehead);
@@ -422,8 +422,8 @@ function showlist(iconid) {
 				var dates = "";
 				if(getdata[i].date_for !== null) { dates = "" + getdata[i].date_since + "<br />"+getdata[i].date_for; }
 				else { dates = getdata[i].date_since; }
-				
-				var role;         
+
+				var role;
 				if(getdata[i].role == "u") { role = "участн."; }
 				else if(getdata[i].role == "p") { role = "призер"; }
 				else if(getdata[i].role == "w") { role = "победит."; }
@@ -431,10 +431,10 @@ function showlist(iconid) {
 				else if(getdata[i].role == "m") { role = "организ."; }
 				else if(getdata[i].role == "h") { role = "глав. организ."; }
 				else if(getdata[i].role == "b") { role = "-"; }
-				
+
 				complex = "";
 				if(getdata[i].complex == "y") { complex = " <img style=\"vertical-align:top; width:15px; opacity:0.8;\" src=\"img/muscle_black.svg\">"; }
-				
+
 				tr = $('<tr/>');
 				tr.attr("aid", ""+getdata[i].aid+"");
 				tr.append("<td class=\"blowit center hideit\">" + (i+1) + "</td>");
@@ -448,12 +448,12 @@ function showlist(iconid) {
 			} else {
 			  $(".box_student_add").append("<p class=\"center\"><b>Мероприятий нет</b></p>");
 			}
-			
+
 			var incontent = $(".box_student").html();
-			
+
 			if(ifnothistory !== 1) {
 				history.pushState(null, data.sinid, "/rating#info");
-				
+
 				window.onpopstate = function(event) {
 					if(($(".fancybox-skin").is(":visible")) && (!$(".mw").is(":visible"))) {
 					  $.fancybox.close();
@@ -462,7 +462,7 @@ function showlist(iconid) {
 					}
 				};
 			}
-	
+
 			$.fancybox({
 				'afterClose':function () {
 					if(ifnothistory !== 1) { history.pushState(null, null, "/rating"); }
@@ -470,10 +470,10 @@ function showlist(iconid) {
 				'width' : 500,
 				'content' : incontent
 			});
-			
+
 		  } else if(data.error == "s_notexist") {
 			$(".searchinput").blur();
-			
+
 			$.fancybox({
 			  'afterClose':function () {
 				$(".searchinput").focus();
@@ -481,15 +481,15 @@ function showlist(iconid) {
 			  'height' : 250,
 			  'content' : m_error('Студент c заданным кодом не найден!')
 			});
-			
+
 		  } else {
-			
+
 			$.fancybox({ 'content' : data.error });
 		  }
 		}
     });
   }
-  
+
   function findstudents() {
     si = $(".searchinput").val();
     getstudby = "i";
@@ -500,7 +500,7 @@ function showlist(iconid) {
 	cursearchtagA = $(".searchtagA option:selected").val();
     page_rating(1);
   }
-  
+
 /* SET */
 function changepw() {
 	if(($("#pw_old").val() !== '') && ($("#pw_new").val() !== '') && ($("#pw_newrepeat").val() !== '')) {
@@ -560,7 +560,7 @@ function page_group() {
 					$(".titleline h1").prepend("<img class='inlinesvg inlinesvg_title' src='content/svg/"+data.icon+"' alt='' />");
 				}
 				$(".list_info").append($("<div/>").addClass("span12 inforow").html("<div><b>Кол-во студентов:</b> <span class='memberscount'>"+members.length+"</span></div>"));
-				
+
 				if(members.length == 0) {
 					$('.textalert').show();
 				} else {
@@ -598,18 +598,18 @@ function sortFIO() {
 		success: function(answer) {
 		  var data = (JSON.parse(answer));
 		  if(data.error == "ok") {
-			$(".activitytable").html('<tr class="table_head"><td><b>ФИО [курс/группа]</b></td><td width="40%"><b>Роль</b></td></tr>');
-			
+			$(".activitytable").html('<tr class="table_head"><td><b>ФИО [факультет/курс]</b></td><td width="20%" class="curevent_role"><b>Роль</b></td><td width="4%" style="padding:3px !important;"><img src="img/muscle.svg" /></td><td width="14%" class="curevent_added"><b>Добавлено</b></td><td width="18%" class="curevent_by"><b>Фиксатор</b></td></tr>');
+
 			var getdata = (JSON.parse(answer)).einfo;
-			
-			var elevel, edates;         
+
+			var elevel, edates;
 			if(getdata.level == "f") { elevel = "факультетский"; }
 			else if(getdata.level == "u") { elevel = "университетский"; }
 			else if(getdata.level == "c") { elevel = "городской"; }
 			else if(getdata.level == "r") { elevel = "региональный"; }
 			else if(getdata.level == "v") { elevel = "всероссийский"; }
 			else if(getdata.level == "i") { elevel = "международный"; }
-			
+
 			$("h1").html(getdata.name);
 			$(".event_i1").html("<div><b>Уровень:</b> <span>"+elevel+"</span></div>");
 			if(getdata.place) { $(".event_i1").append("<div><b>Место:</b> <span>"+getdata.place+"</span></div>"); }
@@ -617,14 +617,14 @@ function sortFIO() {
 			else { edates = getdata.ds; }
 			$(".event_i1").append("<div><b>Дата:</b> <span>"+edates+"</span></div>");
 			if(getdata.ts !== null) { $(".event_i1").append("<div><b>Время:</b> <span>"+getdata.ts+" - "+getdata.tf+"</span></div>"); }
-			
+
 			if(getdata.creator) { $(".event_i2").html("<div><b>Регистратор:</b> <span>"+HTML.decode(getdata.creator)+"</span></div>"); }
 			if(getdata.dep) { $(".event_i2").append("<div><b>Организация:</b> <span>"+getdata.dep+"</span></div><div><b>Координатор:</b> <span>"+getdata.hname+"</span></div>"); }
-			else { $(".event_i2").append("<div><b>Координатор:</b> <span>"+getdata.hname+"</span></div>"); } 
+			else { $(".event_i2").append("<div><b>Координатор:</b> <span>"+getdata.hname+"</span></div>"); }
 			$(".event_i2").append("<div><b>Задействовано:</b> <span class='involvednum'>"+data.allrows+"</span></div>");
-			
+
 			if(getdata.comment) { $(".event_comment_box").html("<div class='event_comment'><span style='width:100%;'>"+getdata.comment+"</span></div>"); }
-			
+
 			if(data.allrows == '0') {
 			  $('.textalert').show();
 			} else {
@@ -633,15 +633,18 @@ function sortFIO() {
 				tr = $('<tr/>');
 				tr.append("<td><a href='' onclick='student("+alist[i].a_uid+",1); return false;'><b>" + alist[i].a_name + "</b></a> [" + alist[i].a_from + "]</td>");
 				var role;
-				addcomplex = '';
-				if(alist[i].a_complex == "y") { addcomplex = ' <img style="width:15px" src="img/muscle_black.svg">'; }    
-				if(alist[i].a_role == "u") { tr.append('<td>участник'+addcomplex+'</td>'); }
-				else if(alist[i].a_role == "p") { tr.append('<td>призер'+addcomplex+'</td>'); }
-				else if(alist[i].a_role == "w") { tr.append('<td>победитель'+addcomplex+'</td>'); }
-				else if(alist[i].a_role == "l") { tr.append('<td>помощник организатора'+addcomplex+'</td>'); }
-				else if(alist[i].a_role == "m") { tr.append('<td>организатор'+addcomplex+'</td>'); }
-				else if(alist[i].a_role == "h") { tr.append('<td>главный организатор'+addcomplex+'</td>'); }
+				addcomplex = ' <div class="complexcheck-show" style="margin:-4px 0 0 -2px;"></div>';
+				if(alist[i].a_complex == "y") { addcomplex = ' <div class="complexcheck-show complexcheck-show2" style="margin:-4px 0 0 -2px;"></div>'; }
+				if(alist[i].a_role == "u") { tr.append('<td>участник</td>'); }
+				else if(alist[i].a_role == "p") { tr.append('<td>призер</td>'); }
+				else if(alist[i].a_role == "w") { tr.append('<td>победитель</td>'); }
+				else if(alist[i].a_role == "l") { tr.append('<td>помощник организатора</td>'); }
+				else if(alist[i].a_role == "m") { tr.append('<td>организатор</td>'); }
+				else if(alist[i].a_role == "h") { tr.append('<td>главный организатор</td>'); }
 				else if(alist[i].a_role == "b") { tr.append('<td>-</td>'); }
+				tr.append("<td class=\"center\">" + addcomplex + "</td>");
+				tr.append("<td class=\"curevent_added\">" + alist[i].a_time + "</td>");
+				tr.append("<td class=\"curevent_by\">" + alist[i].a_by + "</td>");
 				$('.activitytable').append(tr);
 			  }
 			}
@@ -651,4 +654,3 @@ function sortFIO() {
 		}
     });
   }
-  

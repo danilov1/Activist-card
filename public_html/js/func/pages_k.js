@@ -1463,9 +1463,9 @@ function showlist(iconid) {
 
 			var infobox = $(".box_student_info");
 			if(data.patronymic.length < 2) {
-				infobox.html("<b style='text-transform:uppercase; color:#4b8ab5;'>"+data.surname+" "+data.firstname+"</b>"+addbirthday);
+				infobox.html("<b style='text-transform:uppercase; color:#0081ca;'>"+data.surname+" "+data.firstname+"</b>"+addbirthday);
 			} else {
-				infobox.html("<b style='text-transform:uppercase; color:#4b8ab5;'>"+data.surname+" "+data.firstname+" "+data.patronymic+"</b>"+addbirthday);
+				infobox.html("<b style='text-transform:uppercase; color:#0081ca;'>"+data.surname+" "+data.firstname+" "+data.patronymic+"</b>"+addbirthday);
 			}
 			var edulevel;
 			if(data.edulevel == "b") { edulevel = "бак."; }
@@ -2250,7 +2250,7 @@ function delmembersYES() {
 
 			$("h1").html(getdata.name);
 			$("h1").append("<a href='#' class='headicon' onclick='printdata(); return false;'><i class='icon-print'></i></a>");
-			$(".menu").after('<div class="row-fluid sz_event" style="margin-top:20px;"><a href="" class="span12 btn" onclick="printdata(); return false;">С/з по мероприятию</a></div><div class="row-fluid sz_event" style="margin-top:0;"><button href="" class="span12 btn btn-success" onclick="printdata(1); return false;">С/з на освобождение</button></div>');
+			$(".menu").after('<div class="row-fluid sz_event" style="margin-top:20px;"><a href="" class="span12 btn" onclick="printdata(); return false;">С/з по мероприятию</a></div><div class="row-fluid sz_event" style="margin-top:5px;"><button href="" class="span12 btn btn-success" onclick="printdata(1); return false;">С/з на освобождение</button></div>');
 			$(".event_i1").html("<div><b>Уровень:</b> <span>"+elevel+"</span></div>");
 			if(getdata.place) { $(".event_i1").append("<div><b>Место:</b> <span>"+getdata.place+"</span></div>"); }
 			if(getdata.df !== null) { edates = "c " + getdata.ds + " по "+getdata.df; }

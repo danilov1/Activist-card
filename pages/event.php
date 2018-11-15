@@ -24,12 +24,12 @@ render_doctype();
 ?>
 <head>
 	<?php render_meta("Мероприятия","events"); ?>
-	
+
 	<style>
 	.content input, .content select { margin-bottom:0; }
 	<?php if(ISHOLDER !== "YES") { ?>.activitytable td { padding:10px; }<?php } ?>
 	</style>
-	
+
 	<script type="text/javascript">
 	$(window).bind('load', function() {
 		$("#add_activity").focus();
@@ -137,9 +137,6 @@ render_doctype();
 						<?php } ?>
 						<table class="table_withhead table_normalrow activitytable">
 						</table>
-						<!--<table class="table_withhead table_normalrow activitytable2">
-							<tr uid="18869"><td><b><img src="img/loading.gif" alt="" width="20px" /></b></td><td></td><td class="center"></td><td class="curevent_added"></td><td class="curevent_by"></td><td></td></tr>
-						</table>-->
 						<div class="lowerbox">
 							<div class="center textalert">Задействованных нет</div>
 							<div class="pager"></div>

@@ -413,7 +413,7 @@ elseif($_GET['act'] == "getinvolved") {
 		}
 	}
 	else {
-		$pregetlist = mysql_query("SELECT `id`,`event`,`user`,`role`,`complex` from `activity` WHERE `event` ='".$echeck[0]."' ORDER BY `id` DESC;");
+		$pregetlist = mysql_query("SELECT `id`,`event`,`user`,`role`,`complex`,`created`,`addedby` from `activity` WHERE `event` ='".$echeck[0]."' ORDER BY `id` DESC;");
 		$getnum = mysql_num_rows($pregetlist);
 
 		while($erend = mysql_fetch_array($pregetlist)) {
@@ -434,13 +434,23 @@ elseif($_GET['act'] == "getinvolved") {
 			if(LOGGED_ACCESS == "a") { $afrom = $getfac[1]." ".$educ."к."; }
 			else { $afrom = $getfac[1]."(".$getdep[2].")-".$getuser[6]; }
 
+			list($ii1, $ii2) = split(' ', $erend[5]);
+			list($addyear, $addmonth, $addday) = split('[-]', $ii1);
+			$added_dt = $addday.'.'.$addmonth.'.'.substr($addyear, 2, 4).' '.substr($ii2, 0, 5);
+
+			$pregetuser = mysql_query("SELECT `id`,`sname`,`fname`,`pname` from `users` WHERE `id` ='".$erend[6]."' LIMIT 1;");
+			$getholder = mysql_fetch_row($pregetuser);
+			$holder = mb_substr($getholder[2], 0, 1, "UTF-8").".".mb_substr($getholder[3], 0, 1, "UTF-8").".".$getholder[1];
+
 			$newinlist = array(
 				"a_id" => $erend[0],
 				"a_uid" => $erend[2],
 				"a_name" => $name,
 				"a_from" => $afrom,
 				"a_role" => $erend[3],
-				"a_complex" => $erend[4]
+				"a_complex" => $erend[4],
+				"a_time" => $added_dt,
+				"a_by" => $holder,
 			);
 			$sendlist["alist"][] = $newinlist;
 			unset($newinlist);
