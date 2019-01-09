@@ -664,7 +664,9 @@ function page_events(setcurpage) {
 						tr.attr("eid", ""+getdata[i].e_id+"");
 						tr.append("<td class=\"blowit center\">" + dates + "</td>");
 						tr.append("<td class=\"blowit center event_time\">" + times + "</td>");
-						tr.append("<td class=\"center event_name\">" + getdata[i].e_name + "</td>");
+						var event_name = "<td class=\"center event_name\">" + getdata[i].e_name + "";
+            if(getdata[i].e_addme) { tr.addClass("rowyellow"); event_name += '<span class="table-badge"><div>'+getdata[i].e_addme+'</div></span>'; }
+            tr.append(event_name+"</td>");
 						tr.append("<td class=\"blowit event_level\">" + elevel + "</td>");
 						tr.append("<td class=\"center curevent_by\">" + getdata[i].e_holder + "</td>");
 						tr.append("<td class=\"center\">" + getdata[i].e_involved + "</td>");
@@ -971,9 +973,9 @@ function init_groups() {
 	var setFocus = setInterval(function() { var elem = $(".searchinput"); if(elem.is(":focus")) { clearTimeout(setFocus); } else { elem.focus(); } }, 500);
 	$("input[type='file']").change(function () {
 		var ext = $(this).val().split('.').pop().toLowerCase();
-		if($.inArray(ext, ['svg']) == -1) {
+		if($.inArray(ext, ['svg','png']) == -1) {
 			$(this).val("");
-			$.fancybox({ 'content' : m_error("Поддерживается только векторный формат .SVG") });
+			$.fancybox({ 'content' : m_error("Поддерживается только формат .SVG и .PNG") });
 		}
 		$(".uploadFile").val($(this).val());
 	});
@@ -1048,7 +1050,10 @@ function page_groups(setcurpage) {
 					for (var i = 0; i < getdata.length; i++) {
 
 						addicon = "";
-						if(getdata[i].l_icon !== "n") { addicon = "<img class='inlinesvg' src='content/svg/"+getdata[i].l_icon+"' alt='"+getdata[i].l_name+"' /> "; }
+            _addicon = 'svg';
+            l_icon = getdata[i].l_icon.split('.');
+            if(l_icon[1] !== 'svg') { _addicon = 'img'; }
+						if(getdata[i].l_icon !== "n") { addicon = "<img class='inlinesvg' src='content/"+_addicon+"/"+getdata[i].l_icon+"' alt='"+getdata[i].l_name+"' /> "; }
 
 						tr = $('<tr/>');
 						tr.addClass("rowclick");
@@ -1114,7 +1119,10 @@ function editlistwindow(lid) {
 				changeUserRights($("input[name='ue']"));
 				changeUserRights($("input[name='uv']"));
 				$(".btn_noicon").show();
-				if(getdata.l_icon !== "n") { $(".fileUpload").find("span").html('Заменить <img class="inlinesvg" src="content/svg/'+getdata.l_icon+'" alt="" style="margin:0;" />'); }
+        _addicon = 'svg';
+        l_icon = getdata.l_icon.split('.');
+        if(l_icon[1] !== 'svg') { _addicon = 'img'; }
+				if(getdata.l_icon !== "n") { $(".fileUpload").find("span").html('Заменить <img class="inlinesvg" src="content/'+_addicon+'/'+getdata.l_icon+'" alt="" style="margin:0;" />'); }
 				else { $(".fileUpload").find("span").html("Выбрать"); }
 				$(".addwindow h1").html("Настройки группы");
 				$("html, body").animate({ scrollTop: 0 });
@@ -1347,7 +1355,10 @@ function page_rating(setcurpage, hideload) {
 							icons_new.push(getdata[i].lists[c][3]);
 							icons_new.push(getdata[i].name);
 							icons_array.push(icons_new);
-							newicon = "<a href='' onclick='showlist("+(icons_array.length-1)+"); return false;' onmouseover='goonit = \"no\"' onmouseout='goonit = \"yes\"'><img class='inlinesvg' src='content/svg/"+getdata[i].lists[c][3]+"' alt='"+getdata[i].lists[c][1]+"' /></a>";
+              _addicon = 'svg';
+              l_icon = getdata[i].lists[c][3].split('.');
+              if(l_icon[1] !== 'svg') { _addicon = 'img'; }
+							newicon = "<a href='' onclick='showlist("+(icons_array.length-1)+"); return false;' onmouseover='goonit = \"no\"' onmouseout='goonit = \"yes\"'><img class='inlinesvg' src='content/"+_addicon+"/"+getdata[i].lists[c][3]+"' alt='"+getdata[i].lists[c][1]+"' /></a>";
 							listsicons += newicon+" ";
 						}
 					}
@@ -1411,7 +1422,10 @@ function page_rating(setcurpage, hideload) {
 function showlist(iconid) {
 	elem = icons_array[iconid];
 	renderdiv = $("<div/>").addClass("row-fluid listicon").css("max-width","400px");
-	renderdiv.append("<div class='span4'><img src='content/svg/"+elem[3]+"' alt='"+elem[1]+"' /></div>");
+  _addicon = 'svg';
+  l_icon = elem[3].split('.');
+  if(l_icon[1] !== 'svg') { _addicon = 'img'; }
+	renderdiv.append("<div class='span4'><img src='content/"+_addicon+"/"+elem[3]+"' alt='"+elem[1]+"' /></div>");
 	renderdiv.append("<div class='span8'><p><b class='listicon_name'>"+elem[4]+"</b></p><p><b class='listicon_group'>"+elem[1]+"</b></p><div>"+HTML.decode(elem[2])+"</div><p><a href='groups-"+elem[0]+"' style='font-size:12px; text-decoration:underline; color:#4b8ab5;'><i>Просмотреть всех...</i></a></p></div>");
 	$.fancybox({ 'content' : renderdiv });
 }
@@ -1488,7 +1502,10 @@ function showlist(iconid) {
 			else {
 				infobox_lists.show();
 				for (var c = 0; c < data.lists.length; c++) {
-					$(".box_student_lists").append('<div class="greybox"><div class="event_info_inner" style="margin-bottom:-1px;"><div><img class="inlinesvg" src="content/svg/'+data.lists[c][3]+'" alt="'+data.lists[c][1]+'" style="margin:0 8px 0 0; vertical-align:middle;"><span style="display:inline-block; vertical-align:middle; padding:3px 0 0 0; color:#666;"><a target="_blank" href="groups-'+data.lists[c][0]+'">'+data.lists[c][1]+'</a></span></div></div></div>');
+          _addicon = 'svg';
+          l_icon = data.lists[c][3].split('.');
+          if(l_icon[1] !== 'svg') { _addicon = 'img'; }
+					$(".box_student_lists").append('<div class="greybox"><div class="event_info_inner" style="margin-bottom:-1px;"><div><img class="inlinesvg" src="content/'+_addicon+'/'+data.lists[c][3]+'" alt="'+data.lists[c][1]+'" style="margin:0 8px 0 0; vertical-align:middle;"><span style="display:inline-block; vertical-align:middle; padding:3px 0 0 0; color:#666;"><a target="_blank" href="groups-'+data.lists[c][0]+'">'+data.lists[c][1]+'</a></span></div></div></div>');
 				}
 			}
 
@@ -1517,7 +1534,7 @@ function showlist(iconid) {
 				else if(getdata[i].role == "b") { role = "-"; }
 
 				complex = "";
-				if(getdata[i].complex == "y") { complex = " <img style=\"vertical-align:top; width:15px; opacity:0.8;\" src=\"img/muscle_black.svg\">"; }
+				if(getdata[i].complex == "y") { complex = " <img style=\"vertical-align:top; width:15px; opacity:0.8;\" src=\"img/muscle_black.svg?2\">"; }
 
 				tr = $('<tr/>');
 				tr.attr("aid", ""+getdata[i].aid+"");
@@ -1890,7 +1907,10 @@ function page_group() {
 				$(".titleline h1").html(data.name);
 				var members = data.members;
 				if(data.icon !== "n") {
-					$(".titleline h1").prepend("<img class='inlinesvg inlinesvg_title' src='content/svg/"+data.icon+"' alt='' />");
+          _addicon = 'svg';
+          l_icon = data.icon.split('.');
+          if(l_icon[1] !== 'svg') { _addicon = 'img'; }
+					$(".titleline h1").prepend("<img class='inlinesvg inlinesvg_title' src='content/"+_addicon+"/"+data.icon+"' alt='' />");
 				}
         if(data.isediticon) {
           if(data.public == "y") { $(".listpublicicon").attr("publicset","y"); $(".listpublicicon").html("Скрыть значок группы в Рейтинге"); }
@@ -2236,7 +2256,7 @@ function delmembersYES() {
 		success: function(answer) {
 		  var data = (JSON.parse(answer));
 		  if(data.error == "ok") {
-			$(".activitytable").html('<tr class="table_head"><td><b>ФИО [курс/группа]</b></td><td width="20%" class="curevent_role"><b>Роль</b></td><td width="4%" style="padding:3px !important;"><img src="img/muscle.svg" /></td><td width="14%" class="curevent_added"><b>Добавлено</b></td><td width="18%" class="curevent_by"><b>Фиксатор</b></td><td width="4%"></td></tr>');
+			$(".activitytable").html('<tr class="table_head"><td><b>ФИО [курс/группа]</b></td><td width="20%" class="curevent_role"><b>Роль</b></td><td width="4%" style="padding:3px !important;"><img src="img/muscle.svg?2" /></td><td width="14%" class="curevent_added"><b>Добавлено</b></td><td width="18%" class="curevent_by"><b>Фиксатор</b></td><td width="4%"></td></tr>');
 
 			var getdata = (JSON.parse(answer)).einfo;
 
@@ -2265,29 +2285,334 @@ function delmembersYES() {
 
 			if(getdata.comment) { $(".event_comment_box").html("<div class='event_comment'><span style='width:100%;'>"+getdata.comment+"</span></div>"); }
 
+      // Addme
+      if(data.addme.length > 0) {
+        for (var i = 0; i < data.addme.length; i++) {
+          if(data.addme[i].type == "w") { continue; }
+          tr = $('<tr/>');
+  				tr.attr("addme_id",data.addme[i].id);
+          tr.attr("add_role",data.addme[i].role);
+          if(data.addme[i].complex == "y") { tr.attr("add_complex","true"); }
+          if(data.addme[i].complex == "n") { tr.attr("add_complex","false"); }
+  				tr.append("<td><a href='' onclick='student("+data.addme[i].sid+",1); return false;'><b>" + data.addme[i].name + "</b></a> [" + data.addme[i].from + "]</td>");
+  				tr.append('<td><select class="span12 selectrole"><option value="b">-</option><option value="u">участник</option><option value="p">призер</option><option value="w">победитель</option><option value="l">помощник организатора</option><option value="m">организатор</option><option value="h">главный организатор</option></select></td>');
+  				tr.append('<td class="center"><input class="complexcheck" type="checkbox"></td>');
+          var statuses = $('<td/>').attr("colspan", 2);
+          for (var c = 0; c < data.addme[i].story.length; c++) {
+            var status = $('<div/>').addClass("addme_status");
+            if(data.addme[i].story[c].status == "n") {
+              status.append(data.addme[i].comment);
+              status.append("<span>"+data.addme[i].story[c].time+"</span>");
+            }
+            if(data.addme[i].story[c].status == "r") {
+              status.append("<b>"+data.addme[i].story[c].name_from+" &#8594; "+data.addme[i].story[c].name_to+"</b>");
+              status.append($("<i/>").html(data.addme[i].story[c].comment));
+              status.append("<span>"+data.addme[i].story[c].time+"</span>");
+            }
+            statuses.append(status);
+          }
+          tr.append(statuses);
+  				tr.append('<td><div class="btn-group btn_mini_options"><a class="dropdown-toggle" data-toggle="dropdown" href="#"><span class="caret"></span></a><ul class="dropdown-menu"><li><a href="" onclick="addme_accept('+data.addme[i].id+'); return false;">Одобрить</a></li><li><a href="" onclick="addme_reassign('+data.addme[i].id+'); return false;">Переназначить</a></li><li><a href="" onclick="addme_cancel('+data.addme[i].id+'); return false;">Отказать</a></li></ul></div></td>');
+  				$('.activitytable').append(tr);
+          tr.addClass("rowyellow");
+  				tr.find(".selectrole [value='"+data.addme[i].role+"']").prop("selected", true);
+  				if(data.addme[i].complex == "y") { tr.find(".complexcheck").prop("checked", true); }
+        }
+      }
+
 			if(data.allrows == '0') {
 			  $('.textalert').show();
 			} else {
 			  var alist = data.alist;
 			  for (var i = 0; i < alist.length; i++) {
-				tr = $('<tr/>');
-				tr.attr("aid",alist[i].a_id);
-				tr.append("<td><a href='' onclick='student("+alist[i].a_uid+",1); return false;'><b>" + alist[i].a_name + "</b></a> [" + alist[i].a_from + "]</td>");
-				selectblock = "";
-				if(alist[i].a_edit == "n") { selectblock = " disabled=\"disabled\""; }
-				tr.append('<td><select class="span12 selectrole" onchange="changerole('+alist[i].a_id+')"'+selectblock+'><option value="b">-</option><option value="u">участник</option><option value="p">призер</option><option value="w">победитель</option><option value="l">помощник организатора</option><option value="m">организатор</option><option value="h">главный организатор</option></select></td>');
-				tr.append('<td class="center"><input class="complexcheck" type="checkbox" onchange="changerole('+alist[i].a_id+')"'+selectblock+'></td>');
-				tr.append("<td class=\"curevent_added\">" + alist[i].a_time + "</td>");
-				tr.append("<td class=\"curevent_by\">" + alist[i].a_by + "</td>");
-				if(alist[i].a_edit == "y") { tr.append("<td><i class='icon-remove' onclick='delActivity_event("+alist[i].a_id+")'></i></td>"); }
-				else { tr.append("<td></td>"); }
-				$('.activitytable').append(tr);
-				tr.find(".selectrole [value='"+alist[i].a_role+"']").prop("selected", true);
-				if(alist[i].a_complex == "y") { tr.find(".complexcheck").prop("checked", true); }
+  				tr = $('<tr/>');
+  				tr.attr("aid",alist[i].a_id);
+          tr.attr("uid",alist[i].a_uid);
+  				tr.append("<td><a href='' onclick='student("+alist[i].a_uid+",1); return false;'><b>" + alist[i].a_name + "</b></a> [" + alist[i].a_from + "]</td>");
+  				selectblock = "";
+  				if(alist[i].a_edit == "n") { selectblock = " disabled=\"disabled\""; }
+  				tr.append('<td><select class="span12 selectrole" onchange="changerole('+alist[i].a_id+')"'+selectblock+'><option value="b">-</option><option value="u">участник</option><option value="p">призер</option><option value="w">победитель</option><option value="l">помощник организатора</option><option value="m">организатор</option><option value="h">главный организатор</option></select></td>');
+  				tr.append('<td class="center"><input class="complexcheck" type="checkbox" onchange="changerole('+alist[i].a_id+')"'+selectblock+'></td>');
+  				tr.append("<td class=\"curevent_added\">" + alist[i].a_time + "</td>");
+  				tr.append("<td class=\"curevent_by\">" + alist[i].a_by + "</td>");
+  				if(alist[i].a_edit == "y") { tr.append("<td><i class='icon-remove' onclick='delActivity_event("+alist[i].a_id+")'></i></td>"); }
+  				else { tr.append("<td></td>"); }
+  				$('.activitytable').append(tr);
+  				tr.find(".selectrole [value='"+alist[i].a_role+"']").prop("selected", true);
+  				if(alist[i].a_complex == "y") { tr.find(".complexcheck").prop("checked", true); }
 			  }
+        if(data.addme.length > 0) {
+          for (var i = 0; i < data.addme.length; i++) {
+            if(data.addme[i].type == "a") { continue; }
+            $("tr[uid='"+data.addme[i].sid+"']").attr("addme_id",data.addme[i].id);
+            $("tr[uid='"+data.addme[i].sid+"'] td:nth-child(1), tr[uid='"+data.addme[i].sid+"'] td:nth-child(2), tr[uid='"+data.addme[i].sid+"'] td:nth-child(3), tr[uid='"+data.addme[i].sid+"'] td:nth-child(6)").attr("rowspan", 2);
+            $("tr[uid='"+data.addme[i].sid+"']").after($("<tr/>").addClass("rowyellow"));
+            $("tr[uid='"+data.addme[i].sid+"']").addClass("rowyellow");
+            $("tr[uid='"+data.addme[i].sid+"']").attr("new_role",data.addme[i].role);
+            $("tr[uid='"+data.addme[i].sid+"'] td:nth-child(6)").html('<div class="btn-group btn_mini_options"><a class="dropdown-toggle" data-toggle="dropdown" href="#"><span class="caret" style=""></span></a><ul class="dropdown-menu"><li><a href="" onclick="addme_accept('+data.addme[i].id+'); return false;">Одобрить</a></li><li><a href="" onclick="addme_reassign('+data.addme[i].id+'); return false;">Переназначить</a></li><li><a href="" onclick="addme_cancel('+data.addme[i].id+'); return false;">Отказать</a></li></ul></div>');
+            if(data.addme[i].complex == "y") { $("tr[uid='"+data.addme[i].sid+"']").attr("new_complex","true"); }
+            if(data.addme[i].complex == "n") { $("tr[uid='"+data.addme[i].sid+"']").attr("new_complex","false"); }
+            $("tr[uid='"+data.addme[i].sid+"']").attr("old_role", $("tr[uid='"+data.addme[i].sid+"'] select option:selected").val());
+            $("tr[uid='"+data.addme[i].sid+"']").attr("old_complex", $("tr[uid='"+data.addme[i].sid+"'] .complexcheck").prop("checked"));
+            $("tr[uid='"+data.addme[i].sid+"'] select").prop("disabled", false);
+            $("tr[uid='"+data.addme[i].sid+"'] select").removeAttr("onchange");
+            $("tr[uid='"+data.addme[i].sid+"'] .complexcheck").removeAttr("onchange");
+            if($("tr[uid='"+data.addme[i].sid+"'] select option:selected").val() !== data.addme[i].role) {
+              $("tr[uid='"+data.addme[i].sid+"'] td:nth-child(2)").prepend("<div class='addme_new_role' style='text-decoration:line-through;'>"+$("tr[uid='"+data.addme[i].sid+"'] select option:selected").text()+"</div>");
+              $("tr[uid='"+data.addme[i].sid+"'] select option[value='"+data.addme[i].role+"']").prop("selected", true);
+            }
+            var cur_boolean_new_complex = false;
+            if($("tr[uid='"+data.addme[i].sid+"']").attr("new_complex") == "true") { cur_boolean_new_complex = true; }
+            if(cur_boolean_new_complex !== $("tr[uid='"+data.addme[i].sid+"'] .complexcheck").prop("checked")) {
+              if(cur_boolean_new_complex == true) {
+                $("tr[uid='"+data.addme[i].sid+"'] td:nth-child(3)").prepend("<div style='position:relative;'><div class='complexcheck_addme_no'></div></div>");
+                $("tr[uid='"+data.addme[i].sid+"'] .complexcheck").prop("checked",true);
+              } else {
+                $("tr[uid='"+data.addme[i].sid+"'] td:nth-child(3)").prepend("<div style='position:relative;'><div class='complexcheck_addme_no complexcheck_addme_no2'></div></div>");
+                $("tr[uid='"+data.addme[i].sid+"'] .complexcheck").prop("checked",false);
+              }
+            }
+            var statuses = $('<td/>').attr("colspan", 2).addClass("yellowcolspan");
+            for (var c = 0; c < data.addme[i].story.length; c++) {
+              var status = $('<div/>').addClass("addme_status");
+              if(data.addme[i].story[c].status == "n") {
+                status.append(data.addme[i].comment);
+                status.append("<span>"+data.addme[i].story[c].time+"</span>");
+              }
+              if(data.addme[i].story[c].status == "r") {
+                status.append("<b>"+data.addme[i].story[c].name_from+" &#8594; "+data.addme[i].story[c].name_to+"</b>");
+                status.append($("<i/>").html(data.addme[i].story[c].comment));
+                status.append("<span>"+data.addme[i].story[c].time+"</span>");
+              }
+              statuses.append(status);
+            }
+            $("tr[uid='"+data.addme[i].sid+"']").next().append(statuses);
+          }
+        }
 			}
 		  } else { $.fancybox({ 'content' : m_error(data.error) }); }
 		}
+    });
+  }
+
+  function addme_accept(addme_id) {
+    var addme_tr = $("tr[addme_id='"+addme_id+"']");
+     var addme_accept_text = "Одобрить полностью заявку?";
+     var addme_accept_status = true;
+     var addme_change_role = false;
+     var addme_change_complex = false;
+     if(addme_tr.is("[new_role]")) {
+       if(addme_tr.attr("new_role") == addme_tr.find("select option:selected").val())  {
+         addme_change_role = true;
+       }
+       var cur_boolean_new_complex = false;
+       if(addme_tr.attr("new_complex") == "true") { cur_boolean_new_complex = true; }
+       if(cur_boolean_new_complex == addme_tr.find(".complexcheck").prop("checked")) {
+         addme_change_complex = true;
+       }
+       if(addme_change_role == false || addme_change_complex == false) {
+         addme_accept_text = "Вы одобрили предложенные изменения частично. Одобрить заявку частично?";
+         var cur_boolean_old_complex = false;
+         if(addme_tr.attr("old_complex") == "true") { cur_boolean_old_complex = true; }
+         if(addme_tr.attr("old_role") == addme_tr.find("select option:selected").val() && cur_boolean_old_complex == addme_tr.find(".complexcheck").prop("checked")) {
+           addme_accept_text = "Вы вернули предложенные изменения на те, что уже были внесены в систему. В таком случае откажите заявителю.";
+           addme_accept_status = false;
+         }
+       }
+     } else {
+       if(addme_tr.attr("add_role") == addme_tr.find("select option:selected").val())  {
+        addme_change_role = true;
+       }
+       var cur_boolean_add_complex = false;
+       if(addme_tr.attr("add_complex") == "true") { cur_boolean_add_complex = true; }
+       if(cur_boolean_add_complex == addme_tr.find(".complexcheck").prop("checked")) {
+         addme_change_complex = true;
+       }
+       if(addme_change_role == false || addme_change_complex == false) {
+         addme_accept_text = "Вы собираетесь одобрить предложенную заявку частично. Одобрить заявку частично?";
+       }
+     }
+     var addme_accept_text_render = "<div class='render_massage'>"+addme_accept_text+"</div>";
+     if(addme_accept_status == true) {
+       addme_accept_text_render += "<div class='render_massage_buttons'><a class='btn1' href='' onclick='addme_acceptYES("+addme_id+"); $.fancybox.close(); return false;' style='background:#f36b69;'>Одобрить</a> <a class='btn1' href='' onclick='$.fancybox.close(); return false;'>Отмена</a></div>";
+     }
+     render_massage("Заявка",addme_accept_text_render);
+  }
+
+  function addme_acceptYES(addme_id) {
+    var addme_tr = $("tr[addme_id='"+addme_id+"']");
+    $.ajax({
+      data: {
+        act: "addme_accept",
+        id: addme_id,
+        rid: addme_tr.find("select option:selected").val(),
+        complex: addme_tr.find(".complexcheck").prop("checked")
+      },
+      beforeSend: function() { startLoading(); $('.textalert').hide(); },
+  		success: function(answer) {
+  		  var data = (JSON.parse(answer));
+  		  if(data.error == "ok") {
+          var gotrow = data.a_info;
+          tr = $('<tr/>');
+          tr.attr("aid",gotrow.a_id);
+		      tr.css("display","none");
+          tr.append("<td><a href='' onclick='student("+gotrow.a_uid+",1); return false;'><b>" + gotrow.a_name + "</b><a> [" + gotrow.a_from + "]</td>");
+          tr.append('<td><select class="span12 selectrole" onchange="changerole('+gotrow.a_id+')"><option value="b">-</option><option value="u">участник</option><option value="p">призер</option><option value="w">победитель</option><option value="l">помощник организатора</option><option value="m">организатор</option><option value="h">главный организатор</option></select></td>');
+		      tr.append('<td class="center"><input class="complexcheck" type="checkbox" onchange="changerole('+gotrow.a_id+')"></td>');
+          tr.append("<td class=\"curevent_added\">" + gotrow.a_time + "</td>");
+          tr.append("<td class=\"curevent_by\">" + gotrow.a_by + "</td>");
+          tr.append("<td><i class='icon-remove' onclick='delActivity_event("+gotrow.a_id+")'></i></td>");
+          addme_tr.after(tr);
+          tr.find(".selectrole [value='"+gotrow.a_role+"']").prop("selected", true);
+          var complexcheck = false;
+          if(gotrow.a_complex == "y") { complexcheck = true; }
+          tr.find(".complexcheck").prop("checked", complexcheck);
+
+    		  $('tr[aid="'+gotrow.a_id+'"]').animate({'background-color': 'rgba(14,175,113,1.0)'}, 500, function() {
+    				$('tr[aid="'+gotrow.a_id+'"]').animate({'background-color': "rgba(255,255,255,0.7)"}, 2000, function() {
+    					$('tr[aid="'+gotrow.a_id+'"]').each(function() { $(this).removeAttr("style"); });
+    				});
+    		  });
+
+    		  $("tr[aid='"+gotrow.a_id+"']").slideRow('down');
+    		  $("tr[addme_id='"+addme_id+"']").slideRow('up', 500, function() {
+            if(addme_tr.is("[new_role]")) {
+              addme_tr.next().next().remove();
+            }
+            $("tr[addme_id='"+addme_id+"']").remove();
+          });
+          $(".involvednum").html(parseInt($(".involvednum").html())+1);
+          $('.textalert').hide();
+        } else { $.fancybox({ 'content' : m_error(data.error) }); }
+    	}
+    });
+  }
+
+  function addme_reassign(addme_id) {
+    $(".commentwindow h1").html("Переназначение заявки");
+    $("#addme_holder").parent().parent().show();
+    $("#addme_holderend").html('<span style="color:#924242;">Еще не выбран</span>');
+    $("#addme_holderend").attr("hid","");
+    $("#addme_holder").autocomplete({
+      source: function(request, response) {
+          $.ajax({
+            url: "quick",
+            data: {
+                act: 'h',
+                term: request.term
+            },
+            dataType: "json",
+            beforeSend: function() {},
+            success: function(data) {
+            response($.map(data, function(item) {
+                return {
+                    label: item.value,
+                    value: item.value,
+                    id: item.id
+                }
+            }));
+          }
+  		  });
+  	  },
+      search: function(){ $(this).addClass('withload'); },
+      response: function(){ $(this).removeClass('withload'); },
+      delay: 100,
+      minLength: 2,
+      select: function( event, ui ) {
+  		  if($(this).attr("id") == "addme_holder") {
+    			$("#addme_holderend").html(ui.item.value);
+    			$("#addme_holderend").attr("hid", ui.item.id);
+    			$(this).val("");
+          $("#addme_comment").focus();
+    			return false;
+  		  }
+      }
+    });
+    $("#addme_comment").val("");
+    $("#addme_comment").attr("placeholder","Сообщение пользователю");
+    $("#addme_savebtn").attr("onclick", "addme_reassignYES("+addme_id+"); return false;").html("Переназначить");
+    $("html, body").animate({ scrollTop: 0 });
+    $(".fillblack, .commentwindow").fadeIn(400);
+    $("#addme_holder").focus();
+  }
+
+  function addme_reassignYES(addme_id) {
+    if($("#addme_holderend").attr("hid") == "" || $("#addme_comment").val().trim() == "") { return false; }
+    var addme_tr = $("tr[addme_id='"+addme_id+"']");
+    $.ajax({
+      data: {
+        act: "addme_reassign",
+        id: addme_id,
+        hid: $("#addme_holderend").attr("hid"),
+        comment: $("#addme_comment").val().trim()
+      },
+      beforeSend: function() { startLoading(); $('.textalert').hide(); },
+  		success: function(answer) {
+  		  var data = (JSON.parse(answer));
+  		  if(data.error == "ok") {
+          closemw("commentwindow");
+          $.fancybox({
+  				'afterClose':function () {
+            if(data.remove == "y") {
+              $("tr[addme_id='"+addme_id+"']").slideRow('up', 500, function() {
+                if(addme_tr.is("[new_role]")) {
+                  $("tr[addme_id='"+addme_id+"']").next().remove();
+                }
+                $("tr[addme_id='"+addme_id+"']").remove();
+              });
+            } else {
+              var status = $('<div/>').addClass("addme_status");
+              status.append("<b>"+data.story.name_from+" &#8594; "+data.story.name_to+"</b>");
+              status.append($("<i/>").html(HTML.encode($("#addme_comment").val().trim())));
+              status.append("<span>"+data.story.time+"</span>");
+              addme_tr.find(".addme_status").last().after(status);
+            }
+  				},
+  				'content' : m_ok('Заявка успешно переназначена!')
+  			  });
+        } else { $.fancybox({ 'content' : m_error(data.error) }); }
+    	}
+    });
+  }
+
+  function addme_cancel(addme_id) {
+    $(".commentwindow h1").html("Отказ заявки");
+    $("#addme_holder").parent().parent().hide();
+    $("#addme_comment").val("");
+    $("#addme_comment").attr("placeholder","Причина отказа");
+    $("#addme_savebtn").attr("onclick", "addme_cancelASK("+addme_id+"); return false;").html("Отказать");
+    $("html, body").animate({ scrollTop: 0 });
+    $(".fillblack, .commentwindow").fadeIn(400);
+    $("#addme_comment").focus();
+  }
+
+  function addme_cancelASK(addme_id) {
+    if($("#addme_comment").val().trim() == "") { return false; }
+    render_massage("Заявка","<div class='render_massage'>Отказать заявителю?</div><div class='render_massage_buttons'><a class='btn1' href='' onclick='addme_cancelYES("+addme_id+"); $.fancybox.close(); return false;' style='background:#f36b69;'>Отказать</a> <a class='btn1' href='' onclick='$.fancybox.close(); return false;'>Отмена</a></div>");
+  }
+
+  function addme_cancelYES(addme_id) {
+    var addme_tr = $("tr[addme_id='"+addme_id+"']");
+    $.ajax({
+      data: {
+        act: "addme_cancel",
+        id: addme_id,
+        comment: $("#addme_comment").val().trim()
+      },
+      beforeSend: function() { startLoading(); $('.textalert').hide(); },
+  		success: function(answer) {
+  		  var data = (JSON.parse(answer));
+  		  if(data.error == "ok") {
+          closemw("commentwindow");
+          $("tr[addme_id='"+addme_id+"']").slideRow('up', 500, function() {
+            if(addme_tr.is("[new_role]")) {
+              $("tr[addme_id='"+addme_id+"']").next().remove();
+              window.location.reload();
+            }
+            $("tr[addme_id='"+addme_id+"']").remove();
+          });
+        } else { $.fancybox({ 'content' : m_error(data.error) }); }
+    	}
     });
   }
 
@@ -2339,7 +2664,7 @@ function delmembersYES() {
 				addcomplex = '';
 				tr.append("<td><a href=\"\" onclick=\"student("+alist[i].a_uid+",1); return false;\"><b>" + alist[i].a_name + "</b></a> [" + alist[i].a_from + "]</td>");
 				var role;
-				if(alist[i].a_complex == "y") { addcomplex = ' <img width="15px" src="img/muscle_black.svg">'; }
+				if(alist[i].a_complex == "y") { addcomplex = ' <img width="15px" src="img/muscle_black.svg?2">'; }
 				if(alist[i].a_role == "u") { tr.append('<td>участник'+addcomplex+'</td>'); }
 				else if(alist[i].a_role == "p") { tr.append('<td>призер'+addcomplex+'</td>'); }
 				else if(alist[i].a_role == "w") { tr.append('<td>победитель'+addcomplex+'</td>'); }
@@ -2367,7 +2692,7 @@ function delmembersYES() {
       beforeSend: function() {
         beforeRow = $('<tr uid="'+userid+'" style="display:none;"><td><b><img src="img/loading.gif" alt="" width="20px" /></b></td><td></td><td class="center"></td><td class="curevent_added"></td><td class="curevent_by"></td><td></td></tr>');
         $('.activitytable tr:first').after(beforeRow);
-		$("tr[uid='"+userid+"']").slideRow('down');
+		    $("tr[uid='"+userid+"']").slideRow('down');
       },
       error: function(jqXHR, exception) {
         // Вывод ошибки
@@ -2394,10 +2719,10 @@ function delmembersYES() {
           var gotrow = data.gr;
           tr = $('<tr/>');
           tr.attr("aid",gotrow.a_id);
-		  tr.css("display","none");
+		      tr.css("display","none");
           tr.append("<td><a href='' onclick='student("+gotrow.a_uid+",1); return false;'><b>" + gotrow.a_name + "</b><a> [" + gotrow.a_from + "]</td>");
           tr.append('<td><select class="span12 selectrole" onchange="changerole('+gotrow.a_id+')"><option value="b">-</option><option value="u">участник</option><option value="p">призер</option><option value="w">победитель</option><option value="l">помощник организатора</option><option value="m">организатор</option><option value="h">главный организатор</option></select></td>');
-		  tr.append('<td class="center"><input class="complexcheck" type="checkbox" onchange="changerole('+gotrow.a_id+')"></td>');
+		      tr.append('<td class="center"><input class="complexcheck" type="checkbox" onchange="changerole('+gotrow.a_id+')"></td>');
           tr.append("<td class=\"curevent_added\">" + gotrow.a_time + "</td>");
           tr.append("<td class=\"curevent_by\">" + gotrow.a_by + "</td>");
           tr.append("<td><i class='icon-remove' onclick='delActivity_event("+gotrow.a_id+")'></i></td>");
@@ -2436,18 +2761,18 @@ function delmembersYES() {
         }
         else if(data.error == "a_notexist") {
           // Карта с таким id не существует
-		  $("tr[uid='"+userid+"']").slideRow('up', 500, function() { $("tr[uid='"+userid+"']").remove(); });
-		  addAlert = $("<div/>").addClass("alert").addClass("alert-error").append('<span><b>Карта с таким id не существует</b></span>').css("display","none");
-		  $(".fastmassage").append(addAlert);
-		  addAlert.slideDown(function() { $(this).delay("3500").slideUp(function() { $(this).remove(); }); });
-          $("#add_activity").focus();
-        }
-        else if(data.error == "a_wrongcode") {
-          // Неверный формат кода
-		  $("tr[uid='"+userid+"']").slideRow('up', 500, function() { $("tr[uid='"+userid+"']").remove(); });
-		  addAlert = $("<div/>").addClass("alert").addClass("alert-error").append('<span><b>Введен неверный формат кода карты</b></span>').css("display","none");
-		  $(".fastmassage").append(addAlert);
-		  addAlert.slideDown(function() { $(this).delay("3500").slideUp(function() { $(this).remove(); }); });
+    		  $("tr[uid='"+userid+"']").slideRow('up', 500, function() { $("tr[uid='"+userid+"']").remove(); });
+    		  addAlert = $("<div/>").addClass("alert").addClass("alert-error").append('<span><b>Карта с таким id не существует</b></span>').css("display","none");
+    		  $(".fastmassage").append(addAlert);
+    		  addAlert.slideDown(function() { $(this).delay("3500").slideUp(function() { $(this).remove(); }); });
+              $("#add_activity").focus();
+            }
+            else if(data.error == "a_wrongcode") {
+              // Неверный формат кода
+    		  $("tr[uid='"+userid+"']").slideRow('up', 500, function() { $("tr[uid='"+userid+"']").remove(); });
+    		  addAlert = $("<div/>").addClass("alert").addClass("alert-error").append('<span><b>Введен неверный формат кода карты</b></span>').css("display","none");
+    		  $(".fastmassage").append(addAlert);
+    		  addAlert.slideDown(function() { $(this).delay("3500").slideUp(function() { $(this).remove(); }); });
           $("#add_activity").focus();
         }
         else {
@@ -2455,6 +2780,7 @@ function delmembersYES() {
             'height' : 250,
             'content' : m_error(data.error)
           });
+          $("tr[uid='"+userid+"']").slideRow('up', 500, function() { $("tr[uid='"+userid+"']").remove(); });
         }
       }
     });

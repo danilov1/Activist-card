@@ -1,5 +1,5 @@
 <?php return array (
-  'mysql_user' => '',
-  'mysql_pw' => '',
-  'mysql_db' => '',
+  'mysql_user' => '', // имя пользователя
+  'mysql_pw' => '',   // пароль
+  'mysql_db' => ''    // название базы данных
 );

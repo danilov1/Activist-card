@@ -2,7 +2,7 @@
 <head>
   <meta charset="utf-8">
   <?php render_meta("Моя активность","my"); ?>
-  
+
   <style>
   	@media screen and (max-width: 768px) {
 		.titleline .row-fluid { border:none; }
@@ -11,7 +11,7 @@
 		.undermenu { display:inline-block; }
 	}
   </style>
-  
+
   <script type="text/javascript">
   $(document).ready(function () {
 	  activity();
@@ -42,7 +42,7 @@
               </div>
             </div>
             <div class="row-fluid">
-              <table class="table_withhead table_bigrow activities">
+              <table class="table_withhead table_normalrow activities">
                 <tr class="table_head">
                   <td width="12%"><b>Дата</b></td>
                   <td><b>Наименование мероприятия</b></td>

@@ -107,7 +107,7 @@ $(function() {
 		return false;
      }
   });
-  
+
 	$.ajaxPrefilter(function(options,originalOptions,jqXHR) {
 		var originalSuccess = options.success;
 		options.success = function (data) {
@@ -118,16 +118,16 @@ $(function() {
 				else { if (originalSuccess != null) { originalSuccess(data); } }
 			} catch (e) {
 				if (originalSuccess != null) { originalSuccess(data); }
-			} 
+			}
 		};
 	});
-  
+
   $("a.filter").click(function() {
 	  if($("div.filter").is(":visible")) { $("div.filter").slideUp(); }
 	  else { $("div.filter").slideDown(); }
 	  return false;
   });
-  
+
   if(IsIE8Browser()) {
       $('[placeholder]').each(function () {
           var objie = $(this);
@@ -151,7 +151,7 @@ $(function() {
           }
       });
   }
-  
+
   $("body").one('load', function() { $("body").show(); }).each(function() { if(this.complete) $(this).load(); });
 });
 
@@ -184,7 +184,7 @@ function logout() {
     data: { act: "logout" }
   })
   .done(function(answer) {
-    var preanswer = JSON.parse(answer);                                      
+    var preanswer = JSON.parse(answer);
     var logindata = preanswer.error;
     if(logindata == 'ok') {
       $('.page').fadeOut(500, function() { window.location.reload(); });
@@ -235,7 +235,7 @@ function setpw() {
 }
 
 jQuery.fn.center = function () {
-    this.css("left", Math.max(0, (($(window).width() - $(this).outerWidth()) / 2) + 
+    this.css("left", Math.max(0, (($(window).width() - $(this).outerWidth()) / 2) +
                                                 $(window).scrollLeft()) + "px");
     return this;
 }
@@ -255,10 +255,10 @@ function byresize() {
   });
 }
 
-$(window).resize(function() { byresize(); }); 
+$(window).resize(function() { byresize(); });
 $(function(){ byresize(); });
 
-function ismobile() { 
+function ismobile() {
  if( navigator.userAgent.match(/Android/i)
  || navigator.userAgent.match(/webOS/i)
  || navigator.userAgent.match(/iPhone/i)
@@ -313,7 +313,7 @@ function pager(curfunc,curpage,onpage,maxrows,allrows) {
 			if((numpages-endnum) <= 0) { endnum = numpages; next = "n"; }
 		} else { startnum = 1; endnum = onpage; }
 	}
-	
+
 	$(".pager").html("");
 	if(prev == "y") {
 		apager = $('<a/>');

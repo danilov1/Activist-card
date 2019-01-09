@@ -2,9 +2,146 @@
 /* --- © АНО "Центр молодежных и студенческих программ" --- */
 /* -------------------------------------------------------- */
 
+/* SlideRow */
+(function($) {
+var sR = {
+    defaults: {
+        slideSpeed: 400,
+        easing: false,
+        callback: false
+    },
+    thisCallArgs: {
+        slideSpeed: 400,
+        easing: false,
+        callback: false
+    },
+    methods: {
+        up: function (arg1,arg2,arg3) {
+            if(typeof arg1 == 'object') {
+                for(p in arg1) {
+                    sR.thisCallArgs.eval(p) = arg1[p];
+                }
+            }else if(typeof arg1 != 'undefined' && (typeof arg1 == 'number' || arg1 == 'slow' || arg1 == 'fast')) {
+                sR.thisCallArgs.slideSpeed = arg1;
+            }else{
+                sR.thisCallArgs.slideSpeed = sR.defaults.slideSpeed;
+            }
+
+            if(typeof arg2 == 'string'){
+                sR.thisCallArgs.easing = arg2;
+            }else if(typeof arg2 == 'function'){
+                sR.thisCallArgs.callback = arg2;
+            }else if(typeof arg2 == 'undefined') {
+                sR.thisCallArgs.easing = sR.defaults.easing;
+            }
+            if(typeof arg3 == 'function') {
+                sR.thisCallArgs.callback = arg3;
+            }else if(typeof arg3 == 'undefined' && typeof arg2 != 'function'){
+                sR.thisCallArgs.callback = sR.defaults.callback;
+            }
+            var $cells = $(this).find('td');
+            $cells.wrapInner('<div class="slideRowUp" />');
+            var currentPadding = $cells.css('padding');
+            $cellContentWrappers = $(this).find('.slideRowUp');
+            $cellContentWrappers.slideUp(sR.thisCallArgs.slideSpeed,sR.thisCallArgs.easing).parent().animate({
+                                                                                                                paddingTop: '0px',
+                                                                                                                paddingBottom: '0px'},{
+                                                                                                                complete: function () {
+                                                                                                                    $(this).children('.slideRowUp').replaceWith($(this).children('.slideRowUp').contents());
+                                                                                                                    $(this).parent().css({'display':'none'});
+                                                                                                                    $(this).css({'padding': currentPadding});
+                                                                                                                }});
+            var wait = setInterval(function () {
+                if($cellContentWrappers.is(':animated') === false) {
+                    clearInterval(wait);
+                    if(typeof sR.thisCallArgs.callback == 'function') {
+                        sR.thisCallArgs.callback.call(this);
+                    }
+                }
+            }, 100);
+            return $(this);
+        },
+        down: function (arg1,arg2,arg3) {
+            if(typeof arg1 == 'object') {
+                for(p in arg1) {
+                    sR.thisCallArgs.eval(p) = arg1[p];
+                }
+            }else if(typeof arg1 != 'undefined' && (typeof arg1 == 'number' || arg1 == 'slow' || arg1 == 'fast')) {
+                sR.thisCallArgs.slideSpeed = arg1;
+            }else{
+                sR.thisCallArgs.slideSpeed = sR.defaults.slideSpeed;
+            }
+
+            if(typeof arg2 == 'string'){
+                sR.thisCallArgs.easing = arg2;
+            }else if(typeof arg2 == 'function'){
+                sR.thisCallArgs.callback = arg2;
+            }else if(typeof arg2 == 'undefined') {
+                sR.thisCallArgs.easing = sR.defaults.easing;
+            }
+            if(typeof arg3 == 'function') {
+                sR.thisCallArgs.callback = arg3;
+            }else if(typeof arg3 == 'undefined' && typeof arg2 != 'function'){
+                sR.thisCallArgs.callback = sR.defaults.callback;
+            }
+            var $cells = $(this).find('td');
+            $cells.wrapInner('<div class="slideRowDown" style="display:none;" />');
+            $cellContentWrappers = $cells.find('.slideRowDown');
+            $(this).show();
+            $cellContentWrappers.slideDown(sR.thisCallArgs.slideSpeed, sR.thisCallArgs.easing, function() { $(this).replaceWith( $(this).contents()); });
+
+            var wait = setInterval(function () {
+                if($cellContentWrappers.is(':animated') === false) {
+                    clearInterval(wait);
+                    if(typeof sR.thisCallArgs.callback == 'function') {
+                        sR.thisCallArgs.callback.call(this);
+                    }
+                }
+            }, 100);
+            return $(this);
+        }
+    }
+};
+
+$.fn.slideRow = function(method,arg1,arg2,arg3) {
+    if(typeof method != 'undefined') {
+        if(sR.methods[method]) {
+            return sR.methods[method].apply(this, Array.prototype.slice.call(arguments,1));
+        }
+    }
+};
+})(jQuery);
+
 /* COMMON START */
-$(document).ready(function () {
-});
+
+function addme_alerts(addme_data) {
+	var div_box = $("<div/>");
+	for(var i = 0; i < addme_data.length; i++) {
+		var div = $("<div/>").addClass("alert").addClass("alert-addme").addClass("alert-addme-yellow");
+		var content;
+		div.attr("addme_alert_id",i);
+		div.append('<button type="button" class="close" onclick="addme_alert_remove('+i+','+addme_data[i].event_id+')">×</button>');
+		if(addme_data[i].status == "c") {
+			content = 'отклонена';
+		} else {
+			content = 'одобрена';
+			if(addme_data[i].status == "h") { content = 'частично одобрена'; }
+		}
+		var answer = '';
+		if(addme_data[i].answer) { answer = '<div>'+addme_data[i].answer+'</div>'; }
+		div.append('<b>Заявка '+content+'</b><a href="events-'+addme_data[i].event_id+'">'+addme_data[i].event_name+'</a>'+answer+'<span>'+addme_data[i].holder+'<br>'+addme_data[i].time+'</span>');
+		div_box.append(div);
+	}
+	$(".undermenu").after(div_box);
+}
+
+function addme_alert_remove(id,eid) {
+	$("[addme_alert_id="+id+"]").slideUp(function() {
+		$.ajax({
+			data: { act: "addme_done", event: eid }
+		});
+	});
+}
 
 /* ACTIVITY */
 function activity() {
@@ -38,7 +175,7 @@ function activity() {
 				  if(getdata[i].points == "0") { points = "-"; }
 
 				  complex = "";
-				  if(getdata[i].complex == "y") { complex = " <img style=\"vertical-align:top; width:15px; opacity:0.8;\" src=\"img/muscle_black.svg\">"; }
+				  if(getdata[i].complex == "y") { complex = " <img style=\"vertical-align:top; width:15px; opacity:1;\" src=\"img/muscle_black.svg?2\">"; }
 
 				  tr = $('<tr/>');
 				  tr.append("<td class=\"blowit center curmydate\">" + dates + "</td>");
@@ -51,6 +188,7 @@ function activity() {
 			} else {}
 			$(".points b").html(data.scores);
 			$(".rank b").html(data.current);
+			addme_alerts(data.addme_alerts);
 		  } else { $.fancybox({ 'content' : data.error }); }
 		}
 	  });
@@ -89,7 +227,7 @@ function init_events() {
       source: function(request, response) {
 		  	$(".searchholder").attr("holderid","");
               $.ajax({
-                  url: "quick.php",
+                  url: "quick",
                   data: {
                       act: 'd',
                       term: request.term
@@ -175,6 +313,7 @@ function page_events(setcurpage) {
 				pager("events",curpage,5,data.maxrows,data.allrows,$(".pager"));
 				$(".points b").html(data.scores);
 				$(".rank b").html(data.current);
+				addme_alerts(data.addme_alerts);
 			} else if(data.error == "notfound") {
 				$('.pager').html('');
 				$('.textalert').show();
@@ -220,7 +359,11 @@ function page_groups(setcurpage) {
 					for (var i = 0; i < getdata.length; i++) {
 
 						addicon = "";
-						if(getdata[i].l_icon !== "n") { addicon = "<img class='inlinesvg' src='content/svg/"+getdata[i].l_icon+"' /> "; }
+						if(getdata[i].l_icon !== "n") {
+              l_icon = getdata[i].l_icon.split('.');
+              if(l_icon[1] == 'svg') { addicon = "<img class='inlinesvg' src='content/svg/"+getdata[i].l_icon+"' /> "; }
+              else { addicon = "<img class='inlinesvg' src='content/img/"+getdata[i].l_icon+"' /> "; }
+            }
 
 						tr = $('<tr/>');
 						tr.addClass("rowclick");
@@ -233,11 +376,13 @@ function page_groups(setcurpage) {
 				pager("groups",curpage,5,data.maxrows,data.allrows,$(".pager"));
 				$(".points b").html(data.scores);
 				$(".rank b").html(data.current);
+				addme_alerts(data.addme_alerts);
 			} else if(data.error == "notfound") {
 				$('.pager').html('');
 				$('.textalert').show();
 				$(".points b").html(data.scores);
 				$(".rank b").html(data.current);
+				addme_alerts(data.addme_alerts);
 			} else { $.fancybox({ 'content' : data.error }); }
 		}
 	});
@@ -290,7 +435,10 @@ function page_rating(setcurpage, hideload) {
 							icons_new.push(getdata[i].lists[c][3]);
 							icons_new.push(getdata[i].name);
 							icons_array.push(icons_new);
-							newicon = "<a href='' onclick='showlist("+(icons_array.length-1)+"); return false;' onmouseover='goonit = \"no\"' onmouseout='goonit = \"yes\"'><img class='inlinesvg' src='content/svg/"+getdata[i].lists[c][3]+"' alt='"+getdata[i].lists[c][1]+"' /></a>";
+							newicon = "<a href='' onclick='showlist("+(icons_array.length-1)+"); return false;' onmouseover='goonit = \"no\"' onmouseout='goonit = \"yes\"'>";
+              l_icon = getdata[i].lists[c][3].split('.');
+              if(l_icon[1] == 'svg') { newicon += "<img class='inlinesvg' src='content/svg/"+getdata[i].lists[c][3]+"' alt='"+getdata[i].lists[c][1]+"' /></a>"; }
+              else { newicon += "<img class='inlinesvg' src='content/img/"+getdata[i].lists[c][3]+"' alt='"+getdata[i].lists[c][1]+"' /></a>"; }
 							listsicons += newicon+" ";
 						}
 					}
@@ -346,6 +494,7 @@ function page_rating(setcurpage, hideload) {
 
 				$(".points b").html(data.scores);
 				$(".rank b").html(data.current);
+				addme_alerts(data.addme_alerts);
 
 			} else if(data.error == "notfound") {
 				$('.ratingtable').html('<tr class="table_head center"><td width="9%"><b>Место</b></td><td width="9%"><b>Баллы</b></td><td><b>ФИО активиста</b></td><td width="5%" class="owncourse"><b>Курс</b></td><td width="29%"><b>Институт/ВШ</b></td></tr>');
@@ -359,7 +508,10 @@ function page_rating(setcurpage, hideload) {
 function showlist(iconid) {
 	elem = icons_array[iconid];
 	renderdiv = $("<div/>").addClass("row-fluid listicon").css("max-width","400px");
-	renderdiv.append("<div class='span4'><img src='content/svg/"+elem[3]+"' alt='"+elem[1]+"' /></div>");
+  l_icon = elem[3].split('.');
+  if(l_icon[1] == 'svg') { renderdiv.append("<div class='span4'><img src='content/svg/"+elem[3]+"' alt='"+elem[1]+"' /></div>"); }
+  else { renderdiv.append("<div class='span4'><img src='content/img/"+elem[3]+"' alt='"+elem[1]+"' /></div>"); }
+
 	renderdiv.append("<div class='span8'><p><b class='listicon_name'>"+elem[4]+"</b></p><p><b class='listicon_group'>"+elem[1]+"</b></p><div>"+HTML.decode(elem[2])+"</div><p><a href='groups-"+elem[0]+"' style='font-size:12px; text-decoration:underline; color:#4b8ab5;'><i>Просмотреть всех...</i></a></p></div>");
 	$.fancybox({ 'content' : renderdiv });
 }
@@ -404,7 +556,10 @@ function showlist(iconid) {
 			else {
 				infobox_lists.show();
 				for (var c = 0; c < data.lists.length; c++) {
-					$(".box_student_lists").append('<div class="greybox"><div class="event_info_inner" style="margin-bottom:-1px;"><div><img class="inlinesvg" src="content/svg/'+data.lists[c][3]+'" alt="'+data.lists[c][1]+'" style="margin:0 8px 0 0; vertical-align:middle;"><span style="display:inline-block; vertical-align:middle; padding:3px 0 0 0; color:#666;"><a target="_blank" href="groups-'+data.lists[c][0]+'">'+data.lists[c][1]+'</a></span></div></div></div>');
+          addicon = 'svg';
+          l_icon = data.lists[c][3].split('.');
+          if(l_icon[1] !== 'svg') { addicon = 'img'; }
+					$(".box_student_lists").append('<div class="greybox"><div class="event_info_inner" style="margin-bottom:-1px;"><div><img class="inlinesvg" src="content/'+addicon+'/'+data.lists[c][3]+'" alt="'+data.lists[c][1]+'" style="margin:0 8px 0 0; vertical-align:middle;"><span style="display:inline-block; vertical-align:middle; padding:3px 0 0 0; color:#666;"><a target="_blank" href="groups-'+data.lists[c][0]+'">'+data.lists[c][1]+'</a></span></div></div></div>');
 				}
 			}
 
@@ -433,7 +588,7 @@ function showlist(iconid) {
 				else if(getdata[i].role == "b") { role = "-"; }
 
 				complex = "";
-				if(getdata[i].complex == "y") { complex = " <img style=\"vertical-align:top; width:15px; opacity:0.8;\" src=\"img/muscle_black.svg\">"; }
+				if(getdata[i].complex == "y") { complex = " <img style=\"vertical-align:top; width:15px; opacity:0.8;\" src=\"img/muscle_black.svg?2\">"; }
 
 				tr = $('<tr/>');
 				tr.attr("aid", ""+getdata[i].aid+"");
@@ -557,7 +712,10 @@ function page_group() {
 				$(".editSortFIO").html("<b><a href='' onclick='sortFIO(); return false;'>ФИО студента</a></b>");
 				var members = data.members;
 				if(data.icon !== "n") {
-					$(".titleline h1").prepend("<img class='inlinesvg inlinesvg_title' src='content/svg/"+data.icon+"' alt='' />");
+          addicon = 'svg';
+          l_icon = data.icon.split('.');
+          if(l_icon[1] !== 'svg') { addicon = 'img'; }
+					$(".titleline h1").prepend("<img class='inlinesvg inlinesvg_title' src='content/"+addicon+"/"+data.icon+"' alt='' />");
 				}
 				$(".list_info").append($("<div/>").addClass("span12 inforow").html("<div><b>Кол-во студентов:</b> <span class='memberscount'>"+members.length+"</span></div>"));
 
@@ -578,6 +736,7 @@ function page_group() {
 				}
 				$(".points b").html(data.scores);
 				$(".rank b").html(data.current);
+				addme_alerts(data.addme_alerts);
 			} else { $.fancybox({ 'content' : data.error }); }
 		}
 	});
@@ -598,7 +757,7 @@ function sortFIO() {
 		success: function(answer) {
 		  var data = (JSON.parse(answer));
 		  if(data.error == "ok") {
-			$(".activitytable").html('<tr class="table_head"><td><b>ФИО [факультет/курс]</b></td><td width="20%" class="curevent_role"><b>Роль</b></td><td width="4%" style="padding:3px !important;"><img src="img/muscle.svg" /></td><td width="14%" class="curevent_added"><b>Добавлено</b></td><td width="18%" class="curevent_by"><b>Фиксатор</b></td></tr>');
+			$(".activitytable").html('<tr class="table_head"><td><b>ФИО [факультет/курс]</b></td><td width="20%" class="curevent_role"><b>Роль</b></td><td width="4%" style="padding:3px !important;"><img src="img/muscle.svg?2" style="max-width:20px;" /></td><td width="14%" class="curevent_added"><b>Добавлено</b></td><td width="18%" class="curevent_by"><b>Фиксатор</b></td></tr>');
 
 			var getdata = (JSON.parse(answer)).einfo;
 
@@ -625,13 +784,34 @@ function sortFIO() {
 
 			if(getdata.comment) { $(".event_comment_box").html("<div class='event_comment'><span style='width:100%;'>"+getdata.comment+"</span></div>"); }
 
+			var isme = "n";
 			if(data.allrows == '0') {
 			  $('.textalert').show();
 			} else {
 			  var alist = data.alist;
 			  for (var i = 0; i < alist.length; i++) {
 				tr = $('<tr/>');
-				tr.append("<td><a href='' onclick='student("+alist[i].a_uid+",1); return false;'><b>" + alist[i].a_name + "</b></a> [" + alist[i].a_from + "]</td>");
+				var addme_button = "";
+				if( alist[i].isme ) {
+					isme = "y";
+					tr.attr("isme","y");
+					if(!data.addme) {
+						tr.addClass("rowclick").addClass("rowedit");
+						addme_button = ' <button onclick="addme_window();"><i class="icon-edit icon-white"></i> изменить</button>';
+					} else {
+						tr.attr("new_role",data.addme.role);
+						if(data.addme.complex == "y") { tr.attr("new_complex","true"); }
+						else { tr.attr("new_complex","false"); }
+
+						addme_button = ' <button onclick="addme_remove();"><i class="icon-remove icon-white"></i> отменить заявку</button>';
+						tr.addClass("rowyellow");
+					}
+					tr.attr("old_role",alist[i].a_role);
+					if(alist[i].a_complex == "y") { tr.attr("old_complex","true"); }
+					else { tr.attr("old_complex","false"); }
+				}
+
+				tr.append("<td><a href='' onclick='student("+alist[i].a_uid+",1); return false;'><b>" + alist[i].a_name + "</b></a> [" + alist[i].a_from + "]"+addme_button+"</td>");
 				var role;
 				addcomplex = ' <div class="complexcheck-show" style="margin:-4px 0 0 -2px;"></div>';
 				if(alist[i].a_complex == "y") { addcomplex = ' <div class="complexcheck-show complexcheck-show2" style="margin:-4px 0 0 -2px;"></div>'; }
@@ -648,9 +828,181 @@ function sortFIO() {
 				$('.activitytable').append(tr);
 			  }
 			}
+
+			if( data.addme ) {
+				if( isme == "y" ) {
+					var addme_tr = $("tr[isme='y']");
+					if(addme_tr.attr("new_role") !== addme_tr.attr("old_role")) {
+						addme_tr.find("td:nth-child(2)").html("<div class='addme_new_role' style='text-decoration:line-through;'>"+addme_tr.find("td:nth-child(2)").html()+"</div>");
+						var addme_newrole = "";
+						if(addme_tr.attr("new_role") == "u") { addme_newrole = "участник"; }
+						else if(addme_tr.attr("new_role") == "p") { addme_newrole = "призер"; }
+						else if(addme_tr.attr("new_role") == "w") { addme_newrole = "победитель"; }
+						else if(addme_tr.attr("new_role") == "l") { addme_newrole = "помощник организатора"; }
+						else if(addme_tr.attr("new_role") == "m") { addme_newrole = "организатор"; }
+						else if(addme_tr.attr("new_role") == "h") { addme_newrole = "главный организатор"; }
+						else if(addme_tr.attr("new_role") == "b") { addme_newrole = "-"; }
+						addme_tr.find("td:nth-child(2)").append(addme_newrole);
+					}
+					var cur_boolean_new_complex = false;
+					if(addme_tr.attr("new_complex") == "true") { cur_boolean_new_complex = true; }
+					var cur_boolean_old_complex = false;
+					if(addme_tr.attr("old_complex") == "true") { cur_boolean_old_complex = true; }
+					if(cur_boolean_new_complex !== cur_boolean_old_complex) {
+						if(cur_boolean_new_complex == true) {
+							addme_tr.find("td:nth-child(3)").prepend("<div style='position:relative;'><div class='complexcheck_addme_no user-a'></div></div>");
+							addme_tr.find(".complexcheck-show").addClass("complexcheck-show2");
+						} else {
+							addme_tr.find("td:nth-child(3)").prepend("<div style='position:relative;'><div class='complexcheck_addme_no user-a complexcheck_addme_no2'></div></div>");
+							addme_tr.find(".complexcheck-show").removeClass("complexcheck-show2");
+						}
+					}
+				} else {
+					var addme_button = ' <button onclick="addme_remove();"><i class="icon-remove icon-white"></i> отменить заявку</button>';
+					tr = $('<tr/>');
+					tr.addClass("rowyellow");
+					tr.attr("isme","y");
+					tr.append("<td><a href='' onclick='student("+data.addme.sid+",1); return false;'><b>" + data.addme.name + "</b></a> [" + data.addme.from + "]"+addme_button+"</td>");
+					if(data.addme.role == "u") { tr.append('<td>участник</td>'); }
+					else if(data.addme.role == "p") { tr.append('<td>призер</td>'); }
+					else if(data.addme.role == "w") { tr.append('<td>победитель</td>'); }
+					else if(data.addme.role == "l") { tr.append('<td>помощник организатора</td>'); }
+					else if(data.addme.role == "m") { tr.append('<td>организатор</td>'); }
+					else if(data.addme.role == "h") { tr.append('<td>главный организатор</td>'); }
+					else if(data.addme.role == "b") { tr.append('<td>-</td>'); }
+					var role;
+					addcomplex = ' <div class="complexcheck-show" style="margin:-4px 0 0 -2px;"></div>';
+					if(data.addme.complex == "y") { addcomplex = ' <div class="complexcheck-show complexcheck-show2" style="margin:-4px 0 0 -2px;"></div>'; }
+					tr.append("<td class=\"center\">" + addcomplex + "</td>");
+					tr.append("<td class=\"curevent_added\"></td>");
+					tr.append("<td class=\"curevent_by\"></td>");
+					$('.activitytable tbody tr:first-child').after(tr);
+				}
+
+				// for all addme cases
+				var status = $('<div/>').addClass("addme_status");
+				status.append(data.addme.comment);
+				status.append("<span>"+data.addme.time+"</span>");
+				$("tr[isme=y] td:nth-child(1)").append(status);
+			}
+
+			if(!data.addme && isme == "n") {
+				$(".undermenu").after('<div class="row-fluid" style="margin-top:5px;"><button href="" class="span12 btn btn-yellow" onclick="addme_window();"><i class="icon-plus icon-white"></i> Меня не добавили</button></div>')
+			}
 			$(".points b").html(data.scores);
 			$(".rank b").html(data.current);
+			addme_alerts(data.addme_alerts);
 		  } else { $.fancybox({ 'content' : data.error }); }
 		}
     });
   }
+
+	function addme_window() {
+		if($("tr[isme=y]").length > 0) {
+			$(".addmewindow h1").html("Меня добавили неправильно");
+			$("#addme_role [value='"+$("tr[isme=y]").attr("old_role")+"']").prop("selected", true);
+			if($("tr[isme=y]").attr("old_complex") == "true") { $("#addme_complex").prop("checked", true); }
+			else { $("#addme_complex").prop("checked", false); }
+			$("#addme_comment").attr("placeholder","почему данные нужно изменить");
+			$("#removemebtn").show();
+		} else {
+			$(".addmewindow h1").html("Меня не добавили");
+			$("#addme_role [value='']").prop("selected", true);
+	    $("#addme_complex").prop("checked", false);
+			$("#addme_comment").attr("placeholder","почему меня нужно добавить");
+			$("#removemebtn").hide();
+		}
+		$("#addme_comment").val("");
+		$("html, body").animate({ scrollTop: 0 });
+    $(".fillblack, .addmewindow").fadeIn(400);
+  }
+
+	function addme() {
+		if($("#addme_comment").val().trim() == "") { return false; }
+		if($("tr[isme=y]").length > 0) {
+			var new_complex = false;
+			if($("tr[isme=y]").attr("old_complex") == "true") { new_complex = true; }
+			if($("tr[isme=y]").attr("old_role") == $("#addme_role option:selected").val()
+			&& new_complex == $("#addme_complex").prop("checked")) {
+				$.fancybox({ 'content' : "Данные в заявке не отличаются от текущих данных." });
+				return false;
+			}
+		}
+		$.ajax({
+      data: {
+        act: "addme_profile",
+				eid: curevent,
+        rid: $("#addme_role option:selected").val(),
+				complex: $("#addme_complex").prop("checked"),
+				comment: $("#addme_comment").val().trim()
+      },
+			success: function(answer) {
+		  	var data = (JSON.parse(answer));
+		  	if(data.error == "ok") {
+					$.fancybox({
+						'afterClose':function () {
+						  window.location.reload();
+						},
+						'content' : m_ok("Заявка успешно отправлена")
+					});
+				} else {
+					$.fancybox({ 'content' : data.error });
+				}
+			}
+		});
+	}
+
+	function addme_remove() {
+		render_massage("Отменить заявку?","<div class='render_massage_buttons'><a class='btn1' href='' onclick='addme_removeYES(); $.fancybox.close(); return false;' style='background:#f36b69;'>Отменить заявку</a></div>");
+	}
+
+	function addme_removeYES() {
+		$.ajax({
+      data: {
+        act: "addme_remove",
+				event: curevent
+      },
+			success: function(answer) {
+		  	var data = (JSON.parse(answer));
+		  	if(data.error == "ok") {
+					$.fancybox({
+						'afterClose':function () {
+						  window.location.reload();
+						},
+						'content' : m_ok("Заявка успешно отменена")
+					});
+				} else {
+					$.fancybox({ 'content' : data.error });
+				}
+			}
+		});
+	}
+
+	function removeme() {
+		render_massage("Удалить информацию о вашем участии на данном мероприятии?","<div class='render_massage_buttons'><a class='btn1' href='' onclick='removemeYES(); $.fancybox.close(); return false;' style='background:#f36b69;'>Удалить</a> <a class='btn1' href='' onclick='$.fancybox.close(); return false;'>Отмена</a></div>");
+	}
+
+	function removemeYES() {
+		$.ajax({
+      data: {
+        act: "removeme",
+				event: curevent
+      },
+			success: function(answer) {
+		  	var data = (JSON.parse(answer));
+		  	if(data.error == "ok") {
+					closemw("addmewindow");
+					$.fancybox({
+						'afterClose':function () {
+							$("tr[isme='y']").slideRow('up', 500, function() {
+								$("tr[isme='y']").remove();
+							});
+						},
+						'content' : m_ok("Информация о вашем участии успешно удалена.")
+					});
+				} else {
+					$.fancybox({ 'content' : data.error });
+				}
+			}
+		});
+	}

@@ -108,3 +108,30 @@ function authSocial(authResult) {
 	else if(authResult == "ok") { window.location.reload(); }
 	else { $.fancybox({ 'content' : authError(authResult) }); }
 }
+
+jQuery.fn.center = function () {
+    this.css("left", Math.max(0, (($(window).width() - $(this).outerWidth()) / 2) +
+                                                $(window).scrollLeft()) + "px");
+    return this;
+}
+
+function byresize() {
+  $(".mw").each(function(index, element) {
+	if($(window).width()<600) {
+	  $(this).width($(window).width()-20);
+	} else { $(this).width(600); }
+	/*if(($(window).height())<($(this).height()-60)) {
+		$(this).height($(window).height()-60);
+	} else {*/
+	  //$(this).height("auto");
+	/*}*/
+	$(this).center();
+  });
+}
+
+$(window).resize(function() { byresize(); });
+$(function(){ byresize(); });
+
+function closemw(elemclass) {
+	$(".fillblack, ."+elemclass).fadeOut(400);
+}

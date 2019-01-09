@@ -95,7 +95,7 @@ CREATE TABLE `config` (
   PRIMARY KEY (`key`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-INSERT INTO `config` VALUES ('organization_department','Объединенный совет обучающихся НесГУ'),('organization_favicon','img/favicon.ico?5bd07058de180'),('organization_form','ФГБОУ ВО'),('organization_fullname','Несуществующий государственный университет'),('organization_logo','img/org_logo.svg?5bd07058de063'),('organization_shortname','НесГУ'),('organizations_order','[\"1\"]'),('rating_complex','1.5'),('rating_levels','{\"f\":1,\"u\":2,\"c\":3,\"r\":4,\"v\":5,\"i\":6}'),('rating_muscle','0.2'),('rating_oneday','0.1'),('rating_roles','{\"u\":1,\"p\":2,\"w\":3,\"l\":1,\"m\":3,\"h\":4}'),('sms_channel',''),('sms_login',''),('sms_name',''),('sms_pw',''),('vk_id',''),('vk_secret',''),('vk_state','0');
+INSERT INTO `config` VALUES ('organization_department','Объединенный совет обучающихся НесГУ'),('organization_favicon','img/favicon.ico?5bd07058de180'),('organization_form','ФГБОУ ВО'),('organization_fullname','Несуществующий государственный университет'),('organization_logo','img/org_logo.svg?5bd07058de063'),('organization_shortname','НесГУ'),('organizations_order','[\"1\"]'),('rating_complex','1.5'),('rating_levels','{\"f\":1,\"u\":2,\"c\":3,\"r\":4,\"v\":5,\"i\":6}'),('rating_muscle','0.2'),('rating_oneday','0.1'),('rating_roles','{\"b\":0,\"u\":1,\"p\":2,\"w\":3,\"l\":1,\"m\":3,\"h\":4}'),('sms_channel',''),('sms_login',''),('sms_name',''),('sms_pw',''),('vk_id',''),('vk_secret',''),('vk_state','0');
 
 CREATE TABLE `deps` (
   `id` bigint(20) NOT NULL,
@@ -293,6 +293,21 @@ INSERT INTO `users` (`id`, `access`, `sin`, `phone`, `password`, `vkauth`, `vkto
 (29, 'y', '9092360551', '9092360551', 'zlvfo', NULL, NULL, 'k', 's', NULL, 'Темрезов Роберт Магомедшапиевич', 'Темрезов', 'Роберт', 'Магомедшапиевич', 'm', NULL, 'Заместитель руководителя', NULL, 17, NULL, NULL, NULL, NULL, '2018-03-29 08:54:56', 1, 0, '[]'),
 (30, 'y', '9087998090', '9087998090', 'ledpn', NULL, NULL, 't', 's', NULL, 'Еремина Галина Сергеевна', 'Еремина', 'Галина', 'Сергеевна', 'f', NULL, 'Председатель стипендиального комитета', NULL, 2, NULL, NULL, NULL, NULL, '2018-03-29 08:57:37', 1, 0, '[]');
 
+CREATE TABLE `addme` (
+  `id` bigint(20) NOT NULL,
+  `type` varchar(1) NOT NULL,
+  `event` bigint(20) NOT NULL,
+  `sid` bigint(20) NOT NULL,
+  `role` varchar(1) NOT NULL,
+  `complex` varchar(1) NOT NULL,
+  `comment` longtext NOT NULL,
+  `executer` bigint(20) NOT NULL,
+  `answer` longtext,
+  `status` varchar(1) NOT NULL,
+  `story` text NOT NULL,
+  `see` text NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 
 ALTER TABLE `activity`
   ADD PRIMARY KEY (`id`),
@@ -325,6 +340,9 @@ ALTER TABLE `users`
   ADD KEY `type` (`type`),
   ADD KEY `out` (`out`);
 
+ALTER TABLE `addme`
+  ADD PRIMARY KEY (`id`);
+
 
 ALTER TABLE `activity`
   MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
@@ -345,6 +363,9 @@ ALTER TABLE `temp_sz`
   MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
 
 ALTER TABLE `users`
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `addme`
   MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

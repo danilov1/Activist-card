@@ -6,7 +6,7 @@ ini_set('post_max_size', '2M');
 date_default_timezone_set('Europe/Moscow');
 if(isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') { define("PROTOCOL", "https://"); } else { define("PROTOCOL", "http://"); }
 
-define("filesversion", "2.4.20181115");
+define("filesversion", "2.5.20190109");
 
 // Загрузка конфигурации БД
 $GLOBALS['config_db'] = include '../settings/config_db.php';
@@ -320,7 +320,7 @@ function render_meta($pagename, $pagefile) {
 	echo'<meta charset="utf-8">
 	<title>'.$pagename.'</title>
 '; ?>	<link rel="shortcut icon" href="<?php echo $GLOBALS['config']['organization_favicon']; ?>">
-	<meta name="author"			 content="Центр молодежных и студенческих программ (АНО ЦМСП), Владимир Данилов (@1danilov), 2015г.">
+	<meta name="author"			 content="Центр молодежных и студенческих программ (АНО ЦМСП), Владимир Данилов, Анна Ревазова, 2015г.">
 	<meta name="description"	content="Карта активиста <?php echo htmlentities($GLOBALS['config']['organization_shortname'], ENT_QUOTES, "UTF-8"); ?>, Студенческая карта">
 	<meta name="keywords"		 content="Карта активиста, Активисты, Центр молодежных и студенческих программ, <?php echo htmlentities($GLOBALS['config']['organization_shortname'], ENT_QUOTES, "UTF-8").", ".htmlentities($GLOBALS['config']['organization_form'], ENT_QUOTES, "UTF-8")." ".htmlentities($GLOBALS['config']['organization_fullname'], ENT_QUOTES, "UTF-8").", ".htmlentities($GLOBALS['config']['organization_department'], ENT_QUOTES, "UTF-8"); ?>">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -383,14 +383,21 @@ function render_header() {
 	</script><div class="fillpage">
 		<div class="loading">Пожалуйста, подождите...</div>
 	</div>
+	<div class="mw pd_window">
+		<a class="closemw" href="javascript:closemw('pd_window');"><i class="icon-remove"></i></a>
+		<h1>Политика конфиденциальности</h1>
+		<p>Данный веб-ресурс предоставляет АНО "Центр молодежных и студенческих программ", который выступает как Оператор веб-ресурса.</p>
+		<p>Посещая и используя данный веб-ресурс Вы соглашаетесь с <a href="https://studmol.ru/%D0%BF%D0%BE%D0%BB%D0%B8%D1%82%D0%B8%D0%BA%D0%B0-%D0%BA%D0%BE%D0%BD%D1%84%D0%B8%D0%B4%D0%B5%D0%BD%D1%86%D0%B8%D0%B0%D0%BB%D1%8C%D0%BD%D0%BE%D1%81%D1%82%D0%B8/" target="_blank" style="text-decoration:underline;">Положением о персональных данных Оператора</a>, в частности с обработкой Ваших персональных данных, полученных на данном веб-ресурсе, в том числе указанных Вами, с целью Вашей идентификации, предоставления всех доступных возможностей веб-ресурса.</p>
+		<p>Оператор предоставляет данный веб-ресурс в рамках своей Программы развития студенческого самоуправления России на основании договора между Оператором и образовательной организацией.</p>
+	</div>
 	<?php
-	if(preg_match('/(?i)msie [1-8]/',$_SERVER['HTTP_USER_AGENT'])) {
+	if( preg_match('/(?i)msie [1-8]/',$_SERVER['HTTP_USER_AGENT']) ) {
 		echo '<div class="browserinfo">Ваш браузер устарел. Для стабильной работы системы обновите браузер до последней версии.<br />Рекомендуемые браузеры: Google Chrome, Safari.</div>';
 	}
 }
 
 function render_footer() {
-	?>	<footer>&copy; <?php echo $GLOBALS['config']['organization_form']." \"".$GLOBALS['config']['organization_shortname']."\" (".date("Y")."г.)"; ?></footer>
+	?>	<footer>&copy; <?php echo $GLOBALS['config']['organization_form']." \"".$GLOBALS['config']['organization_shortname']."\""; ?> | Вы соглашаетесь с <a href="#" onclick='$("html, body").animate({ scrollTop: 0 }); $(".fillblack, .pd_window").fadeIn(); return false;'>Политикой конфиденциальности</a></footer>
 	<script src="js/bootstrap.min.js"></script><?php
 }
 
@@ -403,11 +410,27 @@ function menu() {
 		</div>
 	</div>
 	<?php
+	$mydep = mysql_query("SELECT `id`, `dep` FROM `users` WHERE `id`=".LOGGED_ID.";");
+	$mydep = mysql_fetch_row($mydep);
+	$addme_sql = "";
+	if(LOGGED_ACCESS == "s") {
+		$addme_sql = "SELECT `id`, `type`, `event`, `sid`, `role`, `complex`, `comment`, `executer`, `answer`, `status`, `story`,`see` from `addme` WHERE `status` = 'n';";
+	} elseif(LOGGED_ACCESS == "t") {
+		$addme_sql = "SELECT `id`, `type`, `event`, `sid`, `role`, `complex`, `comment`, `executer`, `answer`, `status`, `story`,`see` from `addme` WHERE `status` = 'n' AND `executer` = '".LOGGED_ID."';";
+	} else {
+		$addme_sql = "SELECT `id`, `type`, `event`, `sid`, `role`, `complex`, `comment`, `executer`, `answer`, `status`, `story`,`see` from `addme` WHERE `status` = 'n' AND (`executer` = '".LOGGED_ID."' OR `see` LIKE '%\"d".$mydep[1]."\"%' OR `see` LIKE '%\"u".LOGGED_ID."\"%');";
+	}
+	$addme_sql = mysql_query($addme_sql);
+	$addme_sql = mysql_num_rows($addme_sql);
+	$addme_render = '<li><a href="events">Мероприятия</a></li>';
+	if($addme_sql > 0) {
+		$addme_render = '<li><a href="events" class="box-badge"><span>Мероприятия<div>'.$addme_sql.'</div></span></a></li>';
+	}
 	if(LOGGED_ACCESS == "s") {
 		?><ul class="menu">
 			<li><a href="rating">Рейтинг</a></li>
 			<li><a href="staff">Пользователи</a></li>
-			<li><a href="events">Мероприятия</a></li>
+			<?php echo $addme_render; ?>
 			<li><a href="groups">Группы</a></li>
 			<li><a href="sz">Печать с/з</a></li>
 			<li><a href="set">Настройки</a></li>
@@ -418,7 +441,7 @@ function menu() {
 	elseif(LOGGED_ACCESS == "k") {
 		?><ul class="menu">
 			<li><a href="rating">Рейтинг</a></li>
-			<li><a href="events">Мероприятия</a></li>
+			<?php echo $addme_render; ?>
 			<li><a href="groups">Группы</a></li>
 			<li><a href="sz">Печать с/з</a></li>
 			<li><a href="set">Настройки</a></li>
@@ -427,7 +450,7 @@ function menu() {
 	elseif(LOGGED_ACCESS == "t") {
 		?><ul class="menu">
 			<li><a href="rating">Рейтинг</a></li>
-			<li><a href="events">Мероприятия</a></li>
+			<?php echo $addme_render; ?>
 			<li><a href="groups">Группы</a></li>
 			<li><a href="set">Настройки</a></li>
 		</ul><?php
@@ -534,6 +557,44 @@ function config_save() {
 
 function vk_auth_link($callack_page) {
 	echo 'https://oauth.vk.com/authorize?client_id='.$GLOBALS['config']['vk_id'].'&scope=offline&redirect_uri='.urlencode(PROTOCOL.$_SERVER['SERVER_NAME'].'/'.$callack_page).'&response_type=code&v=5.32&state=1';
+}
+
+function addme_alerts() {
+	$addme_sql = "SELECT `id`, `event`, `sid`, `executer`, `answer`, `status`, `story` from `addme` WHERE `status` != 'n' AND `sid` = '".LOGGED_ID."' ";
+	$addme_sql = mysql_query($addme_sql);
+	$addme_array = Array();
+	while($addme = mysql_fetch_array($addme_sql)) {
+		$event = "SELECT `id`, `name` from `events` WHERE `id` = '".$addme[1]."' LIMIT 1;";
+		$event = mysql_query($event);
+		$event = mysql_fetch_row($event);
+		$newpname = "";
+		$user = mysql_query("SELECT `id`,`sname`,`fname`,`pname` from `users` WHERE `id` ='".$addme[3]."' LIMIT 1;");
+		$user = mysql_fetch_row($user);
+		if(mb_strlen($user[3], "UTF-8")<2) { $name = mb_substr($user[2], 0, 1, "UTF-8").".".$user[1]; }
+		else { $name = mb_substr($user[2], 0, 1, "UTF-8").".".mb_substr($user[3], 0, 1, "UTF-8").".".$user[1]; }
+		$addme_array_new = array(
+			"event_id" => $addme[1],
+			"event_name" => $event[1],
+			"status" => $addme[5],
+			"holder" => $name
+		);
+		if($addme[5] == "c" or $addme[5] == "h") {
+			//$addme_array_new["answer"] = $addme[4];
+			$story = json_decode($addme[6], true);
+			$addme_array_new["time"] = $story[(count($story)-1)]["time"];
+		} else {
+			$activity = mysql_query("SELECT `id`,`user`,`event`,`created` from `activity` WHERE `user` ='".LOGGED_ID."' AND `event` ='".$addme[1]."' LIMIT 1;");
+			$activity = mysql_fetch_row($activity);
+			$time = explode(' ', $activity[3]);
+			$date = explode('-', $time[0]);
+			$addme_array_new["time"] = $date[2].".".$date[1].".".$date[0]." ".$time[1];
+		}
+		if($addme[5] == "c") {
+			$addme_array_new["answer"] = $addme[4];
+		}
+		$addme_array[] = $addme_array_new;
+	}
+	return $addme_array;
 }
 
 // Маршрутизатор

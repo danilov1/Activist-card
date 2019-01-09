@@ -1,7 +1,7 @@
 <?php accesspage(); render_doctype(); ?>
 <head>
 	<?php render_meta("Группы","groups"); ?>
-	
+
 	<script type="text/javascript">
 	<?php
 	$pregetdep = mysql_query("SELECT `id`,`dep` from `users` WHERE `id`='".LOGGED_ID."' LIMIT 1");
@@ -15,7 +15,7 @@
 	var curLID = "";
 	var ue = [];
 	var uv = [];
-	
+
 	$(function() {
 		init_groups();
 	});
@@ -38,7 +38,7 @@
 		<div class="control-group">
 			<label class="control-label">Иконка <i>(необязательно)</i>:</label>
 			<div class="controls">
-				<span class="filepath"><input id="list_icon_path" class="uploadFile" disabled="disabled" placeholder="Формат .SVG" style="width:180px;" /><a class="btn_delicon" href="" onclick="delicon(); return false;"><i class="icon-remove"></i></a></span>
+				<span class="filepath"><input id="list_icon_path" class="uploadFile" disabled="disabled" placeholder="Формат .SVG или .PNG" style="width:180px;" /><a class="btn_delicon" href="" onclick="delicon(); return false;"><i class="icon-remove"></i></a></span>
 				<div class="fileUpload btn">
 					<span>Выбрать</span>
 					<input id="list_icon" type="file" />
@@ -46,7 +46,7 @@
 				<div class="row-fluid"><button class="btn btn-small btn_noicon" onclick="noicon($(this));">не использовать иконку</button></div>
 			</div>
 		</div>
-		
+
 		<div class="greybox"><div class="event_info_inner span12" style="margin-bottom:10px;">
 			<p><b>Просмотр списка участников группы студентами:</b></p>
 			<div class="control-group">
@@ -57,7 +57,7 @@
 				</div>
 			</div>
 		</div></div>
-			
+
 		<div class="greybox"><div class="event_info_inner span12" style="margin-bottom:10px;">
 			<p><b>Доступ для сотрудников</b></p>
 			<p>Внесение/изменение/удаление участников группы:</p>

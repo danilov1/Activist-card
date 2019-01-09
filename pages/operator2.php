@@ -53,6 +53,9 @@ if($_POST['act'] == "lists") {
 
 		$sendlist["scores"] = $resscores[1];
 		$sendlist["current"] = $getrank[0];
+		if($sendlist["scores"] == "0") { $sendlist["current"] = "&#8734;"; }
+
+		$sendlist["addme_alerts"] = addme_alerts();
 	}
 
 	$sendlist["allrows"] = $getnum;
@@ -118,11 +121,24 @@ else if($_POST['act'] == "addlist" or $_POST['act'] == "editlist") {
 	if($_POST['sv'] == "r2") { $list_rights .= "_svl_"; }
 
 	$list_icon = "n";
+	$icon_type = "";
 	if(isset($_FILES['icon'])) {
 		uploaderror($_FILES['icon']);
-		if($_FILES['icon']['type'] !== 'image/svg+xml') { wrongusing(); }
-		$list_icon = md5(uniqid('icon',true).$_POST['lid']).".svg";
+		if($_FILES['icon']['type'] == 'image/svg+xml') {
+			$icon_type = "svg";
+		} elseif($_FILES['icon']['type'] == 'image/png') {
+			$icon_type = "png";
+			list($icon_width, $icon_height) = getimagesize($_FILES['icon']['tmp_name']);
+			$icon_size = $icon_width - $icon_height;
+			if($icon_size < 0) { $icon_size = $icon_size * (-1); }
+			if($icon_size > 2 or $icon_width < 127) { errorjson("Значок группы в формате .PNG должен быть одинакового размера по высоте и ширине и равен 127 пикс. или больше."); }
+		} else {
+			wrongusing();
+		}
+
+		$list_icon = md5(uniqid('icon',true).$_POST['lid']).".".$icon_type;
 		chmod("content/svg/",0777);
+		chmod("content/img/",0777);
 	}
 
 	if($_POST['act'] == "addlist") {
@@ -130,16 +146,24 @@ else if($_POST['act'] == "addlist" or $_POST['act'] == "editlist") {
 	} else {
 		if($_POST['newicon'] == "n") { $list_icon = $checklist[2]; }
 		$addlistreq = "UPDATE `".$GLOBALS['config_db']['mysql_db']."`.`lists` SET `name` = '".htmlentities($_POST['name'], ENT_QUOTES, "UTF-8")."', `rights` = '".$list_rights."', `icon` = '".$list_icon."' WHERE `lists`.`id` = '".$_POST['lid']."';";
-		$uploadfile = "content/svg/".$list_icon;
+		if($icon_type == "svg") { $uploadfile = "content/svg/".$list_icon; }
+		if($icon_type == "png") { $uploadfile = "content/img/".$list_icon; }
 	}
 
 	if(!mysql_query($addlistreq)) { errorjson("Ошибка базы данных. Повторите попытку позже."); }
-	if($_POST['act'] == "addlist") { $uploadfile = "content/svg/".$list_icon; }
+	if($_POST['act'] == "addlist") {
+		if($icon_type == "svg") { $uploadfile = "content/svg/".$list_icon; }
+		if($icon_type == "png") { $uploadfile = "content/img/".$list_icon; }
+	}
 	if(isset($_FILES['icon'])) {
 		if(!move_uploaded_file($_FILES['icon']['tmp_name'], $uploadfile)) { errorjson("Ошибка записи файла."); };
 		chmod($uploadfile,0777);
 	}
-	if($_POST['act'] == "editlist" and $checklist[2] !== "n" and $_POST['newicon'] == "y") { unlink("content/svg/".$checklist[2]); }
+	if($_POST['act'] == "editlist" and $checklist[2] !== "n" and $_POST['newicon'] == "y") {
+		$type_unlink = explode('.',$checklist[2]);
+		if($type_unlink[1] == "svg") { unlink("content/svg/".$checklist[2]); }
+		else { unlink("content/img/".$checklist[2]); }
+	}
 	errorjson("ok");
 }
 else if($_POST['act'] == "listpublicicon") {
@@ -378,6 +402,9 @@ else if($_POST['act'] == "getlist") {
 
 		$sendlist["scores"] = $resscores[1];
 		$sendlist["current"] = $getrank[0];
+		if($sendlist["scores"] == "0") { $sendlist["current"] = "&#8734;"; }
+
+		$sendlist["addme_alerts"] = addme_alerts();
 	}
 
 	if($list[4] !== "n" and LOGGED_ACCESS == "s") { $sendlist["isediticon"] = 1; }
@@ -560,17 +587,40 @@ elseif($_POST['act'] == "setorginfo") {
 
 	if(isset($_FILES['organization_logo'])) {
 		uploaderror($_FILES['organization_logo']);
-		if($_FILES['organization_logo']['type'] !== 'image/svg+xml') { errorjson("Неверный формат файла логотипа."); }
-		$organization_logo_way = "img/org_logo.svg";
+		if($_FILES['organization_logo']['type'] == 'image/svg+xml') {
+			$organization_logo_way = "img/org_logo.svg";
+		} elseif($_FILES['organization_logo']['type'] == 'image/png') {
+			$organization_logo_way = "img/org_logo.png";
+			list($logo_width, $logo_height) = getimagesize($_FILES['organization_logo']['tmp_name']);
+			$logo_size = $logo_width - $logo_height;
+			if($logo_size < 0) { $logo_size = $logo_size * (-1); }
+			if($logo_size > 2 or $logo_width < 50) { errorjson("Логотип в формате .PNG должен быть одинакового размера по высоте и ширине и равен 50 пикс. или больше."); }
+
+		} else {
+			errorjson("Неверный формат файла логотипа.");
+		}
+		if(file_exists("img/org_logo.svg")) { unlink("img/org_logo.svg"); }
+		if(file_exists("img/org_logo.png")) { unlink("img/org_logo.png"); }
 		if(!move_uploaded_file($_FILES['organization_logo']['tmp_name'], $organization_logo_way)) { errorjson("Ошибка записи файла логотипа."); };
 		$GLOBALS['config']['organization_logo'] = $organization_logo_way."?".uniqid()."";
 	}
 
 	if(isset($_FILES['organization_favicon'])) {
 		uploaderror($_FILES['organization_favicon']);
-		if($_FILES['organization_favicon']['type'] !== 'image/x-icon' and $_FILES['organization_favicon']['type'] !== 'image/vnd.microsoft.icon') { errorjson("Неверный формат файла favicon.ico."); }
-		$organization_favicon_way = "img/favicon.ico";
-		if(!move_uploaded_file($_FILES['organization_favicon']['tmp_name'], $organization_favicon_way)) { errorjson("Ошибка записи файла favicon.ico."); };
+		if($_FILES['organization_favicon']['type'] == 'image/x-icon' or $_FILES['organization_favicon']['type'] == 'image/vnd.microsoft.icon') {
+			$organization_favicon_way = "img/favicon.ico";
+		} elseif($_FILES['organization_favicon']['type'] == 'image/png' ) {
+			$organization_favicon_way = "img/favicon.png";
+		} else {
+			errorjson("Неверный формат файла favicon.");
+		}
+		list($icon_width, $icon_height) = getimagesize($_FILES['organization_favicon']['tmp_name']);
+		$icon_size = $icon_width - $icon_height;
+		if($icon_size < 0) { $icon_size = $icon_size * (-1); }
+		if($icon_size > 2 or $icon_width < 32) { errorjson("Favicon должна быть одинакового размера по высоте и ширине и равна 32 пикс. или больше."); }
+		if(file_exists("img/favicon.ico")) { unlink("img/favicon.ico"); }
+		if(file_exists("img/favicon.png")) { unlink("img/favicon.png"); }
+		if(!move_uploaded_file($_FILES['organization_favicon']['tmp_name'], $organization_favicon_way)) { errorjson("Ошибка записи файла favicon."); };
 		$GLOBALS['config']['organization_favicon'] = $organization_favicon_way."?".uniqid()."";
 	}
 

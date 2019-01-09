@@ -54,8 +54,11 @@ if($_GET['act'] == "mylist") {
 	$pregetrank = mysql_query("SELECT * FROM (SELECT @rownum:=@rownum+1 AS pos, `id`, `count`,`type` FROM `users` u, (SELECT @rownum:=0) r WHERE `type`='a' ORDER BY `count` DESC) as a WHERE `id`=".LOGGED_ID." AND `type`='a';");
 	$getrank = mysql_fetch_row($pregetrank);
 
+	$sendlist["addme_alerts"] = addme_alerts();
+
 	$sendlist["scores"] = $resscores[1];
 	$sendlist["current"] = $getrank[0];
+	if($sendlist["scores"] == "0") { $sendlist["current"] = "&#8734;"; }
 	$sendlist["error"] = "ok";
 	exit(json_encode($sendlist));
 }
@@ -160,6 +163,8 @@ elseif($_GET['act'] == "getrating") {
 			$_pregetrank = mysql_query("SELECT * FROM (SELECT @rownum:=@rownum+1 AS pos, `id`, `count`,`type` FROM `users` u, (SELECT @rownum:=0) r WHERE `type`='a' ORDER BY `count` DESC) as a WHERE `id`=".$getlist[0]." AND `type`='a';");
 			$_getrank = mysql_fetch_row($_pregetrank);
 
+			$sendlist["addme_alerts"] = addme_alerts();
+
 			$newactive = array(
 				"id" => $getlist[0],
 				"rate" => ($n + ($_GET['page']*$maxrows)),
@@ -181,8 +186,11 @@ elseif($_GET['act'] == "getrating") {
 		$pregetrank = mysql_query("SELECT * FROM (SELECT @rownum:=@rownum+1 AS pos, `id`, `count`,`type` FROM `users` u, (SELECT @rownum:=0) r WHERE `type`='a' ORDER BY `count` DESC) as a WHERE `id`=".LOGGED_ID." AND `type`='a';");
 		$getrank = mysql_fetch_row($pregetrank);
 
+		$sendlist["addme_alerts"] = addme_alerts();
+
 		$sendlist["scores"] = $resscores[1];
 		$sendlist["current"] = $getrank[0];
+		if($sendlist["scores"] == "0") { $sendlist["current"] = "&#8734;"; }
 	}
 	elseif((LOGGED_ACCESS == "t") or (LOGGED_ACCESS == "k") or (LOGGED_ACCESS == "s")) {
 		while($getlist = mysql_fetch_array($pregetlist)) {
@@ -220,6 +228,8 @@ elseif($_GET['act'] == "getrating") {
 
 			$_pregetrank = mysql_query("SELECT * FROM (SELECT @rownum:=@rownum+1 AS pos, `id`, `count`,`type` FROM `users` u, (SELECT @rownum:=0) r WHERE `type`='a' ORDER BY `count` DESC) as a WHERE `id`=".$getlist[0]." AND `type`='a';");
 			$_getrank = mysql_fetch_row($_pregetrank);
+
+			$sendlist["addme_alerts"] = addme_alerts();
 
 			$newactive = array(
 				"id" => $getlist[0],
@@ -411,6 +421,78 @@ elseif($_GET['act'] == "getinvolved") {
 			$sendlist["alist"][] = $newinlist;
 			unset($newinlist);
 		}
+
+		// Addme
+		$addme_answer = array();
+		$addme_sql = "SELECT `id`, `type`, `event`, `sid`, `role`, `complex`, `comment`, `executer`, `answer`, `status`, `story` from `addme` WHERE `status` = 'n' AND `event` = '".$echeck[0]."' ";
+		if((LOGGED_ACCESS == "s") or (LOGGED_ID == $echeck[9]) or (LOGGED_ID == $echeck[10]) or ($_ifindep[1] == $ifindep[1])) {
+			$addme_sql .= "";
+		} else {
+			$addme_sql .= "AND `executer` = '".LOGGED_ID."'";
+		}
+		$addme_sql .= " ORDER BY `id` DESC;";
+
+		$addme_sql = mysql_query($addme_sql);
+		while($addme = mysql_fetch_array($addme_sql)) {
+			$pregetuser = mysql_query("SELECT `id`,`sname`,`fname`,`pname`,`dep`,`curcourse`,`groupnum` from `users` WHERE `id` ='".$addme[3]."' LIMIT 1;");
+			$getuser = mysql_fetch_row($pregetuser);
+
+			if(mb_strlen($getuser[3], "UTF-8")<2) { $name = mb_substr($getuser[2], 0, 1, "UTF-8").".".$getuser[1]; }
+			else { $name = mb_substr($getuser[2], 0, 1, "UTF-8").".".mb_substr($getuser[3], 0, 1, "UTF-8").".".$getuser[1]; }
+
+			$pregetdep = mysql_query("SELECT `id`,`area`,`name` from `deps` WHERE `id`='".$getuser[4]."' LIMIT 1");
+			$getdep = mysql_fetch_row($pregetdep);
+			$pregetfac = mysql_query("SELECT `id`,`name` from `deps` WHERE `id`='".$getdep[1]."' LIMIT 1");
+			$getfac = mysql_fetch_row($pregetfac);
+
+			$afrom = $getfac[1]."(".$getdep[2].")-".$getuser[6];
+
+			$story = array(
+				array(
+					"time" => "01.12.18 10:25",
+					"status" => "n"
+				),
+				array(
+					"time" => "01.12.18 10:30",
+					"status" => "r",
+					"id_from" => "5",
+					"name_from" => "В.Р. Абрамов",
+					"id_to" => "5",
+					"name_to" => "В.Р. Данилов",
+					"comment" => "Я в этом ничего не понимаю. Может вы знаете."
+				)
+			);
+
+			$story = json_decode($addme[10], true);
+			for($i = 0; $i < count($story); $i++) {
+				if($story[$i]["status"] == "r") {
+					$pregetuser = mysql_query("SELECT `id`,`sname`,`fname`,`pname` from `users` WHERE `id` ='".$story[$i]["id_from"]."' LIMIT 1;");
+					$getuser = mysql_fetch_row($pregetuser);
+					if(mb_strlen($getuser[3], "UTF-8")<2) { $_name = mb_substr($getuser[2], 0, 1, "UTF-8").".".$getuser[1]; }
+					else { $_name = mb_substr($getuser[2], 0, 1, "UTF-8").".".mb_substr($getuser[3], 0, 1, "UTF-8").".".$getuser[1]; }
+					$story[$i]["name_from"] = $_name;
+					$pregetuser = mysql_query("SELECT `id`,`sname`,`fname`,`pname` from `users` WHERE `id` ='".$story[$i]["id_to"]."' LIMIT 1;");
+					$getuser = mysql_fetch_row($pregetuser);
+					if(mb_strlen($getuser[3], "UTF-8")<2) { $_name = mb_substr($getuser[2], 0, 1, "UTF-8").".".$getuser[1]; }
+					else { $_name = mb_substr($getuser[2], 0, 1, "UTF-8").".".mb_substr($getuser[3], 0, 1, "UTF-8").".".$getuser[1]; }
+					$story[$i]["name_to"] = $_name;
+				}
+			}
+
+			$addme_answer[] = array(
+				"id" => $addme[0],
+				"type" => $addme[1],
+				"sid" => $addme[3],
+				"name" => $name,
+				"from" => $afrom,
+				"role" => $addme[4],
+				"complex" => $addme[5],
+				"comment" => $addme[6],
+				"executer" => $addme[7],
+				"story" => $story
+			);
+		}
+		$sendlist["addme"] = $addme_answer;
 	}
 	else {
 		$pregetlist = mysql_query("SELECT `id`,`event`,`user`,`role`,`complex`,`created`,`addedby` from `activity` WHERE `event` ='".$echeck[0]."' ORDER BY `id` DESC;");
@@ -452,6 +534,11 @@ elseif($_GET['act'] == "getinvolved") {
 				"a_time" => $added_dt,
 				"a_by" => $holder,
 			);
+
+			if(LOGGED_ACCESS == "a") {
+				if(LOGGED_ID == $erend[2]) { $newinlist["isme"] = "y"; }
+			}
+
 			$sendlist["alist"][] = $newinlist;
 			unset($newinlist);
 		}
@@ -464,8 +551,47 @@ elseif($_GET['act'] == "getinvolved") {
 		$pregetrank = mysql_query("SELECT * FROM (SELECT @rownum:=@rownum+1 AS pos, `id`, `count`,`type` FROM `users` u, (SELECT @rownum:=0) r WHERE `type`='a' ORDER BY `count` DESC) as a WHERE `id`=".LOGGED_ID." AND `type`='a';");
 		$getrank = mysql_fetch_row($pregetrank);
 
+		$sendlist["addme_alerts"] = addme_alerts();
+
 		$sendlist["scores"] = $resscores[1];
 		$sendlist["current"] = $getrank[0];
+		if($sendlist["scores"] == "0") { $sendlist["current"] = "&#8734;"; }
+
+		// Addme
+		$addme_answer = array();
+		$addme_sql = "SELECT `id`, `type`, `event`, `sid`, `role`, `complex`, `comment`, `executer`, `answer`, `status`, `story` from `addme` WHERE `status` = 'n' AND `event` = '".$echeck[0]."' AND `sid` = '".LOGGED_ID."' ";
+		$addme_sql = mysql_query($addme_sql);
+		$addme_sql = mysql_fetch_row($addme_sql);
+		if( $addme_sql[0] ) {
+			$time = json_decode($addme_sql[10], true);
+			$sendlist["addme"] = array(
+				"type" => $addme_sql[1],
+				"sid" => $addme_sql[3],
+				"role" => $addme_sql[4],
+				"complex" => $addme_sql[5],
+				"comment" => $addme_sql[6],
+				"time" => $time[0]["time"]
+			);
+			if($addme_sql[1] == "a") {
+				$pregetuser = mysql_query("SELECT `id`,`sname`,`fname`,`pname`,`dep`,`curcourse`,`groupnum` from `users` WHERE `id` ='".$addme_sql[3]."' LIMIT 1;");
+				$getuser = mysql_fetch_row($pregetuser);
+				$newpname = "";
+				if(mb_strlen($getuser[3], "UTF-8")<2) { $name = mb_substr($getuser[2], 0, 1, "UTF-8").".".$getuser[1]; }
+				else { $name = mb_substr($getuser[2], 0, 1, "UTF-8").".".mb_substr($getuser[3], 0, 1, "UTF-8").".".$getuser[1]; }
+
+				$pregetdep = mysql_query("SELECT `id`,`area`,`name` from `deps` WHERE `id`='".$getuser[4]."' LIMIT 1");
+				$getdep = mysql_fetch_row($pregetdep);
+				$pregetfac = mysql_query("SELECT `id`,`name` from `deps` WHERE `id`='".$getdep[1]."' LIMIT 1");
+				$getfac = mysql_fetch_row($pregetfac);
+
+				list($edul, $educ) = split('[-]', $getuser[5]);
+				if($edul == "m") { $educ .= "м"; }
+
+				$from = $getfac[1]." ".$educ."к.";
+				$sendlist["addme"]["name"] = $name;
+				$sendlist["addme"]["from"] = $from;
+			}
+		}
 	}
 
 	$sendlist["allrows"] = $getnum;
@@ -479,6 +605,34 @@ elseif($_GET['act'] == "getevents") {
 	accessto("s,k,t,a");
 
 	if(($_GET['page'] == "") or (!is_numeric($_GET['page']))) { wrongusing(); }
+
+	$addme_events = array();
+	$addme_sql_ids = "";
+	$mydep = mysql_query("SELECT `id`, `dep` FROM `users` WHERE `id`=".LOGGED_ID.";");
+	$mydep = mysql_fetch_row($mydep);
+	if(LOGGED_ACCESS !== "a") {
+		$addme_sql = "";
+		if(LOGGED_ACCESS == "s") {
+			$addme_sql = "SELECT `id`, `event`, `status` from `addme` WHERE `status` = 'n';";
+		} elseif(LOGGED_ACCESS == "t") {
+			$addme_sql = "SELECT `id`, `event`, `status`, `executer` from `addme` WHERE `status` = 'n' AND `executer` = '".LOGGED_ID."';";
+		} else {
+			$addme_sql = "SELECT `id`, `event`, `status`, `executer`, `see` from `addme` WHERE `status` = 'n' AND (`executer` = '".LOGGED_ID."' OR `see` LIKE '%\"d".$mydep[1]."\"%' OR `see` LIKE '%\"u".LOGGED_ID."\"%');";
+		}
+		$addme_sql = mysql_query($addme_sql);
+		while($addme_event = mysql_fetch_array($addme_sql)) {
+			$addme_events[] = $addme_event[1];
+		}
+		$addme_events = array_unique($addme_events);
+		if(count($addme_events) > 0) {
+			$addme_events_sql = "";
+			for($i=0; $i<count($addme_events); $i++) {
+				$addme_events_sql .= "".$addme_events[$i]."";
+				if($i !== (count($addme_events)-1)) { $addme_events_sql .= ", "; }
+			}
+			$addme_sql_ids = "FIELD(id, ".$addme_events_sql.") DESC, ";
+		}
+	}
 
 	$page_holderid = "";
 	if(isset($_GET['holder'])) { $page_holderid = $_GET['holder']; }
@@ -507,7 +661,7 @@ elseif($_GET['act'] == "getevents") {
 	$presearch = preg_replace("|[\s]+|", " ", $_GET['query']);
 	$presearch = trim($presearch);
 
-	$pregetlist = mysql_query("SELECT `id`,`name`,`date`,`date_for`,`time_since`,`time_for`,`level`,`dep`,`holder`,`author`,`fixers`,`tags` from `events` WHERE `name` LIKE '%".$presearch."%' ".$page_info." ORDER BY `date` DESC LIMIT ".$pagenum.", ".$maxrows.";");
+	$pregetlist = mysql_query("SELECT `id`,`name`,`date`,`date_for`,`time_since`,`time_for`,`level`,`dep`,`holder`,`author`,`fixers`,`tags` from `events` WHERE `name` LIKE '%".$presearch."%' ".$page_info." ORDER BY ".$addme_sql_ids."`date` DESC LIMIT ".$pagenum.", ".$maxrows.";");
 
 	$fornum = mysql_query("SELECT `id`,`name`,`date`,`date_for`,`time_since`,`time_for`,`level`,`dep`,`holder`,`author`,`fixers`,`tags` from `events` WHERE `name` LIKE '%".$presearch."%' ".$page_info." ORDER BY `date` DESC;");
 
@@ -581,6 +735,21 @@ elseif($_GET['act'] == "getevents") {
 			"e_edit" => $isedit,
 			"e_access" => $isaccess
 		);
+
+		if(LOGGED_ACCESS !== "a") {
+			$addme_sql2 = "";
+			if(LOGGED_ACCESS == "s") {
+				$addme_sql2 = "SELECT `id`, `type`, `event`, `sid`, `role`, `complex`, `comment`, `executer`, `answer`, `status`, `story`,`see` from `addme` WHERE `event` = '".$event[0]."' AND `status` = 'n';";
+			} elseif(LOGGED_ACCESS == "t") {
+				$addme_sql2 = "SELECT `id`, `type`, `event`, `sid`, `role`, `complex`, `comment`, `executer`, `answer`, `status`, `story`,`see` from `addme` WHERE `event` = '".$event[0]."' AND `status` = 'n' AND `executer` = '".LOGGED_ID."';";
+			} else {
+				$addme_sql2 = "SELECT `id`, `type`, `event`, `sid`, `role`, `complex`, `comment`, `executer`, `answer`, `status`, `story`,`see` from `addme` WHERE `event` = '".$event[0]."' AND `status` = 'n' AND (`executer` = '".LOGGED_ID."' OR `see` LIKE '%\"d".$mydep[1]."\"%' OR `see` LIKE '%\"u".LOGGED_ID."%');";
+			}
+			$addme_sql2 = mysql_query($addme_sql2);
+			$addme_sql2 = mysql_num_rows($addme_sql2);
+			if($addme_sql2 > 0) { $newevent["e_addme"] = $addme_sql2; }
+		}
+
 		$sendlist["events"][] = $newevent;
 		unset($newevent);
 	}
@@ -594,8 +763,11 @@ elseif($_GET['act'] == "getevents") {
 		$pregetrank = mysql_query("SELECT * FROM (SELECT @rownum:=@rownum+1 AS pos, `id`, `count`,`type` FROM `users` u, (SELECT @rownum:=0) r WHERE `type`='a' ORDER BY `count` DESC) as a WHERE `id`=".LOGGED_ID." AND `type`='a';");
 		$getrank = mysql_fetch_row($pregetrank);
 
+		$sendlist["addme_alerts"] = addme_alerts();
+
 		$sendlist["scores"] = $resscores[1];
 		$sendlist["current"] = $getrank[0];
+		if($sendlist["scores"] == "0") { $sendlist["current"] = "&#8734;"; }
 	}
 
 	$sendlist["allrows"] = $getnum;
@@ -721,7 +893,7 @@ elseif(($_GET['act'] == "adduser") or ($_GET['act'] == "edituser")) {
 	if($_GET['type'] == "a") {
 		if((!$_GET['sin']) or (!$_GET['course']) or (!$_GET['level']) or (!$_GET['budget']) or (!$_GET['groupnum'])) { wrongusing(); }
 		// Проверка прав на редактирование ID и ФИО
-		if(LOGGED_ACCESS !== "s" and ($checkuid[4] !== $_GET['surname']) or ($checkuid[5] !== $_GET['firstname']) or ($checkuid[6] !== $_GET['patronymic'])) { errorjson("Редактирвать ID и ФИО студента может только пользователь с правами администратора"); }
+		if(LOGGED_ACCESS !== "s" and (($checkuid[4] !== $_GET['surname']) or ($checkuid[5] !== $_GET['firstname']) or ($checkuid[6] !== $_GET['patronymic']))) { errorjson("Редактирвать ID и ФИО студента может только пользователь с правами администратора"); }
 		// Проверка длины ID
 		if(mb_strlen($_GET['sin'], "UTF-8") < 1 or mb_strlen($_GET['sin'], "UTF-8") > 15) { errorjson("Длина ID должна быть от 1 до 15 символов"); }
 		// Проверка даты рождения
@@ -896,11 +1068,14 @@ elseif($_GET['act'] == "getgroups") {
 // Добавление и редактирование мероприятия
 elseif(($_GET['act'] == "addevent") or ($_GET['act'] == "editevent")) {
 	accessto("s,k,t");
+	$author_id = "";
 	if($_GET['act'] == "editevent") {
 		if(!$_GET['id']) { wrongusing(); }
 		$precheckeid = mysql_query("SELECT `id`,`name`,`holder`,`author`,`date`,`date_for`,`level` from `events` WHERE `id`='".$_GET['id']."' LIMIT 1");
 		$checkeid = mysql_fetch_row($precheckeid);
 		if(!$checkeid[1]) { errorjson("Мероприятие не найдено"); }
+
+		$author_id = $checkeid[3];
 
 		// Проверка департамента
 		$_preifindep = mysql_query("SELECT `id`,`dep` from `users` WHERE `id`=".$checkeid[2]." LIMIT 1;");
@@ -1010,6 +1185,18 @@ elseif(($_GET['act'] == "addevent") or ($_GET['act'] == "editevent")) {
 				countStudentsRating($getactive[1]);
 			}
 		}
+		// addme пересчет
+		$addme_sql = mysql_query("SELECT `id`, `event`, `sid`, `status` from `addme` WHERE `event` = '".$_GET['id']."';");
+		$see = "\"u".$author_id."\"";
+		//if($event[8] !== NULL) { $see .= ",\"d".$event[8]."\""; }
+		$dep = mysql_query("SELECT `id`,`dep` from `users` WHERE `id`=".$_GET['holder']." LIMIT 1;");
+		$dep = mysql_fetch_row($dep);
+		$see .= ",\"d".$dep[1]."\"";
+		while($addme = mysql_fetch_array($addme_sql)) {
+			$addme_req = "UPDATE  `".$GLOBALS['config_db']['mysql_db']."`.`addme` SET
+	`see` = '".$see."' WHERE  `addme`.`id` =".$addme[0].";";
+			if(!mysql_query($addme_req)) { errorjson("Ошибка базы данных. Повторите попытку позже."); }
+		}
 		errorjson("ok");
 	}
 }
@@ -1057,6 +1244,7 @@ elseif($_GET['act'] == "delevent") {
 
 	if(!mysql_query("DELETE FROM `".$GLOBALS['config_db']['mysql_db']."`.`events` WHERE `events`.`id` = ".$_GET['eid'].";")) { errorjson("Ошибка базы данных. Повторите попытку позже. #2"); }
 	if(!mysql_query("DELETE FROM `".$GLOBALS['config_db']['mysql_db']."`.`activity` WHERE `activity`.`event` = ".$_GET['eid'].";")) { errorjson("Ошибка базы данных. Повторите попытку позже. #3"); }
+	if(!mysql_query("DELETE FROM `".$GLOBALS['config_db']['mysql_db']."`.`addme` WHERE `addme`.`event` = '".$_GET['eid']."';")) { errorjson("Ошибка базы данных. Повторите попытку позже. #4"); }
 	else { errorjson("ok"); }
 }
 
@@ -1090,6 +1278,11 @@ elseif($_GET['act'] == "addactive") {
 	$checkuid = mysql_fetch_row($precheckuid);
 
 	if(!$checkuid[1]) { errorjson("a_notexist"); } // не найден или не студент
+
+	//addme_check
+	$addme_sql = mysql_query("SELECT `id`, `event`, `sid`, `status` from `addme` WHERE `event` = '".$_GET['eid']."' AND `sid` = '".$_GET['uid']."' AND `status` = 'n' LIMIT 1;");
+	$addme_sql = mysql_fetch_row($addme_sql);
+	if($addme_sql[0]) { errorjson("Выбранный студент отправил заявку на изменение данных о его участии в мероприятии. Данные может изменить ответственный за мероприятие или сотрудник подразделения, за которым закреплен ответственный, или регистратор мероприятия."); }
 
 	$precheckaid = mysql_query("SELECT `id`,`event`,`user`,`role`,`created`,`addedby` from `activity` WHERE `event`='".$_GET['eid']."' AND `user`='".$checkuid[0]."' LIMIT 1;");
 	$checkaid = mysql_fetch_row($precheckaid);
@@ -1292,7 +1485,7 @@ elseif($_GET['act'] == "delactive") {
 		}
 
 		$updatereq = "UPDATE  `".$GLOBALS['config_db']['mysql_db']."`.`users` SET  `count` =  '".$setcount."'".$sqlcountByTags." WHERE  `users`.`id` =".$getactive[2].";";
-		if(!mysql_query($updatereq)) { errorjson("Ошибка базы данных. Повторите попытку позже. Запрос выполнен неполностью. Немедленно обратитесь к администратору."); }
+		if(!mysql_query($updatereq)) { errorjson("Ошибка базы данных. Повторите попытку позже."); }
 	}
 	errorjson("ok");
 }
@@ -2403,6 +2596,7 @@ elseif($_GET['act'] == "studentsupload_connect") {
 
 		$prefindfaceid = mysql_query("SELECT `id`,`type`,`area`,`name` from `deps` WHERE `type`='i' AND `name`='".$dataCSV[$i][($CONNECTIONS["department"])]."';");
 		$findfaceid = mysql_fetch_row($prefindfaceid);
+		// проверить департаменты в массиве
 		if(!$findfaceid[0]) {
 			$newdeps[] = $dataCSV[$i][($CONNECTIONS["department"])];
 			$newgroups[] = $dataCSV[$i][($CONNECTIONS["group_name"])].' ('.$dataCSV[$i][($CONNECTIONS["department"])].')';
@@ -2617,9 +2811,16 @@ elseif($_GET['act'] == "studentsupload_confirm") {
 
 		// Регистрация студента
 		if(!$checkSIN[0]) {
+			$addIC_sql1 = "";
+			$addIC_sql2 = "";
+			$pregetByATags = mysql_query("SELECT `id`,`type` from `tags` WHERE `type` = 'a';");
+			while($getByATags = mysql_fetch_array($pregetByATags)) {
+				$addIC_sql1 .= ", `ic_".$getByATags[0]."`";
+				$addIC_sql2 .= ", '0'";
+			}
 			$newpwgen = pwgenerator().pwgenerator();
 			$regtoken = md5(uniqid('auth', true).$newpwgen);
-			$RegStudentSQL = "INSERT INTO `users` (`id`, `access`, `sin`, `phone`, `password`, `vkauth`, `vktoken`, `type`, `out`, `code`, `fullname`, `sname`, `fname`, `pname`, `sex`, `birthday`, `post`, `fac`, `dep`, `form`, `curcourse`, `groupnum`, `budget`, `created`, `addedby`, `count`, `groups`) VALUES (NULL, 'y', '".$JSONStudentsData[$i][($CONNECTIONS["id"])]."', '".$JSONStudentsData[$i][($CONNECTIONS["phone"])]."', '".$regtoken."', NULL, NULL, 'a', 's', '0123456789', '".$fullName." (".$depName.")', '".$JSONStudentsData[$i][($CONNECTIONS["sname"])]."', '".$JSONStudentsData[$i][($CONNECTIONS["fname"])]."', '".$JSONStudentsData[$i][($CONNECTIONS["pname"])]."', '".$JSONStudentsData[$i][($CONNECTIONS["sex"])]."', ".$JSONStudentsData[$i][($CONNECTIONS["birthday"])].", NULL, '".$depID."', '".$groupID."', '".$JSONStudentsData[$i][($CONNECTIONS["edu_type"])]."', '".$JSONStudentsData[$i][($CONNECTIONS["edu_level"])]."-".$JSONStudentsData[$i][($CONNECTIONS["course"])]."', '".$JSONStudentsData[$i][($CONNECTIONS["group_num"])]."', '".$JSONStudentsData[$i][($CONNECTIONS["pay"])]."', '".date("Y-m-d H:i:s")."', '".LOGGED_ID."', '0', '[]');";
+			$RegStudentSQL = "INSERT INTO `users` (`id`, `access`, `sin`, `phone`, `password`, `vkauth`, `vktoken`, `type`, `out`, `code`, `fullname`, `sname`, `fname`, `pname`, `sex`, `birthday`, `post`, `fac`, `dep`, `form`, `curcourse`, `groupnum`, `budget`, `created`, `addedby`, `count`, `groups`".$addIC_sql1.") VALUES (NULL, 'y', '".$JSONStudentsData[$i][($CONNECTIONS["id"])]."', '".$JSONStudentsData[$i][($CONNECTIONS["phone"])]."', '".$regtoken."', NULL, NULL, 'a', 's', '0123456789', '".$fullName." (".$depName.")', '".$JSONStudentsData[$i][($CONNECTIONS["sname"])]."', '".$JSONStudentsData[$i][($CONNECTIONS["fname"])]."', '".$JSONStudentsData[$i][($CONNECTIONS["pname"])]."', '".$JSONStudentsData[$i][($CONNECTIONS["sex"])]."', ".$JSONStudentsData[$i][($CONNECTIONS["birthday"])].", NULL, '".$depID."', '".$groupID."', '".$JSONStudentsData[$i][($CONNECTIONS["edu_type"])]."', '".$JSONStudentsData[$i][($CONNECTIONS["edu_level"])]."-".$JSONStudentsData[$i][($CONNECTIONS["course"])]."', '".$JSONStudentsData[$i][($CONNECTIONS["group_num"])]."', '".$JSONStudentsData[$i][($CONNECTIONS["pay"])]."', '".date("Y-m-d H:i:s")."', '".LOGGED_ID."', '0', '[]'".$addIC_sql2.");";
 			if(!mysql_query($RegStudentSQL)) { errorjson("Не удалось зарегистрировать студента. Ошибка базы данных."); }
 		} else {
 		// Обновление информации о студенте
@@ -2657,12 +2858,329 @@ elseif($_GET['act'] == "studentsupload_confirm") {
 	errorjson("ok");
 }
 
+// Addme - Заявка
+elseif($_GET['act'] == "addme_profile") {
+	accessto("a");
+	if((!$_GET['eid']) or (!$_GET['rid']) or (!$_GET['complex']) or (!$_GET['comment'])) { wrongusing(1); }
+	$roles = json_decode($GLOBALS['config']['rating_roles'], true);
+	if(!array_key_exists($_GET['rid'], $roles) or ($_GET['complex'] !== "true" and $_GET['complex'] !== "false")) { wrongusing(2); }
+	$addme_sql = mysql_query("SELECT `id`, `event`, `sid`, `status` from `addme` WHERE `event` = '".$_GET['eid']."' AND `sid` = '".LOGGED_ID."' AND `status` = 'n' LIMIT 1;");
+	$addme_sql = mysql_fetch_row($addme_sql);
+	if($addme_sql[0]) { errorjson("Заявка уже отправлена"); }
+	$event = mysql_query("SELECT `id`,`name`,`place`,`date`,`date_for`,`time_since`,`time_for`,`level`,`dep`,`holder`,`author`,`comment`,`fixers`,`outside`,`complex`,`tags` from `events` WHERE `id`=".$_GET['eid']." LIMIT 1;");
+	$event = mysql_fetch_row($event);
+	if(!$event[0]) { errorjson("Мероприятие не найдено"); }
+	$activity = mysql_query("SELECT `id`,`event`,`user`,`role`,`complex` from `activity` WHERE `event`='".$_GET['eid']."' AND `user`='".LOGGED_ID."' LIMIT 1;");
+	$activity = mysql_fetch_row($activity);
+	$type = "a";
+	if($activity[0]) { $type = "w"; }
+	$complex = "n";
+	if($_GET['complex'] == "true") { $complex = "y"; }
+	if($type == "w") {
+		if($activity[3] == $_GET['rid'] and $activity[4] == $complex) { errorjson("Заявка не содержит изменений по сравнению с уже внесенными данными."); }
+	} else {
+	}
 
+	$story[] = array(
+		"status" => "n",
+		"time" => date("d.m.Y H:i:s")
+	);
 
+	$comment = htmlentities(trim($_GET['comment']), ENT_QUOTES, "UTF-8");
 
+	$see = "\"u".$event[10]."\"";
+	//if($event[8] !== NULL) { $see .= ",\"d".$event[8]."\""; }
+	$dep = mysql_query("SELECT `id`,`dep` from `users` WHERE `id`=".$event[9]." LIMIT 1;");
+	$dep = mysql_fetch_row($dep);
+	$see .= ",\"d".$dep[1]."\"";
 
+	$addme_req = "INSERT INTO `".$GLOBALS['config_db']['mysql_db']."`.`addme` (`id`, `type`, `event`, `sid`, `role`, `complex`, `comment`, `executer`, `answer`, `status`, `story`, `see`) VALUES (NULL, '".$type."', '".$_GET['eid']."', '".LOGGED_ID."', '".$_GET['rid']."', '".$complex."', '".$comment."', 0, NULL, 'n', '".json_encode($story)."', '".$see."');";
+	if(!mysql_query($addme_req)) { errorjson("Ошибка базы данных. Повторите попытку позже."); }
 
+	errorjson("ok");
+}
 
+// n - открытая заявка
+// с - отказано
+// a - одобрено
+// h - одобрено частично
+
+// Addme - Одобрение заявки
+elseif($_GET['act'] == "addme_accept") {
+	accessto("s,k,t");
+	if((!$_GET['id']) or (!$_GET['rid']) or (!$_GET['complex'])) { wrongusing(); }
+	$roles = json_decode($GLOBALS['config']['rating_roles'], true);
+	if(!array_key_exists($_GET['rid'], $roles) or ($_GET['complex'] !== "true" and $_GET['complex'] !== "false")) { wrongusing(); }
+	$addme_sql = mysql_query("SELECT `id`, `type`, `event`, `sid`, `role`, `complex`, `comment`, `executer`, `answer`, `status`, `story` from `addme` WHERE `id` = '".$_GET['id']."' AND `status` = 'n' LIMIT 1;");
+	$addme_sql = mysql_fetch_row($addme_sql);
+	if(!$addme_sql[0]) { wrongusing(); }
+	$event = mysql_query("SELECT `id`,`name`,`place`,`date`,`date_for`,`time_since`,`time_for`,`level`,`dep`,`holder`,`author`,`comment`,`fixers`,`outside`,`complex`,`tags` from `events` WHERE `id`=".$addme_sql[2]." LIMIT 1;");
+	$event = mysql_fetch_row($event);
+	if(!$event[0]) { errorjson("Мероприятие не найдено"); }
+	$_ifindep = mysql_query("SELECT `id`,`dep` from `users` WHERE `id`=".$event[9]." LIMIT 1;");
+	$_ifindep = mysql_fetch_row($_ifindep);
+	$ifindep = mysql_query("SELECT `id`,`dep` from `users` WHERE `id`=".LOGGED_ID." LIMIT 1;");
+	$ifindep = mysql_fetch_row($ifindep);
+	if((LOGGED_ACCESS !== "s") and (LOGGED_ID !== $event[9]) and (LOGGED_ID !== $event[10]) and ($_ifindep[1] !== $ifindep[1]) and LOGGED_ID !== $addme_sql[7]) {
+		errorjson("У вас недостаточно прав для выполнения данного действия.");
+	}
+
+	$sender = mysql_query("SELECT `id`,`sname`,`fname`,`pname` from `users` WHERE `id`=".LOGGED_ID." LIMIT 1;");
+	$sender = mysql_fetch_row($sender);
+	if(mb_strlen($sender[3], "UTF-8")<2) { $name_from = mb_substr($sender[2], 0, 1, "UTF-8").". ".$sender[1]; }
+	else { $name_from = mb_substr($sender[2], 0, 1, "UTF-8").".".mb_substr($sender[3], 0, 1, "UTF-8").". ".$sender[1]; }
+
+	$countup = activityPoints($addme_sql[2],$_GET['rid'],$complex);
+	$curtime = date("Y-m-d H:i:s");
+	$addme_status = "a";
+	$complex = "n";
+	if($_GET['complex'] == "true") { $complex = "y"; }
+	$addstorycomment = "";
+	if($addme_sql[1] == "w") {
+		$activity = mysql_query("SELECT `id`,`event`,`user`,`role`,`complex` from `activity` WHERE `event`='".$addme_sql[2]."' AND `user`='".$addme_sql[3]."' LIMIT 1;");
+		$activity = mysql_fetch_row($activity);
+		if(!$activity[0]) { errorjson("Активность не найдена"); }
+		if($activity[3] == $_GET['rid'] and $activity[4] == $complex) { wrongusing(); }
+		$addme_status = "h";
+		if($addme_sql[4] == $_GET['rid'] and $addme_sql[5] == $complex) {
+			$addme_status = "a";
+		} else {
+			$story = json_decode($addme_sql[10], true);
+			$story[] = array(
+				"status" => "h",
+				"time" => date("d.m.Y H:i:s")
+			);
+			$addstorycomment = ", `story` = '".addslashes(json_encode($story))."'";
+		}
+		$decount = activityPoints($activity[1],$activity[3],$activity[4]);
+		$recountreq1 = "UPDATE `".$GLOBALS['config_db']['mysql_db']."`.`activity` SET `role` = '".$_GET['rid']."', `complex` =  '".$complex."' WHERE  `activity`.`id` =".$activity[0].";";
+		if(!mysql_query($recountreq1)) { errorjson("Ошибка базы данных. Повторите попытку позже. #1"); }
+		if(isThisAcademicYear($event[3]) == true) {
+			$sqlcountByTags = "";
+			$countByTags = json_decode($event[15]);
+			$pregetByATags = mysql_query("SELECT `id`,`type` from `tags` WHERE `type` = 'a';");
+			while($getByATags = mysql_fetch_array($pregetByATags)) {
+				if(in_array($getByATags[0], $countByTags)) {
+					$sqlcountByTags .= ", `ic_".$getByATags[0]."` = `ic_".$getByATags[0]."` -".$decount." +".$countup."";
+				}
+			}
+			$recountreq2 = "UPDATE `".$GLOBALS['config_db']['mysql_db']."`.`users` SET  `count` = `count` -".$decount." +".$countup."".$sqlcountByTags." WHERE `users`.`id` =".$activity[2].";";
+			if(!mysql_query($recountreq2)) { errorjson("Ошибка базы данных. Повторите попытку позже. #2"); }
+		}
+	} else {
+		if($addme_sql[4] !== $_GET['rid'] or $addme_sql[5] !== $complex) {
+			/* A: Одобрена частично */
+			$addme_status = "h";
+		}
+		$addactivereq1 = "INSERT INTO `".$GLOBALS['config_db']['mysql_db']."`.`activity` (`id`, `event`, `user`, `role`, `created`, `addedby`, `complex`) VALUES (NULL, '".$addme_sql[2]."', '".$addme_sql[3]."', '".$_GET['rid']."', '".$curtime."', '".LOGGED_ID."', '".$complex."');";
+		if(!mysql_query($addactivereq1)) { errorjson("Ошибка базы данных. Повторите попытку позже. #3"); }
+		if(isThisAcademicYear($event[3]) == true) {
+			$sqlcountByTags = "";
+			$countByTags = json_decode($event[15]);
+			$pregetByATags = mysql_query("SELECT `id`,`type` from `tags` WHERE `type` = 'a';");
+			while($getByATags = mysql_fetch_array($pregetByATags)) {
+				if(in_array($getByATags[0], $countByTags)) {
+					$sqlcountByTags .= ", `ic_".$getByATags[0]."` = `ic_".$getByATags[0]."` +".$countup."";
+				}
+			}
+
+			$addactivereq2 = "UPDATE `".$GLOBALS['config_db']['mysql_db']."`.`users` SET  `count` = `count` +".$countup."".$sqlcountByTags." WHERE  `users`.`id` =".$addme_sql[3].";";
+			if(!mysql_query($addactivereq2)) { errorjson("Ошибка базы данных. Повторите попытку позже. #4"); }
+		}
+	}
+
+	$addme_update = "UPDATE `".$GLOBALS['config_db']['mysql_db']."`.`addme` SET `executer` = '".LOGGED_ID."', `status` = '".$addme_status."'".$addstorycomment." WHERE  `addme`.`id` =".$_GET['id'].";";
+	if(!mysql_query($addme_update)) { errorjson("Ошибка базы данных. Повторите попытку позже. #5"); }
+
+	$pregetuser = mysql_query("SELECT `id`,`sname`,`fname`,`pname`,`dep`,`curcourse`,`sex`,`groupnum` from `users` WHERE `id` ='".$addme_sql[3]."' LIMIT 1;");
+	$getuser = mysql_fetch_row($pregetuser);
+	if(mb_strlen($getuser[3], "UTF-8")<2) {
+		$name = mb_substr($getuser[2], 0, 1, "UTF-8").".".$getuser[1];
+	} else {
+		$name = mb_substr($getuser[2], 0, 1, "UTF-8").".".mb_substr($getuser[3], 0, 1, "UTF-8").".".$getuser[1];
+	}
+
+	$pregetdep = mysql_query("SELECT `id`,`area`,`name` from `deps` WHERE `id`='".$getuser[4]."' LIMIT 1");
+	$getdep = mysql_fetch_row($pregetdep);
+	$pregetfac = mysql_query("SELECT `id`,`name` from `deps` WHERE `id`='".$getdep[1]."' LIMIT 1");
+	$getfac = mysql_fetch_row($pregetfac);
+
+	$afrom = $getfac[1]."(".$getdep[2].")-".$getuser[7];
+
+	list($ii1, $ii2) = split(' ', $curtime);
+	list($addyear, $addmonth, $addday) = split('[-]', $ii1);
+	$added_dt = $addday.'.'.$addmonth.'.'.substr($addyear, 2, 4).' '.substr($ii2, 0, 5);
+
+	$prechecka = mysql_query("SELECT `id`,`event`,`user` from `activity` WHERE `event`='".$addme_sql[2]."' AND `user`='".$addme_sql[3]."' LIMIT 1");
+	$checka = mysql_fetch_row($prechecka);
+
+	$newinlist = array(
+		"a_id" => $checka[0],
+		"a_uid" => $checka[2],
+		"a_name" => $name,
+		"a_sex" => $getuser[6],
+		"a_from" => $afrom,
+		"a_role" => $_GET['rid'],
+		"a_complex" => $complex,
+		"a_time" => $added_dt,
+		"a_by" => $name_from
+	);
+	$sendlist["a_info"] = $newinlist;
+	$sendlist["error"] = "ok";
+	exit(json_encode($sendlist));
+}
+
+// Addme - Переназначение
+elseif($_GET['act'] == "addme_reassign") {
+	accessto("s,k,t");
+	if((!$_GET['id']) or (!$_GET['hid']) or (!$_GET['comment'])) { wrongusing(); }
+	$addme_sql = mysql_query("SELECT `id`, `type`, `event`, `sid`, `role`, `complex`, `comment`, `executer`, `answer`, `status`, `story` from `addme` WHERE `id` = '".$_GET['id']."' AND `status` = 'n' LIMIT 1;");
+	$addme_sql = mysql_fetch_row($addme_sql);
+	if(!$addme_sql[0]) { wrongusing(); }
+	$event = mysql_query("SELECT `id`,`name`,`place`,`date`,`date_for`,`time_since`,`time_for`,`level`,`dep`,`holder`,`author`,`comment`,`fixers`,`outside`,`complex`,`tags` from `events` WHERE `id`=".$addme_sql[2]." LIMIT 1;");
+	$event = mysql_fetch_row($event);
+	if(!$event[0]) { errorjson("Мероприятие не найдено"); }
+	$holder = mysql_query("SELECT `id`,`sname`,`fname`,`pname` from `users` WHERE `id`=".$_GET['hid']." LIMIT 1;");
+	$holder = mysql_fetch_row($holder);
+	if(!$holder[0]) { errorjson("Пользователь не найден"); }
+	$_ifindep = mysql_query("SELECT `id`,`dep` from `users` WHERE `id`=".$event[9]." LIMIT 1;");
+	$_ifindep = mysql_fetch_row($_ifindep);
+	$ifindep = mysql_query("SELECT `id`,`dep` from `users` WHERE `id`=".LOGGED_ID." LIMIT 1;");
+	$ifindep = mysql_fetch_row($ifindep);
+	if((LOGGED_ACCESS !== "s") and (LOGGED_ID !== $event[9]) and (LOGGED_ID !== $event[10]) and ($_ifindep[1] !== $ifindep[1]) and LOGGED_ID !== $addme_sql[7]) {
+		errorjson("У вас недостаточно прав для выполнения данного действия.");
+	}
+	$story = json_decode($addme_sql[10], true);
+	if($_GET['hid'] == LOGGED_ID) { errorjson("Невозможно перевести заявку на самаго себя. Выберите другого пользователя."); }
+	if($story[(count($story)-1)]["id_to"] == $_GET['hid']) { errorjson("Заявка уже переведена на выбранного пользователя. Выберите другого пользователя."); }
+	$story[] = array(
+		"status" => "r",
+		"time" => date("d.m.Y H:i:s"),
+		"id_from" => LOGGED_ID,
+		"id_to" => $_GET['hid'],
+		"comment" => htmlentities(stripslashes(trim($_GET['comment'])), ENT_QUOTES, "UTF-8")
+	);
+
+	//errorjson($story);
+
+	$sender = mysql_query("SELECT `id`,`sname`,`fname`,`pname` from `users` WHERE `id`=".LOGGED_ID." LIMIT 1;");
+	$sender = mysql_fetch_row($sender);
+	if(mb_strlen($sender[3], "UTF-8")<2) { $name_from = mb_substr($sender[2], 0, 1, "UTF-8").". ".$sender[1]; }
+	else { $name_from = mb_substr($sender[2], 0, 1, "UTF-8").".".mb_substr($sender[3], 0, 1, "UTF-8").". ".$sender[1]; }
+
+	if(mb_strlen($holder[3], "UTF-8")<2) { $name_to = mb_substr($holder[2], 0, 1, "UTF-8").".".$holder[1]; }
+	else { $name_to = mb_substr($holder[2], 0, 1, "UTF-8").".".mb_substr($holder[3], 0, 1, "UTF-8").".".$holder[1]; }
+
+	$addme_update = "UPDATE `".$GLOBALS['config_db']['mysql_db']."`.`addme` SET `executer` = '".$_GET['hid']."', `story` =  '".addslashes(json_encode($story))."' WHERE  `addme`.`id` =".$_GET['id'].";";
+	if(!mysql_query($addme_update)) { errorjson("Ошибка базы данных. Повторите попытку позже."); }
+
+	$sendlist["story"] = array(
+		"time" => $story[(count($story)-1)]["time"],
+		"name_from" => $name_from,
+		"name_to" => $name_to
+	);
+	$sendlist["remove"] = "n";
+	if((LOGGED_ACCESS !== "s") and (LOGGED_ID !== $event[9]) and (LOGGED_ID !== $event[10]) and ($_ifindep[1] !== $ifindep[1])) {
+		$sendlist["remove"] = "y";
+	}
+	$sendlist["error"] = "ok";
+	exit(json_encode($sendlist));
+}
+
+// Addme - Отказ
+elseif($_GET['act'] == "addme_cancel") {
+	accessto("s,k,t");
+	if((!$_GET['id']) or (!$_GET['comment'])) { wrongusing(); }
+	$addme_sql = mysql_query("SELECT `id`, `type`, `event`, `sid`, `role`, `complex`, `comment`, `executer`, `answer`, `status`, `story` from `addme` WHERE `id` = '".$_GET['id']."' AND `status` = 'n' LIMIT 1;");
+	$addme_sql = mysql_fetch_row($addme_sql);
+	if(!$addme_sql[0]) { wrongusing(); }
+	$event = mysql_query("SELECT `id`,`name`,`place`,`date`,`date_for`,`time_since`,`time_for`,`level`,`dep`,`holder`,`author`,`comment`,`fixers`,`outside`,`complex`,`tags` from `events` WHERE `id`=".$addme_sql[2]." LIMIT 1;");
+	$event = mysql_fetch_row($event);
+	if(!$event[0]) { errorjson("Мероприятие не найдено"); }
+	$_ifindep = mysql_query("SELECT `id`,`dep` from `users` WHERE `id`=".$event[9]." LIMIT 1;");
+	$_ifindep = mysql_fetch_row($_ifindep);
+	$ifindep = mysql_query("SELECT `id`,`dep` from `users` WHERE `id`=".LOGGED_ID." LIMIT 1;");
+	$ifindep = mysql_fetch_row($ifindep);
+	if((LOGGED_ACCESS !== "s") and (LOGGED_ID !== $event[9]) and (LOGGED_ID !== $event[10]) and ($_ifindep[1] !== $ifindep[1]) and LOGGED_ID !== $addme_sql[7]) {
+		errorjson("У вас недостаточно прав для выполнения данного действия.");
+	}
+
+	$story = json_decode($addme_sql[10], true);
+	$story[] = array(
+		"status" => "c",
+		"time" => date("d.m.Y H:i:s")
+	);
+
+	$addme_update = "UPDATE `".$GLOBALS['config_db']['mysql_db']."`.`addme` SET `executer` = '".LOGGED_ID."', `answer` = '".$_GET['comment']."', `status` =  'c', `story` =  '".addslashes(json_encode($story))."' WHERE  `addme`.`id` =".$_GET['id'].";";
+	if(!mysql_query($addme_update)) { errorjson("Ошибка базы данных. Повторите попытку позже."); }
+	errorjson("ok");
+}
+
+// Addme - Ознакомлен
+elseif($_GET['act'] == "addme_done") {
+	accessto("a");
+	if(!$_GET['event']) { wrongusing(); }
+	$addme_sql = mysql_query("SELECT `id`, `event`, `sid`, `status` from `addme` WHERE `sid` = '".LOGGED_ID."' AND `event` = '".$_GET['event']."' AND `status` != 'n';");
+	$addme_sql_num = mysql_num_rows($addme_sql);
+	if($addme_sql_num == 0) { errorjson("Заявка не найдена"); }
+	while($addme = mysql_fetch_array($addme_sql)) {
+		$addme_delete = "DELETE FROM `".$GLOBALS['config_db']['mysql_db']."`.`addme` WHERE `addme`.`id` = '".$addme[0]."';";
+		if(!mysql_query($addme_delete)) { errorjson("Ошибка базы данных. Повторите попытку позже."); }
+	}
+	errorjson("ok");
+}
+
+// Addme - Отмена заявки
+elseif($_GET['act'] == "addme_remove") {
+	accessto("a");
+	if(!$_GET['event']) { wrongusing(); }
+	$addme_sql = mysql_query("SELECT `id`, `event`, `sid`, `status` from `addme` WHERE `sid` = '".LOGGED_ID."' AND `event` = '".$_GET['event']."' AND `status` = 'n' LIMIT 1;");
+	$addme_sql = mysql_fetch_row($addme_sql);
+	if(!$addme_sql[0]) { errorjson("Заявка не найдена"); }
+	$addme_delete = "DELETE FROM `".$GLOBALS['config_db']['mysql_db']."`.`addme` WHERE `addme`.`id` = '".$addme_sql[0]."';";
+	if(!mysql_query($addme_delete)) { errorjson("Ошибка базы данных. Повторите попытку позже."); }
+	errorjson("ok");
+}
+
+// Удаление себя из мероприятия
+elseif($_GET['act'] == "removeme") {
+	accessto("a");
+	if(!$_GET['event']) { wrongusing(); }
+
+	$pregetactive = mysql_query("SELECT `id`,`event`,`user`,`role`,`addedby`,`complex` from `activity` WHERE `event`='".$_GET['event']."' AND `user`='".LOGGED_ID."' LIMIT 1");
+	$getactive = mysql_fetch_row($pregetactive);
+	if(!$getactive[3]) { errorjson("Вы не зарегистрированы на этом мероприятии. Обновите страницу."); }
+
+	$addme_sql = mysql_query("SELECT `id`, `event`, `sid`, `status` from `addme` WHERE `sid` = '".LOGGED_ID."' AND `event` = '".$_GET['event']."' AND `status` = 'n' LIMIT 1;");
+	$addme_sql = mysql_fetch_row($addme_sql);
+	if($addme_sql[0]) { errorjson("Отмените текущую заявку на изменение информации о вашем участии в мероприятии и затем повторите попытку удаления."); }
+
+	$decount = activityPoints($getactive[1],$getactive[3],$getactive[5]);
+	$curcount = mysql_fetch_row(mysql_query("SELECT `id`,`count` from `users` WHERE `id`=".$getactive[2]." LIMIT 1"));
+	$setcount = $curcount[1] - $decount;
+
+	$delactivereq = "DELETE FROM `".$GLOBALS['config_db']['mysql_db']."`.`activity` WHERE `activity`.`id` =".$getactive[0].";";
+	if(!mysql_query($delactivereq)) { errorjson("Ошибка базы данных. Повторите попытку позже."); }
+
+	$_precheckeid = mysql_query("SELECT `id`,`date` from `events` WHERE `id`='".$getactive[1]."' LIMIT 1");
+	$_checkeid = mysql_fetch_row($_precheckeid);
+	if(isThisAcademicYear($_checkeid[1]) == true) {
+
+		$sqlcountByTags = "";
+		$countByTags = json_decode($getifh[4]);
+		$pregetByATags = mysql_query("SELECT `id`,`type` from `tags` WHERE `type` = 'a';");
+		while($getByATags = mysql_fetch_array($pregetByATags)) {
+			if(in_array($getByATags[0], $countByTags)) {
+				$sqlcountByTags .= ", `ic_".$getByATags[0]."` = `ic_".$getByATags[0]."` -".$decount."";
+			}
+		}
+
+		$updatereq = "UPDATE  `".$GLOBALS['config_db']['mysql_db']."`.`users` SET  `count` =  '".$setcount."'".$sqlcountByTags." WHERE  `users`.`id` =".$getactive[2].";";
+		if(!mysql_query($updatereq)) { errorjson("Ошибка базы данных. Повторите попытку позже."); }
+	}
+
+	errorjson("ok");
+}
 
 else { wrongusing(); }
 ?>

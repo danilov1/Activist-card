@@ -50,6 +50,68 @@ render_doctype();
 
 <body>
 <div class="fillblack"></div>
+<?php if(LOGGED_ACCESS !== "a") { ?>
+<div class="mw commentwindow">
+	<a class="closemw" href="javascript:closemw('commentwindow');"><i class="icon-remove"></i></a>
+	<h1></h1>
+	<div class="row-fluid form-horizontal" style="width:500px;">
+		<div class="control-group">
+			<label class="control-label">Пользователь:</label>
+			<div class="controls">
+				<input id="addme_holder" class="span12" type="text" placeholder="Поиск по ФИО..." />
+				<div id="addme_holderend"></div>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">Комментарий:</label>
+			<div class="controls">
+				<textarea id="addme_comment" class="span12" placeholder="" style="resize:none;"></textarea>
+			</div>
+		</div>
+		<div class="control-group">
+			<div class="controls">
+				<a id="addme_savebtn" class="btn1" href=""></a>
+			</div>
+		</div>
+	</div>
+</div>
+<?php
+} else { ?>
+<div class="mw addmewindow">
+	<a class="closemw" href="javascript:closemw('addmewindow');"><i class="icon-remove"></i></a>
+	<h1></h1>
+	<div class="row-fluid form-horizontal" style="width:500px;">
+		<div class="control-group">
+			<label class="control-label">Роль:</label>
+			<div class="controls">
+				<select id="addme_role" class="span12"><!--<option value="n">без роли</option>--><option value="b">без роли</option><option value="u" selected="selected">участник</option><option value="p">призер</option><option value="w">победитель</option><option value="l">помощник организатора</option><option value="m">организатор</option><option value="h">главный организатор</option></select>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">
+				<img src="img/muscle_black.svg" width="15px" alt="" style="margin-top:-5px;" />
+			</label>
+			<div class="controls">
+				<input id="addme_complex" type="checkbox" onChange="">
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">Комментарий:</label>
+			<div class="controls">
+				<textarea id="addme_comment" class="span12" placeholder="" style="resize:none;"></textarea>
+			</div>
+		</div>
+		<div class="control-group">
+			<div class="controls">
+				<a id="addme_savebtn" class="btn1" href="" onclick="addme(); return false;">Отправить заявку</a>
+				<a id="removemebtn" class="btn1" href="" onclick="removeme(); return false;" style="background:#f36b69;">Удалить</a>
+			</div>
+		</div>
+	</div>
+</div>
+<?php
+}
+?>
 <div class="hiddenbox" style="display:none;">
 	<div class="box_student" style="position:relative; width:600px;">
 		<h1 style="width:665px;">Карта активиста</h1>
@@ -126,11 +188,11 @@ render_doctype();
 						<?php if(ISHOLDER == "YES") { ?>
 						<div class="greybox"><div class="span12" style="margin-bottom:10px;">
 							<div class="row-fluid regnew">
-								<div class="span3">
-									<select id="add_role" class="span12" onchange="if(!ismobile()) { $('#add_activity').focus(); }"><!--<option value="n">без роли</option>--><option value="b">без роли</option><option value="u" selected="selected">участник</option><option value="p">призер</option><option value="w">победитель</option><option value="l">помощник организатора</option><option value="m">организатор</option><option value="h">главный организатор</option></select>
-								</div>
 								<div class="span9">
 									<input id="add_activity" class="span12 f_inner" type="text" placeholder="НАЖМИТЕ ДЛЯ ДОБАВЛЕНИЯ СТУДЕНТА" />
+								</div>
+								<div class="span3">
+									<select id="add_role" class="span12" onchange="if(!ismobile()) { $('#add_activity').focus(); }"><!--<option value="n">без роли</option>--><option value="b">без роли</option><option value="u" selected="selected">участник</option><option value="p">призер</option><option value="w">победитель</option><option value="l">помощник организатора</option><option value="m">организатор</option><option value="h">главный организатор</option></select>
 								</div>
 							</div>
 						</div></div>

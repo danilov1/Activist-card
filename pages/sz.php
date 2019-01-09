@@ -187,7 +187,7 @@ if(isset($_GET['l']) and BYEVENT == "YES") {
 								<a class="btn btn-mini btn_downloadlist" href=""><i class=" icon-download-alt"></i></a>
 								<h2></h2>
 								<div class="row-fluid regnew labelline">
-									<input class="span12 f_searcher" type="text" placeholder="Добавить студента по фамилии..." style="padding:0 10px;" />
+									<input class="span12 f_searcher" type="text" placeholder="Добавить студента по фамилии..." />
 								</div>
 								<table class="table_withhead table_forshort">
 									<thead>

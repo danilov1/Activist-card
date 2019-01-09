@@ -10,17 +10,17 @@
 		$(".depsinfo_box, .deplist_box, .grouplist_box, .orglist_box, .studentsinfo_box").hide();
 		$("input[type='file'][id=config_organization_logo]").change(function () {
 			var ext = $(this).val().split('.').pop().toLowerCase();
-			if($.inArray(ext, ['svg']) == -1) {
+			if($.inArray(ext, ['svg','png']) == -1) {
 				$(this).val("");
-				$.fancybox({ 'content' : m_error("Поддерживается только векторный формат (.SVG)") });
+				$.fancybox({ 'content' : m_error("Поддерживается только формат .SVG и .PNG") });
 			}
 			$("#config_organization_logo_path").val($(this).val());
 		});
 		$("input[type='file'][id=config_organization_favicon]").change(function () {
 			var ext = $(this).val().split('.').pop().toLowerCase();
-			if($.inArray(ext, ['ico']) == -1) {
+			if($.inArray(ext, ['ico','png']) == -1) {
 				$(this).val("");
-				$.fancybox({ 'content' : m_error("Поддерживается только формат Favicon (.ICO)") });
+				$.fancybox({ 'content' : m_error("Поддерживается только формат Favicon (.ICO или .PNG)") });
 			}
 			$("#config_organization_favicon_path").val($(this).val());
 		});
@@ -1061,12 +1061,12 @@
 		<hr>
 
 		<div class="control-group">
-			<label class="control-label">Векторное лого:</label>
+			<label class="control-label">Логотип:</label>
 			<div class="controls">
 				<div class="alert" style="font-size:12px; line-height:12px;">
 					<span>Отображается на странице входа и на всех других страницах данного сайта напротив надписи "КАРТА АКТИВИСТА".</span>
 				</div>
-				<span class="filepath"><input id="config_organization_logo_path" class="uploadFile" disabled="disabled" placeholder="Формат .SVG" style="width:180px;" /><a class="btn_delicon" href="" onclick="$('#config_organization_logo_path, #config_organization_logo').val(''); return false;"><i class="icon-remove"></i></a></span>
+				<span class="filepath"><input id="config_organization_logo_path" class="uploadFile" disabled="disabled" placeholder="Формат .SVG или .PNG" style="width:180px;" /><a class="btn_delicon" href="" onclick="$('#config_organization_logo_path, #config_organization_logo').val(''); return false;"><i class="icon-remove"></i></a></span>
 				<div class="fileUpload btn">
 					<span>Заменить <img class="inlinesvg config_organization_logo_image" src="" alt="" style="margin:0;"></span>
 					<input id="config_organization_logo" type="file" />
@@ -1075,12 +1075,12 @@
 		</div>
 
 		<div class="control-group">
-			<label class="control-label">FAVICON.ICO:</label>
+			<label class="control-label">FAVICON:</label>
 			<div class="controls">
 				<div class="alert" style="font-size:12px; line-height:12px;">
-					<span><b>FAVICON.ICO</b> - значок, который отображается во вкладке браузера напротив названия веб-страницы данного сайта.</span>
+					<span><b>FAVICON</b> - значок, который отображается во вкладке браузера напротив названия веб-страницы. Размер значка должен быть одинаковым по высоте и ширине (32 пикс. или больше)</span>
 				</div>
-				<span class="filepath"><input id="config_organization_favicon_path" class="uploadFile" disabled="disabled" placeholder="Формат .ICO" style="width:180px;" /><a class="btn_delicon" href="" onclick="$('#config_organization_favicon_path, #config_organization_favicon').val(''); return false;"><i class="icon-remove"></i></a></span>
+				<span class="filepath"><input id="config_organization_favicon_path" class="uploadFile" disabled="disabled" placeholder="Формат .ICO или .PNG" style="width:180px;" /><a class="btn_delicon" href="" onclick="$('#config_organization_favicon_path, #config_organization_favicon').val(''); return false;"><i class="icon-remove"></i></a></span>
 				<div class="fileUpload btn">
 					<span>Заменить <img class="inlinesvg config_organization_logo_favicon" src="" alt="" style="margin:0;"></span>
 					<input id="config_organization_favicon" type="file" />

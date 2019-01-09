@@ -6,7 +6,7 @@ ini_set('post_max_size', '2M');
 date_default_timezone_set('Europe/Moscow');
 
 // Проверка .htaccess
-if(!file_exists('.htaccess')) {
+if(!file_exists(__DIR__.'/.htaccess')) {
 	$htaccess = fopen(".htaccess", "a+");
 	fwrite($htaccess, "RewriteEngine On
 RewriteCond %{ENV:HTTPS} !on [NC]
@@ -18,6 +18,157 @@ Options -Indexes");
 	fclose($htaccess);
 	if(!file_exists('.htaccess')) { exit("Ошибка записи .htaccess файла. Установите права на запись."); }
 }
+
+$db_create = "
+CREATE TABLE `activity` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `event` bigint(20) NOT NULL,
+  `user` bigint(20) NOT NULL,
+  `role` varchar(10) NOT NULL,
+  `created` datetime NOT NULL,
+  `addedby` bigint(20) NOT NULL,
+  `complex` varchar(1) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `event` (`event`),
+  KEY `user` (`user`),
+  KEY `event_2` (`event`),
+  KEY `user_2` (`user`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `config` (
+  `key` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+  `value` longtext COLLATE utf8_unicode_ci NOT NULL,
+  PRIMARY KEY (`key`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+INSERT INTO `config` VALUES ('organization_department',''),('organization_favicon','img/favicon.ico?5bd07058de180'),('organization_form',''),('organization_fullname',''),('organization_logo','img/org_logo.svg?5bd07058de063'),('organization_shortname',''),('organizations_order','[\"1\"]'),('rating_complex','1.5'),('rating_levels','{\"f\":1,\"u\":2,\"c\":3,\"r\":4,\"v\":5,\"i\":6}'),('rating_muscle','0.2'),('rating_oneday','0.1'),('rating_roles','{\"b\":0,\"u\":1,\"p\":2,\"w\":3,\"l\":1,\"m\":3,\"h\":4}'),('sms_channel',''),('sms_login',''),('sms_name',''),('sms_pw',''),('vk_id',''),('vk_secret',''),('vk_state','0');
+
+CREATE TABLE `deps` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `type` varchar(10) NOT NULL,
+  `area` bigint(20) DEFAULT NULL,
+  `name` varchar(500) NOT NULL,
+  `full` varchar(500) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `events` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `name` varchar(500) NOT NULL,
+  `place` varchar(500) DEFAULT NULL,
+  `date` date NOT NULL,
+  `date_for` date DEFAULT NULL,
+  `time_since` time NOT NULL,
+  `time_for` time NOT NULL,
+  `comment` longtext,
+  `level` varchar(10) NOT NULL,
+  `dep` bigint(11) DEFAULT NULL,
+  `holder` bigint(20) NOT NULL,
+  `created` datetime NOT NULL,
+  `author` bigint(20) NOT NULL,
+  `fixers` text,
+  `outside` varchar(1) NOT NULL,
+  `complex` varchar(1) NOT NULL,
+  `tags` longtext NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `lists` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `name` varchar(500) NOT NULL,
+  `rights` text NOT NULL,
+  `public` varchar(2) NOT NULL,
+  `icon` varchar(100) NOT NULL,
+  `content` longtext NOT NULL,
+  `holder` bigint(20) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `tags` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `type` varchar(1) NOT NULL,
+  `name` varchar(150) NOT NULL,
+  `comment` text,
+  `style` varchar(150) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8;
+
+INSERT INTO `tags` VALUES (1,'a','Общественная',NULL,'0000000001.png'),(2,'a','Научно-исследовательская',NULL,'0000000002.png'),(3,'a','Творческая',NULL,'0000000003.png'),(4,'a','Спортивная',NULL,'0000000004.png'),(5,'e','Организационное (сопроводительное) мероприятие',NULL,'#45926b'),(6,'e','Воспитательное/патриотическое',NULL,'#be3f3f'),(7,'e','Благотворительное',NULL,'#3f8dbe'),(8,'e','Конкурс/Соревнование',NULL,'#e5882d'),(9,'e','Концертная программа',NULL,'#b26bb3'),(10,'e','Приуроченная акция (не благотворительная)',NULL,'#bcb842'),(11,'e','Выпуск периодического продукта',NULL,'#5cb77c'),(12,'e','Форум/Конференция',NULL,'#59aaa9'),(13,'e','Прием/Почетная встреча',NULL,'#795a5a');
+
+CREATE TABLE `temp_sz` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `name` varchar(300) NOT NULL,
+  `header` text NOT NULL,
+  `title` varchar(500) NOT NULL,
+  `post` varchar(300) NOT NULL,
+  `sign` varchar(300) NOT NULL,
+  `content` longtext NOT NULL,
+  `holder` bigint(20) NOT NULL,
+  `area` varchar(50) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `tokens` (
+  `token` varchar(70) NOT NULL,
+  `lastip` varchar(50) NOT NULL,
+  `deadline` datetime NOT NULL,
+  `user` bigint(20) NOT NULL,
+  PRIMARY KEY (`token`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Токены доступа';
+
+CREATE TABLE `users` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `access` varchar(1) NOT NULL,
+  `sin` varchar(15) NOT NULL,
+  `phone` varchar(10) NOT NULL,
+  `password` varchar(150) NOT NULL,
+  `vkauth` int(50) DEFAULT NULL,
+  `vktoken` varchar(300) DEFAULT NULL,
+  `type` varchar(10) NOT NULL,
+  `out` varchar(6) DEFAULT NULL,
+  `code` varchar(50) DEFAULT NULL,
+  `fullname` varchar(150) NOT NULL,
+  `sname` varchar(150) NOT NULL,
+  `fname` varchar(150) NOT NULL,
+  `pname` varchar(150) NOT NULL,
+  `sex` varchar(10) NOT NULL,
+  `birthday` date DEFAULT NULL,
+  `post` varchar(300) DEFAULT NULL,
+  `fac` varchar(2) DEFAULT NULL,
+  `dep` bigint(20) NOT NULL,
+  `form` varchar(3) DEFAULT NULL,
+  `curcourse` varchar(10) DEFAULT NULL,
+  `groupnum` varchar(10) DEFAULT NULL,
+  `budget` varchar(1) DEFAULT NULL,
+  `created` datetime NOT NULL,
+  `addedby` bigint(20) NOT NULL,
+  `count` bigint(20) NOT NULL,
+  `groups` text,
+  `ic_1` bigint(20) DEFAULT NULL,
+  `ic_2` bigint(20) DEFAULT NULL,
+  `ic_3` bigint(20) DEFAULT NULL,
+  `ic_4` bigint(20) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `code` (`code`),
+  KEY `type` (`type`),
+  KEY `out` (`out`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `addme` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `type` varchar(1) NOT NULL,
+  `event` bigint(20) NOT NULL,
+  `sid` bigint(20) NOT NULL,
+  `role` varchar(1) NOT NULL,
+  `complex` varchar(1) NOT NULL,
+  `comment` longtext NOT NULL,
+  `executer` bigint(20) NOT NULL,
+  `answer` longtext,
+  `status` varchar(1) NOT NULL,
+  `story` text NOT NULL,
+  `see` text NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;";
 
 // Загрузка конфигурации БД
 $GLOBALS['config_db'] = include '../settings/config_db.php';
@@ -58,11 +209,11 @@ if($_POST['act'] == 'setup') {
 
 	// Создание БД
 	mysql_set_charset('utf8');
-	$dbsetup_file = file_get_contents("../settings/setdb.txt", FILE_USE_INCLUDE_PATH);
+	//$dbsetup_file = file_get_contents("../settings/setdb.txt", FILE_USE_INCLUDE_PATH);
 	$firstSQLQuery = 'SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
 CREATE DATABASE IF NOT EXISTS `'.$_POST['setup_dbname'].'` DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
-USE `'.$_POST['setup_dbname'].'`;'.$dbsetup_file;
+USE `'.$_POST['setup_dbname'].'`;'.$db_create;
 	$file_content = preg_split("/\r\n|\n|\r/", $firstSQLQuery);
 	foreach ($file_content as $line) {
 		if (substr($line, 0, 2) == '--' || $line == '')
@@ -79,13 +230,13 @@ USE `'.$_POST['setup_dbname'].'`;'.$dbsetup_file;
 	}
 
 	// Регистрация студенческого подразделения
-	if(!mysql_query("INSERT INTO `deps` (`id`, `type`, `area`, `name`, `full`) VALUES (1, 'd', NULL, 'СО', 'Совет обучающихся');")) { mysql_query("DROP DATABASE `".$_POST['setup_dbname']."`;"); exit("Ошибка БД: ".mysql_error()); }
+	if(!mysql_query("INSERT INTO `deps` (`id`, `type`, `area`, `name`, `full`) VALUES (1, 'd', NULL, 'СО', 'Совет обучающихся');")) { $error = mysql_error(); mysql_query("DROP DATABASE `".$_POST['setup_dbname']."`;"); exit("Ошибка БД: ".$error); }
 
 	// Создание основного шаблона служебных записк
-	if(!mysql_query("INSERT INTO `temp_sz` (`id`, `name`, `header`, `title`, `post`, `sign`, `content`, `holder`, `area`) VALUES (NULL, 'Основной шаблон', '&lt;p&gt;Руководителю образовательной организации&lt;/p&gt;&lt;p&gt;&lt;br data-mce-bogus=&quot;1&quot;&gt;&lt;/p&gt;&lt;p&gt;от ...&lt;/p&gt;', '&lt;p&gt;&lt;strong&gt;служебная записка&lt;/strong&gt;&lt;br&gt;&lt;/p&gt;', '-', '&lt;p&gt;И.О. Фамилия&lt;/p&gt;', '&lt;p&gt;Это основной шаблон. Отредактируйте его и сохраните для дальнейшего использования.&lt;/p&gt;', '1', '1');")) { mysql_query("DROP DATABASE `".$_POST['setup_dbname']."`;"); exit("Ошибка БД: ".mysql_error()); }
+	if(!mysql_query("INSERT INTO `temp_sz` (`id`, `name`, `header`, `title`, `post`, `sign`, `content`, `holder`, `area`) VALUES (NULL, 'Основной шаблон', '&lt;p&gt;Руководителю образовательной организации&lt;/p&gt;&lt;p&gt;&lt;br data-mce-bogus=&quot;1&quot;&gt;&lt;/p&gt;&lt;p&gt;от ...&lt;/p&gt;', '&lt;p&gt;&lt;strong&gt;служебная записка&lt;/strong&gt;&lt;br&gt;&lt;/p&gt;', '-', '&lt;p&gt;И.О. Фамилия&lt;/p&gt;', '&lt;p&gt;Это основной шаблон. Отредактируйте его и сохраните для дальнейшего использования.&lt;/p&gt;', '1', '1');")) { $error = mysql_error(); mysql_query("DROP DATABASE `".$_POST['setup_dbname']."`;"); exit("Ошибка БД: ".$error); }
 
 	// Регистрация администратора
-	if(!mysql_query("INSERT INTO `users` (`id`, `access`, `sin`, `phone`, `password`, `vkauth`, `vktoken`, `type`, `out`, `code`, `fullname`, `sname`, `fname`, `pname`, `sex`, `birthday`, `post`, `fac`, `dep`, `gen`, `form`, `curcourse`, `groupnum`, `budget`, `created`, `addedby`, `count`, `groups`) VALUES (NULL, 'y', '".$_POST['setup_phone']."', '".$_POST['setup_phone']."', '".md5($_POST['setup_pw'])."', NULL, NULL, 's', NULL, NULL, '".$_POST['setup_sname']." ".$_POST['setup_fname']."', '".$_POST['setup_sname']."', '".$_POST['setup_fname']."', '-', 'm', '1990-01-01', 'Администратор', '', '1', NULL, NULL, NULL, NULL, NULL, '".date("Y-m-d H:i:s")."', '1', '0', '[]');")) { mysql_query("DROP DATABASE `".$_POST['setup_dbname']."`;"); exit("Не удалось зарегистрировать администратора. Ошибка БД: ".mysql_error()); }
+	if(!mysql_query("INSERT INTO `users` (`id`, `access`, `sin`, `phone`, `password`, `vkauth`, `vktoken`, `type`, `out`, `code`, `fullname`, `sname`, `fname`, `pname`, `sex`, `birthday`, `post`, `fac`, `dep`, `form`, `curcourse`, `groupnum`, `budget`, `created`, `addedby`, `count`, `groups`) VALUES (NULL, 'y', '".$_POST['setup_phone']."', '".$_POST['setup_phone']."', '".md5($_POST['setup_pw'])."', NULL, NULL, 's', NULL, NULL, '".$_POST['setup_sname']." ".$_POST['setup_fname']."', '".$_POST['setup_sname']."', '".$_POST['setup_fname']."', '-', 'm', '1990-01-01', 'Администратор', '', '1', NULL, NULL, NULL, NULL, '".date("Y-m-d H:i:s")."', '1', '0', '[]');")) { $error = mysql_error(); mysql_query("DROP DATABASE `".$_POST['setup_dbname']."`;"); exit("Не удалось зарегистрировать администратора. Ошибка БД: ".$error); }
 
 	file_put_contents('../settings/config_db.php', '<?php return ' . var_export($GLOBALS['config_db'], true) . ';');
 	exit("ok");
