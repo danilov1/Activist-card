@@ -437,8 +437,8 @@ function setAutocomplete_sz(listnum) {
 			  success: function(data) {
 			  response($.map(data, function(item) {
 				  return {
-					  label: item.value,
-					  value: item.value,
+					  label: HTML.decode(item.value),
+					  value: HTML.decode(item.value),
 					  id: item.id
 				  }
 			  })); }
@@ -519,8 +519,8 @@ function init_events() {
                   success: function(data) {
                   response($.map(data, function(item) {
                       return {
-                          label: item.value,
-                          value: item.value,
+                          label: HTML.decode(item.value),
+                          value: HTML.decode(item.value),
                           id: item.id
                       }
                   }));
@@ -571,8 +571,8 @@ function init_events() {
                   success: function(data) {
                   response($.map(data, function(item) {
                       return {
-                          label: item.value,
-                          value: item.value,
+                          label: HTML.decode(item.value),
+                          value: HTML.decode(item.value),
                           id: item.id
                       }
                   }));
@@ -602,7 +602,7 @@ function init_events() {
                   response($.map(data, function(item) {
                       return {
                           label: HTML.decode(item.value),
-                          value: item.value,
+                          value: HTML.decode(item.value),
                           id: item.id
                       }
                   }));
@@ -652,11 +652,11 @@ function page_events(setcurpage) {
 
 						var elevel;
 						if(getdata[i].e_level == "f") { elevel = "факультет"; }
-						else if(getdata[i].e_level == "u") { elevel = "университет"; }
+						else if(getdata[i].e_level == "u") { elevel = "вуз"; }
 						else if(getdata[i].e_level == "c") { elevel = "город"; }
 						else if(getdata[i].e_level == "r") { elevel = "регион"; }
 						else if(getdata[i].e_level == "v") { elevel = "страна"; }
-						else if(getdata[i].e_level == "i") { elevel = "мировой"; }
+						else if(getdata[i].e_level == "i") { elevel = "мир"; }
 
 						tr = $('<tr/>');
 						tr.addClass("rowclick");
@@ -667,7 +667,7 @@ function page_events(setcurpage) {
 						var event_name = "<td class=\"center event_name\">" + getdata[i].e_name + "";
             if(getdata[i].e_addme) { tr.addClass("rowyellow"); event_name += '<span class="table-badge"><div>'+getdata[i].e_addme+'</div></span>'; }
             tr.append(event_name+"</td>");
-						tr.append("<td class=\"blowit event_level\">" + elevel + "</td>");
+						tr.append("<td class=\"center blowit event_level\">" + elevel + "</td>");
 						tr.append("<td class=\"center curevent_by\">" + getdata[i].e_holder + "</td>");
 						tr.append("<td class=\"center\">" + getdata[i].e_involved + "</td>");
 						tr.attr("onclick", "if(goonit == 'yes') { window.open('events-"+getdata[i].e_id+"', '_blank'); }");
@@ -993,8 +993,8 @@ function init_groups() {
                   success: function(data) {
                   response($.map(data, function(item) {
                       return {
-                          label: item.value,
-                          value: item.value,
+                          label: HTML.decode(item.value),
+                          value: HTML.decode(item.value),
                           id: item.id
                       }
                   }));
@@ -1649,53 +1649,6 @@ function showlist(iconid) {
     $(".fillblack, .addwindow").fadeIn(400);
   }
 
-  function oncheck() {
-    if(($("#add_surname").val() == "") || ($("#add_firstname").val() == "") || ($("#add_patronymic").val() == "") || ($("#add_sex option:selected").val() == "") || ($("#add_birthday").val() == "") || ($("#add_phone").val() == "") || ($("#add_faculty option:selected").val() == "") || ($("#add_group option:selected").val() == "") || ($("#add_course option:selected").val() == "") || ($("#add_level option:selected").val() == "") || ($("#add_budget option:selected").val() == "") || ($("#add_groupnum").val() == "")) {
-      $.fancybox({ 'content' : 'Заполните все поля' });
-    } else {
-      isoncheck = "y";
-
-      $(".check_surname").text($("#add_surname").val());
-      $(".check_firstname").text($("#add_firstname").val());
-      $(".check_patronymic").text($("#add_patronymic").val());
-      $(".check_sex").text($("#add_sex option:selected").text());
-      $(".check_birthday").text($("#add_birthday").val());
-      $(".check_phone").text("+7 "+$("#add_phone").val());
-      $(".check_faculty").text($("#add_faculty option:selected").text());
-      $(".check_group").text($("#add_group option:selected").text());
-      $(".check_course").text($("#add_course option:selected").text()+" ("+$("#add_level option:selected").text()+")");
-      $(".check_budget").text($("#add_budget option:selected").text());
-      $(".check_groupnum").text($("#add_groupnum").val());
-
-      $(".checkwindow").fadeIn(200);
-      /*
-        var
-          el = document.documentElement
-          , rfs =
-             el.requestFullScreen
-            || el.webkitRequestFullScreen
-            || el.mozRequestFullScreen
-        ;
-        rfs.call(el);
-      */
-      $(document).keydown(function(event) {
-      if(event.keyCode == 13) {
-        if(isoncheck == "y") {
-          $(".forgetcode").fadeIn(200);
-          $(".forgetcode input").focus();
-        }
-      }
-      else if(event.keyCode == 27) {
-        if(isoncheck == "y") {
-          $(".checkwindow").fadeOut(200);
-          $(".forgetcode").fadeOut(200);
-          isoncheck = "n";
-        }
-      }
-      });
-    }
-  }
-
   function onsave() {
     if((($("#add_id").val() == "") || $("#add_surname").val() == "") || ($("#add_firstname").val() == "") || ($("#add_patronymic").val() == "") || ($("#add_sex option:selected").val() == "") || ($("#add_faculty option:selected").val() == "") || ($("#add_group option:selected").val() == "") || ($("#add_course option:selected").val() == "") || ($("#add_level option:selected").val() == "") || ($("#add_budget option:selected").val() == "") || ($("#add_groupnum").val() == "")) {
       $.fancybox({ 'content' : 'Заполните все поля' });
@@ -1958,8 +1911,8 @@ function page_group() {
 								  success: function(data) {
 								  response($.map(data, function(item) {
 									  return {
-										  label: item.value,
-										  value: item.value,
+										  label: HTML.decode(item.value),
+										  value: HTML.decode(item.value),
 										  id: item.id
 									  }
 								  }));
@@ -2224,8 +2177,8 @@ function delmembersYES() {
                   success: function(data) {
                   response($.map(data, function(item) {
                       return {
-                          label: item.value,
-                          value: item.value,
+                          label: HTML.decode(item.value),
+                          value: HTML.decode(item.value),
                           id: item.id
                       }
                   }));
@@ -2261,12 +2214,12 @@ function delmembersYES() {
 			var getdata = (JSON.parse(answer)).einfo;
 
 			var elevel, edates;
-			if(getdata.level == "f") { elevel = "факультетский"; }
-			else if(getdata.level == "u") { elevel = "университетский"; }
-			else if(getdata.level == "c") { elevel = "городской"; }
-			else if(getdata.level == "r") { elevel = "региональный"; }
-			else if(getdata.level == "v") { elevel = "всероссийский"; }
-			else if(getdata.level == "i") { elevel = "международный"; }
+			if(getdata.level == "f") { elevel = "факультет"; }
+			else if(getdata.level == "u") { elevel = "вуз"; }
+			else if(getdata.level == "c") { elevel = "город"; }
+			else if(getdata.level == "r") { elevel = "регион"; }
+			else if(getdata.level == "v") { elevel = "страна"; }
+			else if(getdata.level == "i") { elevel = "мир"; }
 
 			$("h1").html(getdata.name);
 			$("h1").append("<a href='#' class='headicon' onclick='printdata(); return false;'><i class='icon-print'></i></a>");
@@ -2506,8 +2459,8 @@ function delmembersYES() {
             success: function(data) {
             response($.map(data, function(item) {
                 return {
-                    label: item.value,
-                    value: item.value,
+                    label: HTML.decode(item.value),
+                    value: HTML.decode(item.value),
                     id: item.id
                 }
             }));
@@ -2631,12 +2584,12 @@ function delmembersYES() {
 			var getdata = (JSON.parse(answer)).einfo;
 
 			var elevel, edates;
-			if(getdata.level == "f") { elevel = "факультетский"; }
-			else if(getdata.level == "u") { elevel = "университетский"; }
-			else if(getdata.level == "c") { elevel = "городской"; }
-			else if(getdata.level == "r") { elevel = "региональный"; }
-			else if(getdata.level == "v") { elevel = "всероссийский"; }
-			else if(getdata.level == "i") { elevel = "международный"; }
+			if(getdata.level == "f") { elevel = "факультет"; }
+			else if(getdata.level == "u") { elevel = "вуз"; }
+			else if(getdata.level == "c") { elevel = "город"; }
+			else if(getdata.level == "r") { elevel = "регион"; }
+			else if(getdata.level == "v") { elevel = "страна"; }
+			else if(getdata.level == "i") { elevel = "мир"; }
 
 			$("h1").html(getdata.name);
 			$("h1").append("<a href='#' class='headicon' onclick='printdata(); return false;'><i class='icon-print'></i></a>");

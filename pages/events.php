@@ -35,12 +35,12 @@
 			<div class="controls">
 				<select id="add_level" class="span12" onChange="$('#add_place').focus();">
 					<option value=""></option>
-					<option value="f">факультетский</option>
-					<option value="u">университетский</option>
-					<option value="c">городской</option>
-					<option value="r">региональный</option>
-					<option value="v">всероссийский</option>
-					<option value="i">международный</option>
+					<option value="f">факультет</option>
+					<option value="u">вуз</option>
+					<option value="c">город</option>
+					<option value="r">регион</option>
+					<option value="v">страна</option>
+					<option value="i">мир</option>
 				</select>
 			</div>
 		</div>

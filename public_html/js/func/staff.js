@@ -74,7 +74,7 @@ $(document).ready(function () {
         var accesstype;
         if(data.type == "s") { accesstype = "администратор"; }
         else if(data.type == "k") { accesstype = "специалист"; }
-        else if(data.type == "t") { accesstype = "преподаватель"; }
+        else if(data.type == "t") { accesstype = "наблюдатель"; }
         var infobox = $(".box_user_info");
         infobox.html("<b>ФИО:</b> "+data.surname+" "+data.firstname+" "+data.patronymic+"<br /><b>Тип доступа:</b> "+accesstype+"<br /><b>Номер телефона:</b> +7"+data.phone+"<br /><b>Подразделение:</b> "+data.department_name+"<br /><b>Должность:</b> "+data.post+"");
 
@@ -133,7 +133,7 @@ $(document).ready(function () {
     ui = $(".searchinput").val();
     if((ui == "") || (ui == " ")) { cursearch = ""; }
     else { cursearch = ui; }
-    page(1);
+    page_staff(1);
   }
 
   function reguser() {
@@ -198,7 +198,7 @@ $(document).ready(function () {
     $("#add_phone").val(global_phone);
     $("#add_phone").mask("(999)999-99-99");
     $("#add_dep [value='"+global_depid+"']").prop("selected", true);
-    $("#add_post").val(global_post);
+    $("#add_post").val(HTML.decode(global_post));
     $.fancybox.close();
     $(".fillblack, .addwindow").fadeIn(400);
   }
@@ -230,7 +230,7 @@ $(document).ready(function () {
         var data = JSON.parse(answer);
         if(data.error == "ok") {
 			closemw("addwindow");
-		    page((curpage+1), 1);
+		    page_staff((curpage+1), 1);
           $.fancybox({
             'afterClose':function () { user(globaluid); },
             'content' : m_ok('Данные успешно сохранены!')

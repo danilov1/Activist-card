@@ -13,7 +13,7 @@
 		<div class="control-group">
 			<label class="control-label">Тип доступа:</label>
 			<div class="controls">
-				<select id="add_type" class="span12" onChange="$('#add_surname').focus();"><option value=""></option><option value="s">Администратор (полный доступ)</option><option value="k">Специалист (вносит данные)</option><option value="t">Преподаватель (просмотр данных)</option></select>
+				<select id="add_type" class="span12" onChange="$('#add_surname').focus();"><option value=""></option><option value="s">Администратор (полный доступ)</option><option value="k">Специалист (вносит данные)</option><option value="t">Наблюдатель (просмотр данных)</option></select>
 			</div>
 		</div>
 		<div class="control-group">
@@ -132,4 +132,3 @@
 	<?php render_footer(); ?>
 </body>
 </html>
-	

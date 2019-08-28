@@ -1476,17 +1476,14 @@ tr.rowclick.rowedit .event_name { color:#fff; }
 }
 
 .rowyellow .caret {
-	position: absolute;
-	display:block;
-	background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Capa_1" x="0px" y="0px" viewBox="0 0 124 124" style="enable-background:new 0 0 124 124;" xml:space="preserve"><g><path d="M112,6H12C5.4,6,0,11.4,0,18s5.4,12,12,12h100c6.6,0,12-5.4,12-12S118.6,6,112,6z" fill="#777777"/><path d="M112,50H12C5.4,50,0,55.4,0,62c0,6.6,5.4,12,12,12h100c6.6,0,12-5.4,12-12C124,55.4,118.6,50,112,50z" fill="#777777"/><path d="M112,94H12c-6.6,0-12,5.4-12,12s5.4,12,12,12h100c6.6,0,12-5.4,12-12S118.6,94,112,94z" fill="#777777"/></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g></svg>');
-	background-size:contain;
-	background-repeat:no-repeat;
-	width:16px;
-	height:16px;
-	top:0;
-	left:0;
-	margin:-8px 0 0 0;
-  border:none;
+	border: solid black;
+  border-width: 0 2px 2px 0;
+  display: inline-block;
+  margin-left: 3px;
+  padding: 3px;
+  transform: rotate(-45deg);
+  -webkit-transform: rotate(-45deg);
+  opacity: 0.5;
 }
 
 .addme_status {

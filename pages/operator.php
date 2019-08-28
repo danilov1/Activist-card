@@ -2552,7 +2552,7 @@ elseif($_GET['act'] == "studentsupload_connect") {
 	}
 
 	for($i=0; $i < $dataCSVnum; $i++) {
-		if(!isset($dataCSV[$i][($CONNECTIONS["birthday"])])) {
+		if(!isset($dataCSV[$i][($CONNECTIONS["birthday"])]) or mb_strlen($dataCSV[$i][($CONNECTIONS["birthday"])], "UTF8") < 1) {
 			$dataCSV[$i][($CONNECTIONS["birthday"])] = "NULL"; continue;
 		}
 		$dc_date = $dataCSV[$i][($CONNECTIONS["birthday"])];

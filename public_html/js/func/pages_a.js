@@ -288,11 +288,11 @@ function page_events(setcurpage) {
 
 						var elevel;
 						if(getdata[i].e_level == "f") { elevel = "факультет"; }
-						else if(getdata[i].e_level == "u") { elevel = "университет"; }
+						else if(getdata[i].e_level == "u") { elevel = "вуз"; }
 						else if(getdata[i].e_level == "c") { elevel = "город"; }
 						else if(getdata[i].e_level == "r") { elevel = "регион"; }
 						else if(getdata[i].e_level == "v") { elevel = "страна"; }
-						else if(getdata[i].e_level == "i") { elevel = "мировой"; }
+						else if(getdata[i].e_level == "i") { elevel = "мир"; }
 
 						tr = $('<tr/>');
 						tr.addClass("rowclick");
@@ -301,7 +301,7 @@ function page_events(setcurpage) {
 						tr.append("<td class=\"blowit center\">" + dates + "</td>");
 						tr.append("<td class=\"blowit center event_time\">" + times + "</td>");
 						tr.append("<td class=\"center event_name\">" + getdata[i].e_name + "</td>");
-						tr.append("<td class=\"blowit event_level\">" + elevel + "</td>");
+						tr.append("<td class=\"center blowit event_level\">" + elevel + "</td>");
 						tr.append("<td class=\"center curevent_by\">" + getdata[i].e_holder + "</td>");
 						tr.append("<td class=\"center\">" + getdata[i].e_involved + "</td>");
 						tr.attr("onclick", "window.open('events-"+getdata[i].e_id+"', '_blank');");
@@ -762,12 +762,12 @@ function sortFIO() {
 			var getdata = (JSON.parse(answer)).einfo;
 
 			var elevel, edates;
-			if(getdata.level == "f") { elevel = "факультетский"; }
-			else if(getdata.level == "u") { elevel = "университетский"; }
-			else if(getdata.level == "c") { elevel = "городской"; }
-			else if(getdata.level == "r") { elevel = "региональный"; }
-			else if(getdata.level == "v") { elevel = "всероссийский"; }
-			else if(getdata.level == "i") { elevel = "международный"; }
+			if(getdata.level == "f") { elevel = "факультет"; }
+			else if(getdata.level == "u") { elevel = "вуз"; }
+			else if(getdata.level == "c") { elevel = "город"; }
+			else if(getdata.level == "r") { elevel = "регион"; }
+			else if(getdata.level == "v") { elevel = "страна"; }
+			else if(getdata.level == "i") { elevel = "мир"; }
 
 			$("h1").html(getdata.name);
 			$(".event_i1").html("<div><b>Уровень:</b> <span>"+elevel+"</span></div>");
