@@ -624,6 +624,7 @@ elseif($_GET['act'] == "getevents") {
 			$addme_events[] = $addme_event[1];
 		}
 		$addme_events = array_unique($addme_events);
+		$addme_events = array_values($addme_events);
 		if(count($addme_events) > 0) {
 			$addme_events_sql = "";
 			for($i=0; $i<count($addme_events); $i++) {
