@@ -1,7 +1,7 @@
 <?php accesspage(); accessto("s"); render_doctype(); ?>
 <head>
 	<?php render_meta("Пользователи","staff"); ?>
-	<!-- js interface --> <script src="js/func/staff.js?1_1"></script>
+	<!-- js interface --> <script src="js/func/staff.js?<?php echo filesversion; ?>"></script>
 </head>
 
 <body>
