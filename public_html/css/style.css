@@ -1661,10 +1661,16 @@ tr[isme] .addme_status { margin-left:0; }
 	color:#fff;
 }
 
-.filter input, .filter select, input.searchinput {
+.filter input, .filter select, input.searchinput, .filter .btn-period {
 	background-color: #fff;
   border: 1px solid rgba(0,0,0,0.1);
   border-radius: 3px;
+}
+
+.filter .btn-period {
+	background:#fff url(../img/calendar.svg) no-repeat center center;
+	background-size:20px auto;
+	height:18px;
 }
 
 @media screen and (max-width: 768px) {

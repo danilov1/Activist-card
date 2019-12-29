@@ -17,6 +17,8 @@
 	var isoncheck = "n";
 	var goonit = "yes";
 	var icons_array = [];
+	var period_since = "";
+	var period_for = "";
 
 	$(function () {
 		init_rating();
@@ -139,6 +141,31 @@
 <?php
 }
 ?>
+
+<?php if( LOGGED_ACCESS !== "a" ) { ?>
+<div class="mw window_ratingperiod" style="max-width:500px;">
+	<a class="closemw" href="javascript:closemw('window_ratingperiod')"><i class="icon-remove"></i></a>
+	<h1>Выгрузка за период</h1>
+	<div class="row-fluid">
+		<div class="span12">
+			<div class="alert alert-success"><strong>Внимание!</strong> После применения периода будет сформирован рейтинг исходя из всех начисленных баллов за указанный период, включая мероприятия, не входящие в текущий учебный год. Без указания периода в таблице рейтинга отображаются баллы, начисленные только за мероприятия текущего учебного года (с 1 сентября по 31 августа).</div>
+			<div class="alert alert-warning">Загрузка списка при указании периода происходит дольше обычного.</div>
+			Период:
+			<div class="control-group">
+				<div class="controls">
+					<input class="span6 search_since" type="text" placeholder="00.00.0000 начало" />
+				</div>
+				<div class="controls">
+					<input class="span6 search_for" type="text" placeholder="00.00.0000 конец" />
+				</div>
+			</div>
+			<hr />
+			<div style="margin-bottom:10px;"><a class="btn1" href="" onclick="rating_period(); return false;">Выгрузить</a></div>
+		</div>
+	</div>
+</div>
+<?php } ?>
+
 <div class="hiddenbox" style="display:none;">
 	<div class="box_student" style="position:relative; width:600px;">
 
@@ -250,8 +277,16 @@
 										<option value="m2">2 маг.</option>
 									</select>
 								</div>
-								<div class="span5"><input class="span12 searchinput" type="text" placeholder="Поиск по ФИО..." /></div>
+								<?php
+									if( LOGGED_ACCESS !== "a" )
+									{ ?>
+										<div class="span1"><a class="btn1 btnadd btn-period" href="" onclick="rating_period_window(); return false;"></a></div>
+										<div class="span4"><input class="span12 searchinput" type="text" placeholder="Поиск по ФИО..." /></div>
+									<?php } else { ?>
+											<div class="span5"><input class="span12 searchinput" type="text" placeholder="Поиск по ФИО..." /></div>
+									<?php } ?>
 							</div>
+							<div class="rating_info"></div>
 							<table class="table_withhead table_normalrow ratingtable">
 							</table>
 							<div class="lowerbox">

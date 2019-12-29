@@ -1300,6 +1300,8 @@ function init_rating() {
 	$("#bookcode").keydown(function(downit) { if(downit.keyCode == 9) { downit.preventDefault(); $("#bookcode").focus(); } });
 	$(".closemw").click(function(e) { $('.searchinput').focus(); });
 
+  $(".search_since, .search_for").mask("99.99.9999");
+
 	$("#newbookcode").blur(function() {
 	  if($(".changebook").is(":visible")) { var setFocusNC = setInterval(function() { thiselem = $("#newbookcode"); if(thiselem.is(":focus")) { clearTimeout(setFocusNC); } else { thiselem.focus(); } }, 100); }
 	});
@@ -1326,13 +1328,17 @@ function init_rating() {
 
 function page_rating(setcurpage, hideload) {
 	curpage = setcurpage - 1;
+  rating_method = "getrating";
+  if(period_since != "" && period_for != "") { rating_method = "getrating_period"; }
 	$.ajax({
 		data: {
-			act: "getrating",
+			act: rating_method,
 			query: cursearch,
 			dep: cursearchdep,
 			course: cursearchcourse,
 			tag: cursearchtagA,
+      period_since: period_since,
+      period_for: period_for,
 			page: curpage
 		},
 		beforeSend: function() { if(hideload !== 1) { startLoading(); } $('.textalert').hide(); },
@@ -1340,6 +1346,11 @@ function page_rating(setcurpage, hideload) {
 			$('.ratingtable').html('');
 			var data = (JSON.parse(answer));
 			if(data.error == "ok") {
+        if(rating_method == "getrating_period") {
+          $(".rating_info").html('<div class="alert alert-success">В данном списке отображается рейтинг за период с <strong>'+period_since+'</strong> по <strong>'+period_for+'</strong>.</div>');
+        } else {
+          $(".rating_info").html('');
+        }
 				var getdata = (JSON.parse(answer)).students;
 				$('.ratingtable').html('<tr class="table_head center"><td width="9%"><b>Место</b></td><td width="9%"><b>Баллы</b></td><td><b>ФИО активиста</b></td><td width="5%" class="owncourse"><b>Курс</b></td><td class="curdep" width="29%"><b>Институт/ВШ</b></td></tr>');
 				var tr;
@@ -1413,10 +1424,24 @@ function page_rating(setcurpage, hideload) {
 			} else if(data.error == "notfound") {
 				$('.ratingtable').html('<tr class="table_head center"><td width="9%"><b>Место</b></td><td width="9%"><b>Баллы</b></td><td><b>ФИО активиста</b></td><td width="5%" class="owncourse"><b>Курс</b></td><td width="29%"><b>Институт/ВШ</b></td></tr>');
 				$('.pager').html('');
+        $(".rating_info").html('');
 				$('.textalert').show();
 			} else { $.fancybox({ 'content' : m_error(data.error) }); }
 		}
 	});
+}
+
+function rating_period_window() {
+  $(".search_since").val(period_since);
+  $(".search_for").val(period_for);
+  $(".fillblack, .window_ratingperiod").fadeIn(400);
+}
+
+function rating_period() {
+  period_since = $(".search_since").val();
+  period_for = $(".search_for").val();
+  page_rating(1);
+  closemw("window_ratingperiod");
 }
 
 function showlist(iconid) {

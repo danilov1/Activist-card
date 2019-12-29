@@ -6,7 +6,7 @@ ini_set('post_max_size', '2M');
 date_default_timezone_set('Europe/Moscow');
 if(isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') { define("PROTOCOL", "https://"); } else { define("PROTOCOL", "http://"); }
 
-define("filesversion", "2.5.20190828");
+define("filesversion", "2.6.20191230");
 
 // Загрузка конфигурации БД
 $GLOBALS['config_db'] = include '../settings/config_db.php';
@@ -387,7 +387,7 @@ function render_header() {
 		<a class="closemw" href="javascript:closemw('pd_window');"><i class="icon-remove"></i></a>
 		<h1>Политика конфиденциальности</h1>
 		<p>Данный веб-ресурс предоставляет АНО "Центр молодежных и студенческих программ", который выступает как Оператор веб-ресурса.</p>
-		<p>Посещая и используя данный веб-ресурс Вы соглашаетесь с <a href="https://studmol.ru/%D0%BF%D0%BE%D0%BB%D0%B8%D1%82%D0%B8%D0%BA%D0%B0-%D0%BA%D0%BE%D0%BD%D1%84%D0%B8%D0%B4%D0%B5%D0%BD%D1%86%D0%B8%D0%B0%D0%BB%D1%8C%D0%BD%D0%BE%D1%81%D1%82%D0%B8/" target="_blank" style="text-decoration:underline;">Положением о персональных данных Оператора</a>, в частности с обработкой Ваших персональных данных, полученных на данном веб-ресурсе, в том числе указанных Вами, с целью Вашей идентификации, предоставления всех доступных возможностей веб-ресурса.</p>
+		<p>Посещая и используя данный веб-ресурс, Вы соглашаетесь с <a href="https://studmol.ru/%D0%BF%D0%BE%D0%BB%D0%B8%D1%82%D0%B8%D0%BA%D0%B0-%D0%BA%D0%BE%D0%BD%D1%84%D0%B8%D0%B4%D0%B5%D0%BD%D1%86%D0%B8%D0%B0%D0%BB%D1%8C%D0%BD%D0%BE%D1%81%D1%82%D0%B8/" target="_blank" style="text-decoration:underline;">Положением о персональных данных Оператора</a>, в частности, с обработкой Ваших персональных данных, полученных на данном веб-ресурсе, в том числе указанных Вами, с целью Вашей идентификации, предоставления всех доступных возможностей веб-ресурса.</p>
 		<p>Оператор предоставляет данный веб-ресурс в рамках своей Программы развития студенческого самоуправления России на основании договора между Оператором и образовательной организацией.</p>
 	</div>
 	<?php
@@ -500,6 +500,18 @@ function isThisAcademicYear($datestart) {
 	}
 }
 
+// Период
+function isThisPeriod($datecurrent, $datesince, $datefor) {
+	$datecurrent =date('Y-m-d', strtotime($datecurrent));;
+	$datesince = date('Y-m-d', strtotime($datesince));
+	$datefor = date('Y-m-d', strtotime($datefor));
+	if(($datecurrent > $datesince) && ($datecurrent < $datefor)) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
 function countStudentsRating($studentID) {
 	$editcount = 0;
 	$sqlcountByTags = array();
@@ -534,6 +546,46 @@ function countStudentsRating($studentID) {
 
 	$recounts = "UPDATE  `".$GLOBALS['config_db']['mysql_db']."`.`users` SET `count` = ".$editcount."".$sqlcountByTagsText." WHERE  `users`.`id` =".$studentID.";";
 	if(!mysql_query($recounts)) { errorjson("Ошибка базы данных. Повторите попытку позже.".mysql_error()); }
+}
+
+function countStudentsRatingPeriod($studentID, $periodSince, $periodFor, $sql_query) {
+	$ifexist_sql = "SELECT `id` from `users` WHERE `id`='".$studentID."' AND `type`='a' AND `out`='s' AND ".$sql_query." LIMIT 1;";
+	$ifexist = mysql_query($ifexist_sql);
+	$ifexist = mysql_fetch_row($ifexist);
+	if(!$ifexist[0]) { return false; }
+
+	$editcount = 0;
+	$sqlcountByTags = array();
+	$pregetByATags = mysql_query("SELECT `id`,`type` from `tags` WHERE `type` = 'a';");
+	while($getByATags = mysql_fetch_array($pregetByATags)) {
+		$sqlcountByTags["".$getByATags[0].""] = 0;
+	}
+	$pregetactive = mysql_query("SELECT `id`,`user`,`event`,`role`,`complex` from `activity` WHERE `user`='".$studentID."'");
+	if(mysql_num_rows($pregetactive) > 0) {
+		while($getactive = mysql_fetch_array($pregetactive)) {
+			$precheckeid = mysql_query("SELECT `id`,`date`,`tags` from `events` WHERE `id`='".$getactive[2]."' LIMIT 1");
+			$checkeid = mysql_fetch_row($precheckeid);
+			if(isThisPeriod($checkeid[1], $periodSince, $periodFor) == true) {
+				$currentActivityPoints = activityPoints($getactive[2],$getactive[3],$getactive[4]);
+				$editcount = $editcount + $currentActivityPoints;
+
+				$sqlcountByTagsText = "";
+				$countByTags = json_decode($checkeid[2]);
+				foreach($countByTags as $countByTags_id => $countByTags_value) {
+					if(array_key_exists($countByTags_value, $sqlcountByTags)) {
+						$sqlcountByTags["".$countByTags_value.""] += $currentActivityPoints;
+					}
+				}
+			}
+		}
+	}
+
+	$answer = Array("id"=>$studentID, "count"=>$editcount);
+	foreach($sqlcountByTags as $sqlcountByTags_id => $sqlcountByTags_value) {
+		$answer["ic_".$sqlcountByTags_id.""] = $sqlcountByTags_value;
+	}
+
+	return($answer);
 }
 
 function config_empty() {

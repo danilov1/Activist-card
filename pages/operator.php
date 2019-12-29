@@ -111,12 +111,12 @@ elseif($_GET['act'] == "getrating") {
 
 	$presearch = trim($_GET['query']);
 	if($presearch == "") {
-		$pregetlist = mysql_query("SELECT `id`,`type`,`fullname`,`sname`,`fname`,`pname`,`dep`,`curcourse`,`count`,`groupnum`,`groups` from `users` WHERE `type`='a' AND `out`='s' ".$cursearchcourse." ".$searchfaclist." ORDER BY `".$cursearchtag."` DESC LIMIT ".$pagenum.", ".$maxrows.";");
-		$fornum = mysql_query("SELECT `id`,`type`,`fullname`,`sname`,`fname`,`pname`,`dep`,`curcourse`,`count`,`groupnum`,`groups` from `users` WHERE `type`='a' AND `out`='s' ".$cursearchcourse." ".$searchfaclist." ORDER BY `".$cursearchtag."` DESC;");
+		$pregetlist = mysql_query("SELECT `id`,`type`,`fullname`,`sname`,`fname`,`pname`,`dep`,`curcourse`,`".$cursearchtag."`,`groupnum`,`groups` from `users` WHERE `type`='a' AND `out`='s' ".$cursearchcourse." ".$searchfaclist." ORDER BY `".$cursearchtag."` DESC LIMIT ".$pagenum.", ".$maxrows.";");
+		$fornum = mysql_query("SELECT `id`,`type`,`fullname`,`sname`,`fname`,`pname`,`dep`,`curcourse`,`".$cursearchtag."`,`groupnum`,`groups` from `users` WHERE `type`='a' AND `out`='s' ".$cursearchcourse." ".$searchfaclist." ORDER BY `".$cursearchtag."` DESC;");
 	}
 	else {
-		$pregetlist = mysql_query("SELECT `id`,`type`,`fullname`,`sname`,`fname`,`pname`,`dep`,`curcourse`,`count`,`groupnum`,`groups` from `users` WHERE `type`='a' AND `out`='s' AND `fullname` LIKE '%".$presearch."%' ".$cursearchcourse." ".$searchfaclist." ORDER BY `".$cursearchtag."` DESC LIMIT ".$pagenum.", ".$maxrows.";");
-		$fornum = mysql_query("SELECT `id`,`type`,`fullname`,`sname`,`fname`,`pname`,`dep`,`curcourse`,`count`,`groupnum`,`groups` from `users` WHERE `type`='a' AND `out`='s' AND `fullname` LIKE '%".$presearch."%' ".$cursearchcourse." ".$searchfaclist." ORDER BY `".$cursearchtag."` DESC;");
+		$pregetlist = mysql_query("SELECT `id`,`type`,`fullname`,`sname`,`fname`,`pname`,`dep`,`curcourse`,`".$cursearchtag."`,`groupnum`,`groups` from `users` WHERE `type`='a' AND `out`='s' AND `fullname` LIKE '%".$presearch."%' ".$cursearchcourse." ".$searchfaclist." ORDER BY `".$cursearchtag."` DESC LIMIT ".$pagenum.", ".$maxrows.";");
+		$fornum = mysql_query("SELECT `id`,`type`,`fullname`,`sname`,`fname`,`pname`,`dep`,`curcourse`,`".$cursearchtag."`,`groupnum`,`groups` from `users` WHERE `type`='a' AND `out`='s' AND `fullname` LIKE '%".$presearch."%' ".$cursearchcourse." ".$searchfaclist." ORDER BY `".$cursearchtag."` DESC;");
 	}
 	$getnum = mysql_num_rows($fornum);
 	if($getnum == 0) { errorjson("notfound"); }
@@ -124,7 +124,6 @@ elseif($_GET['act'] == "getrating") {
 
 	if(LOGGED_ACCESS == "a") {
 		while($getlist = mysql_fetch_array($pregetlist)) {
-			//$name = mb_substr($getlist[4], 0, 1, "UTF-8").".".mb_substr($getlist[5], 0, 1, "UTF-8").". ".$getlist[3];
 			$newpname = "";
 			if(mb_strlen($getlist[5], "UTF-8")<2) { $newpname = ""; } else { $newpname = " ".$getlist[5]; }
 			$name = $getlist[3]." ".$getlist[4]."".$newpname;
@@ -163,17 +162,20 @@ elseif($_GET['act'] == "getrating") {
 			$_pregetrank = mysql_query("SELECT * FROM (SELECT @rownum:=@rownum+1 AS pos, `id`, `count`,`type` FROM `users` u, (SELECT @rownum:=0) r WHERE `type`='a' ORDER BY `count` DESC) as a WHERE `id`=".$getlist[0]." AND `type`='a';");
 			$_getrank = mysql_fetch_row($_pregetrank);
 
+			$_rate = ($n + ($_GET['page']*$maxrows));
+			if($getlist[8] == 0) { $_rate = "-"; }
+
 			$sendlist["addme_alerts"] = addme_alerts();
 
 			$newactive = array(
 				"id" => $getlist[0],
-				"rate" => ($n + ($_GET['page']*$maxrows)),
-				"rate_filter" => $_getrank[0],
+				"rate" => $_rate,
+				"rate_filter" => $_rate, //$_getrank[0],
 				"name" => $name,
 				"course" => $educ,
 				"dep" => $dep,
 				"lists" => $mylists,
-				"points" => $getlist[8]
+				"points" => $getlist[8] //$cursearchtag
 			);
 			$sendlist["students"][] = $newactive;
 			unset($newactive);
@@ -229,23 +231,168 @@ elseif($_GET['act'] == "getrating") {
 			$_pregetrank = mysql_query("SELECT * FROM (SELECT @rownum:=@rownum+1 AS pos, `id`, `count`,`type` FROM `users` u, (SELECT @rownum:=0) r WHERE `type`='a' ORDER BY `count` DESC) as a WHERE `id`=".$getlist[0]." AND `type`='a';");
 			$_getrank = mysql_fetch_row($_pregetrank);
 
+			$_rate = ($n + ($_GET['page']*$maxrows));
+			if($getlist[8] == 0) { $_rate = "-"; }
+
 			$sendlist["addme_alerts"] = addme_alerts();
 
 			$newactive = array(
 				"id" => $getlist[0],
-				"rate" => ($n + ($_GET['page']*$maxrows)),
-				"rate_filter" => $_getrank[0],
+				"rate" => $_rate,
+				"rate_filter" => $_rate, //$_getrank[0],
 				"name" => $name,
 				"course" => $educ,
 				"dep" => $dep,
 				"lists" => $mylists,
-				"points" => $getlist[8]
+				"points" => $getlist[8] //$cursearchtag
 			);
 			$sendlist["students"][] = $newactive;
 			unset($newactive);
 			$n++;
 		}
 	}
+	$sendlist["allrows"] = $getnum;
+	$sendlist["maxrows"] = $maxrows;
+	$sendlist["error"] = "ok";
+	exit(json_encode($sendlist));
+}
+
+// Вывод рейтинговой таблицы ЗА ПЕРИОД
+elseif($_GET['act'] == "getrating_period") {
+	accessto("s,k,t");
+
+	if(!$_GET['period_since'] or !$_GET['period_for']) { wrongusing(); }
+	if(($_GET['page'] == "") or (!is_numeric($_GET['page']))) { wrongusing(); }
+
+	$date_since = datecheck($_GET['period_since'], "Дата введена неверно.");
+	$date_for = datecheck($_GET['period_for'], "Дата введена неверно.");
+
+	$maxrows = 10;
+	$pagenum = ($_GET['page'])*$maxrows;
+
+	$students_buffer = array();
+
+	$sendlist = array();
+
+	$cursearchdep = "";
+	if(isset($_GET['dep'])) { $cursearchdep = $_GET['dep']; }
+	$cursearchcourse = "";
+	if(isset($_GET['course'])) {
+		$cursearchcourse .= "AND (";
+		if(mb_strlen($_GET['course'], "UTF-8") == 2) {
+			if(mb_substr($_GET['course'], 0, 1, "UTF-8") == "c") {
+				$cursearchcourse .= "`curcourse` = 'c-".mb_substr($_GET['course'], 1, 1, "UTF-8")."'";
+			}
+			if(mb_substr($_GET['course'], 0, 1, "UTF-8") == "m") {
+				$cursearchcourse .= "`curcourse` = 'm-".mb_substr($_GET['course'], 1, 1, "UTF-8")."'";
+			}
+		}
+		else { $cursearchcourse .= "`curcourse` = 'b-".$_GET['course']."' OR `curcourse` = 's-".$_GET['course']."'"; }
+		$cursearchcourse .= ")";
+	}
+	$pregetfacs = mysql_query("SELECT `id`,`type`,`area` from `deps` WHERE `type`='g' AND `area`='".$_GET['dep']."'");
+	$facsnum = mysql_num_rows($pregetfacs);
+	$searchfaclist = "";
+	$counter = 0;
+	while($getfacs = mysql_fetch_array($pregetfacs)) {
+		if($counter == 0) { $searchfaclist .= " AND ("; }
+		$searchfaclist .= "`dep` = '".$getfacs[0]."'";
+		if(++$counter !== $facsnum) { $searchfaclist .= " OR "; }
+		else { $searchfaclist .= ")"; }
+	}
+
+	$presearch = trim($_GET['query']);
+	$sql_query = "`fullname` LIKE '%".$presearch."%' ".$cursearchcourse." ".$searchfaclist."";
+
+	$prestudpoints = mysql_query("SELECT `id`,`type`,`out` from `users` WHERE `type`='a' AND `out`='s'");
+	while($studpoints = mysql_fetch_array($prestudpoints)) {
+		$students_buffer_add = countStudentsRatingPeriod($studpoints[0], $date_since, $date_for, $sql_query);
+		if($students_buffer_add) {
+			$students_buffer[] = $students_buffer_add;
+		}
+	}
+
+	$getnum = count($students_buffer);
+	if($getnum == 0) { errorjson("notfound"); }
+
+	$cursearchtag = "count";
+	if(isset($_GET['tag'])) {
+		$_pregetByATags = mysql_query("SELECT `id`,`type` from `tags` WHERE `type` = 'a' AND `id` ='".$_GET['tag']."';");
+		$pregetByATags = mysql_fetch_row($_pregetByATags);
+		if(!$pregetByATags[0]) { wrongusing(); }
+		$cursearchtag = "ic_".$pregetByATags[0]."";
+	}
+
+	function students_buffer_sorter($keytag) {
+    return function ($a, $b) use ($keytag) {
+        return strnatcmp($b[$keytag], $a[$keytag]);
+    };
+	}
+
+  usort($students_buffer, students_buffer_sorter($cursearchtag));
+
+	$students_buffer = array_slice($students_buffer, $pagenum, $maxrows);
+
+	$n = 1;
+	foreach($students_buffer as $students_buffer_key=>$students_buffer_value) {
+		$getlist = mysql_query("SELECT `id`,`type`,`fullname`,`sname`,`fname`,`pname`,`dep`,`curcourse`,`count`,`groupnum`,`groups` from `users` WHERE `id` = '".$students_buffer_value['id']."' LIMIT 1;");
+		$getlist = mysql_fetch_row($getlist);
+		//errorjson("SELECT `id`,`type`,`fullname`,`sname`,`fname`,`pname`,`dep`,`curcourse`,`count`,`groupnum`,`groups` from `users` WHERE `id` = '".$students_buffer_key."' LIMIT 1;");
+		$newpname = "";
+		if(mb_strlen($getlist[5], "UTF-8")<2) { $newpname = ""; } else { $newpname = " ".$getlist[5]; }
+		$name = $getlist[3]." ".$getlist[4]."".$newpname;
+
+		$pregetdep = mysql_query("SELECT `id`,`area`,`name` from `deps` WHERE `id`='".$getlist[6]."' LIMIT 1");
+		$getdep = mysql_fetch_row($pregetdep);
+		$pregetfac = mysql_query("SELECT `id`,`name` from `deps` WHERE `id`='".$getdep[1]."' LIMIT 1");
+		$getfac = mysql_fetch_row($pregetfac);
+		$dep = $getfac[1]." (".$getdep[2].")-".$getlist[9];
+
+		// бакалавриат: b-1, специалитет: s-1, магистратура: m-1
+		list($edul, $educ) = split('[-]', $getlist[7]);
+		if($edul == "m") { $educ .= " маг"; }
+		if($edul == "c") { $educ .= " спо"; }
+
+		$mylists = array();
+		$ownlist = json_decode($getlist[10]);
+		if(count($ownlist) !== 0) {
+			for($i=0; $i<count($ownlist); $i++) {
+				$pregetlists = mysql_query("SELECT `id`,`name`,`icon`,`public`,`content` from `lists` WHERE `id`='".$ownlist[$i]."' AND `public`='y' AND `icon`!='n' LIMIT 1;");
+				$lists = mysql_fetch_row($pregetlists);
+				if(!$lists[0]) { continue; }
+				$list_members = json_decode($lists[4]);
+				$members = array();
+				for($c=0; $c<count($list_members); $c++) {
+					$members[] = $list_members[$c][0];
+				}
+				$pos = array_search($getlist[0], $members);
+				$mylists[] = array($lists[0],$lists[1],$list_members[$pos][1],$lists[2]);
+			}
+		}
+
+		//$_pregetrank = mysql_query("SELECT * FROM (SELECT @rownum:=@rownum+1 AS pos, `id`, `count`,`type` FROM `users` u, (SELECT @rownum:=0) r WHERE `type`='a' ORDER BY `count` DESC) as a WHERE `id`=".$getlist[0]." AND `type`='a';");
+		//$_getrank = mysql_fetch_row($_pregetrank);
+
+		$_rate = ($n + ($_GET['page']*$maxrows));
+		if($students_buffer_value[$cursearchtag] == 0) { $_rate = "-"; }
+
+		$sendlist["addme_alerts"] = addme_alerts();
+
+		$newactive = array(
+			"id" => $getlist[0],
+			"rate" => $_rate,
+			"rate_filter" => $_rate,
+			"name" => $name,
+			"course" => $educ,
+			"dep" => $dep,
+			"lists" => $mylists,
+			"points" => $students_buffer_value[$cursearchtag]
+		);
+		$sendlist["students"][] = $newactive;
+		unset($newactive);
+		$n++;
+	}
+
 	$sendlist["allrows"] = $getnum;
 	$sendlist["maxrows"] = $maxrows;
 	$sendlist["error"] = "ok";
@@ -1219,34 +1366,23 @@ elseif($_GET['act'] == "delevent") {
 
 	if((LOGGED_ACCESS !== "s") and ($checkeid[2] !== LOGGED_ID) and ($checkeid[3] !== LOGGED_ID) and ($ifindep[1] !== $ifindep[1])) { errorjson("У Вас недостаточно прав для удаления данного мероприятия"); }
 
+	$studentsToRecount = array();
 	$pregetactive = mysql_query("SELECT `id`,`user`,`event`,`role`,`complex` from `activity` WHERE `event`='".$_GET['eid']."'");
 	if(mysql_num_rows($pregetactive) > 0) {
 		while($getactive = mysql_fetch_array($pregetactive)) {
-			$decount = activityPoints($getactive[2],$getactive[3],$getactive[4]);
-			$_precheckeid = mysql_query("SELECT `id`,`date` from `events` WHERE `id`='".$_GET['eid']."' LIMIT 1");
-			$_checkeid = mysql_fetch_row($_precheckeid);
-			if(isThisAcademicYear($_checkeid[1]) == true) {
-
-				$sqlcountByTags = "";
-				$countByTags = json_decode($checkeid[4]);
-				$pregetByATags = mysql_query("SELECT `id`,`type` from `tags` WHERE `type` = 'a';");
-				while($getByATags = mysql_fetch_array($pregetByATags)) {
-					if(in_array($getByATags[0], $countByTags)) {
-						$sqlcountByTags .= ", `ic_".$getByATags[0]."` = `ic_".$getByATags[0]."` -".$decount."";
-					}
-				}
-
-				if(!mysql_query("UPDATE  `".$GLOBALS['config_db']['mysql_db']."`.`users` SET  `count` = `count` -".$decount."".$sqlcountByTags." WHERE  `users`.`id` =".$getactive[1].";")) {
-					errorjson("Ошибка базы данных. Повторите попытку позже. #1");
-				}
-			}
+			$studentsToRecount[] = $getactive[1];
 		}
 	}
 
 	if(!mysql_query("DELETE FROM `".$GLOBALS['config_db']['mysql_db']."`.`events` WHERE `events`.`id` = ".$_GET['eid'].";")) { errorjson("Ошибка базы данных. Повторите попытку позже. #2"); }
 	if(!mysql_query("DELETE FROM `".$GLOBALS['config_db']['mysql_db']."`.`activity` WHERE `activity`.`event` = ".$_GET['eid'].";")) { errorjson("Ошибка базы данных. Повторите попытку позже. #3"); }
 	if(!mysql_query("DELETE FROM `".$GLOBALS['config_db']['mysql_db']."`.`addme` WHERE `addme`.`event` = '".$_GET['eid']."';")) { errorjson("Ошибка базы данных. Повторите попытку позже. #4"); }
-	else { errorjson("ok"); }
+
+	foreach($studentsToRecount as $studentsToRecountId) {
+		countStudentsRating($studentsToRecountId);
+	}
+
+	errorjson("ok");
 }
 
 // Добавление студента в мероприятие
@@ -1295,22 +1431,7 @@ elseif($_GET['act'] == "addactive") {
 		$addactivereq1 = "INSERT INTO `".$GLOBALS['config_db']['mysql_db']."`.`activity` (`id`, `event`, `user`, `role`, `created`, `addedby`, `complex`) VALUES (NULL, '".$_GET['eid']."', '".$checkuid[0]."', '".$_GET['rid']."', '".$curtime."', '".LOGGED_ID."', 'n');";
 		if(!mysql_query($addactivereq1)) { errorjson("Ошибка базы данных. Повторите попытку позже."); }
 
-		$_precheckeid = mysql_query("SELECT `id`,`date` from `events` WHERE `id`='".$_GET['eid']."' LIMIT 1");
-		$_checkeid = mysql_fetch_row($_precheckeid);
-		if(isThisAcademicYear($_checkeid[1]) == true) {
-
-			$sqlcountByTags = "";
-			$countByTags = json_decode($checkeid[5]);
-			$pregetByATags = mysql_query("SELECT `id`,`type` from `tags` WHERE `type` = 'a';");
-			while($getByATags = mysql_fetch_array($pregetByATags)) {
-				if(in_array($getByATags[0], $countByTags)) {
-					$sqlcountByTags .= ", `ic_".$getByATags[0]."` = `ic_".$getByATags[0]."` +".$countup."";
-				}
-			}
-
-			$addactivereq2 = "UPDATE  `".$GLOBALS['config_db']['mysql_db']."`.`users` SET  `count` = `count` +".$countup."".$sqlcountByTags." WHERE  `users`.`id` =".$checkuid[0].";";
-			if(!mysql_query($addactivereq2)) { errorjson("Ошибка базы данных. Повторите попытку позже."); }
-		}
+		countStudentsRating($checkuid[0]);
 
 		$pregetuser = mysql_query("SELECT `id`,`sname`,`fname`,`pname`,`dep`,`curcourse`,`sex`,`groupnum` from `users` WHERE `id` ='".$checkuid[0]."' LIMIT 1;");
 		$getuser = mysql_fetch_row($pregetuser);
@@ -1419,22 +1540,8 @@ elseif($_GET['act'] == "editrole") {
 	$recountreq1 = "UPDATE  `".$GLOBALS['config_db']['mysql_db']."`.`activity` SET  `role` =  '".$_GET['rid']."', `complex` =  '".$_GET['cv']."' WHERE  `activity`.`id` =".$_GET['aid'].";";
 	if(!mysql_query($recountreq1)) { errorjson("Ошибка базы данных. Повторите попытку позже. #1"); }
 
-	$_precheckeid = mysql_query("SELECT `id`,`date` from `events` WHERE `id`='".$getactive[1]."' LIMIT 1");
-	$_checkeid = mysql_fetch_row($_precheckeid);
-	if(isThisAcademicYear($_checkeid[1]) == true) {
+	countStudentsRating($getactive[4]);
 
-		$sqlcountByTags = "";
-		$countByTags = json_decode($getifh[4]);
-		$pregetByATags = mysql_query("SELECT `id`,`type` from `tags` WHERE `type` = 'a';");
-		while($getByATags = mysql_fetch_array($pregetByATags)) {
-			if(in_array($getByATags[0], $countByTags)) {
-				$sqlcountByTags .= ", `ic_".$getByATags[0]."` = `ic_".$getByATags[0]."` -".$decount." +".$recount."";
-			}
-		}
-
-		$recountreq2 = "UPDATE  `".$GLOBALS['config_db']['mysql_db']."`.`users` SET  `count` = `count` -".$decount." +".$recount."".$sqlcountByTags." WHERE  `users`.`id` =".$getactive[4].";";
-		if(!mysql_query($recountreq2)) { errorjson("Ошибка базы данных. Повторите попытку позже. #2"); }
-	}
 	errorjson("ok");
 }
 
@@ -1472,22 +1579,8 @@ elseif($_GET['act'] == "delactive") {
 	$delactivereq = "DELETE FROM `".$GLOBALS['config_db']['mysql_db']."`.`activity` WHERE `activity`.`id` =".$_GET['aid'].";";
 	if(!mysql_query($delactivereq)) { errorjson("Ошибка базы данных. Повторите попытку позже."); }
 
-	$_precheckeid = mysql_query("SELECT `id`,`date` from `events` WHERE `id`='".$getactive[1]."' LIMIT 1");
-	$_checkeid = mysql_fetch_row($_precheckeid);
-	if(isThisAcademicYear($_checkeid[1]) == true) {
+	countStudentsRating($getactive[2]);
 
-		$sqlcountByTags = "";
-		$countByTags = json_decode($getifh[4]);
-		$pregetByATags = mysql_query("SELECT `id`,`type` from `tags` WHERE `type` = 'a';");
-		while($getByATags = mysql_fetch_array($pregetByATags)) {
-			if(in_array($getByATags[0], $countByTags)) {
-				$sqlcountByTags .= ", `ic_".$getByATags[0]."` = `ic_".$getByATags[0]."` -".$decount."";
-			}
-		}
-
-		$updatereq = "UPDATE  `".$GLOBALS['config_db']['mysql_db']."`.`users` SET  `count` =  '".$setcount."'".$sqlcountByTags." WHERE  `users`.`id` =".$getactive[2].";";
-		if(!mysql_query($updatereq)) { errorjson("Ошибка базы данных. Повторите попытку позже."); }
-	}
 	errorjson("ok");
 }
 
@@ -3163,22 +3256,7 @@ elseif($_GET['act'] == "removeme") {
 	$delactivereq = "DELETE FROM `".$GLOBALS['config_db']['mysql_db']."`.`activity` WHERE `activity`.`id` =".$getactive[0].";";
 	if(!mysql_query($delactivereq)) { errorjson("Ошибка базы данных. Повторите попытку позже."); }
 
-	$_precheckeid = mysql_query("SELECT `id`,`date` from `events` WHERE `id`='".$getactive[1]."' LIMIT 1");
-	$_checkeid = mysql_fetch_row($_precheckeid);
-	if(isThisAcademicYear($_checkeid[1]) == true) {
-
-		$sqlcountByTags = "";
-		$countByTags = json_decode($getifh[4]);
-		$pregetByATags = mysql_query("SELECT `id`,`type` from `tags` WHERE `type` = 'a';");
-		while($getByATags = mysql_fetch_array($pregetByATags)) {
-			if(in_array($getByATags[0], $countByTags)) {
-				$sqlcountByTags .= ", `ic_".$getByATags[0]."` = `ic_".$getByATags[0]."` -".$decount."";
-			}
-		}
-
-		$updatereq = "UPDATE  `".$GLOBALS['config_db']['mysql_db']."`.`users` SET  `count` =  '".$setcount."'".$sqlcountByTags." WHERE  `users`.`id` =".$getactive[2].";";
-		if(!mysql_query($updatereq)) { errorjson("Ошибка базы данных. Повторите попытку позже."); }
-	}
+	countStudentsRating($getactive[2]);
 
 	errorjson("ok");
 }
