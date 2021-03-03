@@ -648,7 +648,8 @@ elseif($_POST['act'] == "studentsupload") {
 		if(count($data[$i]) > 18) { errorjson("Количество столбцов в таблице слишком большое"); }
 		$sendPreCSV[$i] = array();
 		for($c=0; $c < count($data[$i]); $c++) {
-			$sendPreCSV[$i][$c] = iconv('windows-1251', 'UTF-8', $data[$i][$c]);
+			//$sendPreCSV[$i][$c] = iconv('windows-1251', 'UTF-8', $data[$i][$c]);
+			$sendPreCSV[$i][$c] = $data[$i][$c];
 		}
 	}
 

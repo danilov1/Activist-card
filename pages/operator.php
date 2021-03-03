@@ -2603,7 +2603,7 @@ elseif($_GET['act'] == "studentsupload_connect") {
 	array_shift($dataCSV);
 	for($i=0; $i < count($dataCSV); $i++) {
 		for($c=0; $c < count($dataCSV[$i]); $c++) {
-			$dataCSV[$i][$c] = iconv('windows-1251', 'UTF-8', $dataCSV[$i][$c]);
+			//$dataCSV[$i][$c] = iconv('windows-1251', 'UTF-8', $dataCSV[$i][$c]);
 			$dataCSV[$i][$c] = addslashes($dataCSV[$i][$c]); //хз
 		}
 	}
@@ -2636,7 +2636,7 @@ elseif($_GET['act'] == "studentsupload_connect") {
 			or mb_strlen($dataCSV[$i][($CONNECTIONS["sname"])], "UTF-8") < 1
 			or mb_strlen($dataCSV[$i][($CONNECTIONS["fname"])], "UTF-8") > 150
 			or mb_strlen($dataCSV[$i][($CONNECTIONS["sname"])], "UTF-8") > 150
-		) { errorjson("Фамилия и имя не могут быть короче 1 и длинее 150 символов"); }
+		) { errorjson("Фамилия и имя не могут быть короче 1 и длинее 150 символов - ".$dataCSV[$i][($CONNECTIONS["fname"])]." ".$dataCSV[$i][($CONNECTIONS["sname"])]); }
 		if(mb_strlen($dataCSV[$i][($CONNECTIONS["pname"])], "UTF-8") <= 1) { $dataCSV[$i][($CONNECTIONS["pname"])] = ""; }
 	}
 
@@ -2665,14 +2665,14 @@ elseif($_GET['act'] == "studentsupload_connect") {
 	for($i=0; $i < $dataCSVnum; $i++) {
 		$curEduLevel = $dataCSV[$i][($CONNECTIONS["edu_level"])];
 		settype($dataCSV[$i][($CONNECTIONS["edu_level"])], "integer");
-		if($dataCSV[$i][($CONNECTIONS["edu_level"])] < 1 or $dataCSV[$i][($CONNECTIONS["edu_level"])] > 5) {
-			errorjson("Ступень образования '".$curEduLevel."' указана в нестандартном формате. Ступень образования может быть: для СПО = '1', для бакалавриата = '2', для магистратуры = '3', для специалитета = '4', для аспирантуры = '5'.");
+		if($dataCSV[$i][($CONNECTIONS["edu_level"])] < 2 or $dataCSV[$i][($CONNECTIONS["edu_level"])] > 6) {
+			errorjson("Ступень образования '".$curEduLevel."' указана в нестандартном формате. Ступень образования может быть: для СПО = '2', для бакалавриата = '3', для магистратуры = '4', для специалитета = '5', для аспирантуры = '6'.");
 		}
-		if($dataCSV[$i][($CONNECTIONS["edu_level"])] == 1) { $dataCSV[$i][($CONNECTIONS["edu_level"])] = "c"; }
-		elseif($dataCSV[$i][($CONNECTIONS["edu_level"])] == 2) { $dataCSV[$i][($CONNECTIONS["edu_level"])] = "b"; }
-		elseif($dataCSV[$i][($CONNECTIONS["edu_level"])] == 3) { $dataCSV[$i][($CONNECTIONS["edu_level"])] = "m"; }
-		elseif($dataCSV[$i][($CONNECTIONS["edu_level"])] == 4) { $dataCSV[$i][($CONNECTIONS["edu_level"])] = "s"; }
-		elseif($dataCSV[$i][($CONNECTIONS["edu_level"])] == 5) { $dataCSV[$i][($CONNECTIONS["edu_level"])] = "a"; }
+		if($dataCSV[$i][($CONNECTIONS["edu_level"])] == 2) { $dataCSV[$i][($CONNECTIONS["edu_level"])] = "c"; }
+		elseif($dataCSV[$i][($CONNECTIONS["edu_level"])] == 3) { $dataCSV[$i][($CONNECTIONS["edu_level"])] = "b"; }
+		elseif($dataCSV[$i][($CONNECTIONS["edu_level"])] == 4) { $dataCSV[$i][($CONNECTIONS["edu_level"])] = "m"; }
+		elseif($dataCSV[$i][($CONNECTIONS["edu_level"])] == 5) { $dataCSV[$i][($CONNECTIONS["edu_level"])] = "s"; }
+		elseif($dataCSV[$i][($CONNECTIONS["edu_level"])] == 6) { $dataCSV[$i][($CONNECTIONS["edu_level"])] = "a"; }
 	}
 
 	// Обработка факультета и группы
